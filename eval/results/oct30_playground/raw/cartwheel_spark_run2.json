@@ -1,0 +1,14 @@
+{
+  "merchant_name": {"status": "observed", "value": "Cartwheel Office", "evidence": "\"Cartwheel Office\""},
+  "cart_item_count": {"status": "observed", "value": 3, "evidence": "\"Cart (3 items)\""},
+  "line_items": [
+    {"name": {"status": "observed", "value": "Standing Desk Pro", "evidence": "\"Standing Desk Pro\""}, "quantity": {"status": "observed", "value": 1, "evidence": "\"Qty 1\""}, "unit_price": {"status": "inferred", "value": "$349.00", "evidence": "Qty is 1 and row total is \"$349.00\", so unit price equals line total"}, "line_total": {"status": "observed", "value": "$349.00", "evidence": "\"$349.00\""}},
+    {"name": {"status": "observed", "value": "Monitor Arm", "evidence": "\"Monitor Arm\""}, "quantity": {"status": "observed", "value": 2, "evidence": "\"Qty 2\""}, "unit_price": {"status": "observed", "value": "$49.50", "evidence": "\"$49.50 each\""}, "line_total": {"status": "observed", "value": "$99.00", "evidence": "\"$99.00\""}}
+  ],
+  "subtotal": {"status": "observed", "value": "$448.00", "evidence": "\"Subtotal\" \"$448.00\""},
+  "discount": {"status": "observed", "value": "-$44.80", "evidence": "\"Discount (WELCOME10)\" \"-$44.80\""},
+  "shipping": {"status": "observed", "value": "Free", "evidence": "\"Shipping\" \"Free\""},
+  "tax": {"status": "observed", "value": "$32.26", "evidence": "\"Tax (8%)\" \"$32.26\""},
+  "total": {"status": "observed", "value": "$435.46", "evidence": "\"Total\" \"$435.46\""},
+  "uncertainty_flags": []
+}

@@ -1,0 +1,1285 @@
+{
+  "runs": [
+    {
+      "file": "cartwheel_spark_run1.json",
+      "checkout": "cartwheel",
+      "model": "spark",
+      "run": 1,
+      "compliance": {
+        "kit_names_used": 4,
+        "of": 12,
+        "fields_not_in_kit": [
+          "cart_count",
+          "discount_code",
+          "discount_amount",
+          "shipping",
+          "tax_rate",
+          "tax_amount",
+          "total",
+          "renewal_price",
+          "renewal_date",
+          "billing_terms"
+        ],
+        "status_value_evidence_form": "12 of 12"
+      },
+      "mapping_notes": [
+        "discount_amount -> discounts",
+        "tax_amount -> tax",
+        "total -> total_due_now",
+        "discount_code kept as a separate field (the amount is what's scored)"
+      ],
+      "unmapped_fields": [
+        "cart_count",
+        "shipping",
+        "tax_rate",
+        "renewal_price",
+        "renewal_date",
+        "billing_terms"
+      ],
+      "statuses_from_model": true,
+      "facts_correct": 14,
+      "fields_scored": 14,
+      "status_correct": 14,
+      "invented": [],
+      "extra_items": [],
+      "flags_found": [],
+      "flags_missed": [],
+      "wrong": [],
+      "math": [
+        {
+          "check": "line items add up to subtotal",
+          "ok": true
+        },
+        {
+          "check": "subtotal - discount + tax = total",
+          "ok": true
+        }
+      ],
+      "normalized": {
+        "merchant": {
+          "status": "observed",
+          "value": "Cartwheel Office",
+          "evidence": "Cartwheel Office"
+        },
+        "currency": {
+          "status": "unknown",
+          "value": null,
+          "evidence": "field not in answer"
+        },
+        "subtotal": {
+          "status": "observed",
+          "value": "$448.00",
+          "evidence": "$448.00"
+        },
+        "discounts": {
+          "status": "observed",
+          "value": "-$44.80",
+          "evidence": "-$44.80"
+        },
+        "tax": {
+          "status": "observed",
+          "value": "$32.26",
+          "evidence": "$32.26"
+        },
+        "total_due_now": {
+          "status": "observed",
+          "value": "$435.46",
+          "evidence": "$435.46"
+        },
+        "renewal_terms": {
+          "status": "unknown",
+          "value": null,
+          "evidence": "field not in answer"
+        },
+        "trial_terms": {
+          "status": "unknown",
+          "value": null,
+          "evidence": "field not in answer"
+        },
+        "cancellation_terms": {
+          "status": "unknown",
+          "value": null,
+          "evidence": "field not in answer"
+        },
+        "other_conditions": {
+          "status": "unknown",
+          "value": null,
+          "evidence": "field not in answer"
+        },
+        "line_items": [
+          {
+            "name": {
+              "status": "observed",
+              "value": "Standing Desk Pro",
+              "evidence": "Standing Desk Pro"
+            },
+            "quantity": {
+              "status": "observed",
+              "value": "1",
+              "evidence": "Qty 1"
+            },
+            "term": {
+              "status": "unknown",
+              "value": null,
+              "evidence": "field not in answer"
+            },
+            "line_total": {
+              "status": "observed",
+              "value": "$349.00",
+              "evidence": "$349.00"
+            }
+          },
+          {
+            "name": {
+              "status": "observed",
+              "value": "Monitor Arm",
+              "evidence": "Monitor Arm"
+            },
+            "quantity": {
+              "status": "observed",
+              "value": "2",
+              "evidence": "Qty 2 \u00b7 $49.50 each"
+            },
+            "term": {
+              "status": "unknown",
+              "value": null,
+              "evidence": "field not in answer"
+            },
+            "line_total": {
+              "status": "observed",
+              "value": "$99.00",
+              "evidence": "$99.00"
+            }
+          }
+        ],
+        "uncertainty_flags": []
+      }
+    },
+    {
+      "file": "cartwheel_spark_run2.json",
+      "checkout": "cartwheel",
+      "model": "spark",
+      "run": 2,
+      "compliance": {
+        "kit_names_used": 4,
+        "of": 12,
+        "fields_not_in_kit": [
+          "merchant_name",
+          "cart_item_count",
+          "discount",
+          "shipping",
+          "total"
+        ],
+        "status_value_evidence_form": "7 of 7"
+      },
+      "mapping_notes": [
+        "merchant_name -> merchant",
+        "discount -> discounts",
+        "total -> total_due_now"
+      ],
+      "unmapped_fields": [
+        "cart_item_count",
+        "shipping"
+      ],
+      "statuses_from_model": true,
+      "facts_correct": 14,
+      "fields_scored": 14,
+      "status_correct": 14,
+      "invented": [],
+      "extra_items": [],
+      "flags_found": [],
+      "flags_missed": [],
+      "wrong": [],
+      "math": [
+        {
+          "check": "line items add up to subtotal",
+          "ok": true
+        },
+        {
+          "check": "subtotal - discount + tax = total",
+          "ok": true
+        }
+      ],
+      "normalized": {
+        "merchant": {
+          "status": "observed",
+          "value": "Cartwheel Office",
+          "evidence": "\"Cartwheel Office\""
+        },
+        "currency": {
+          "status": "unknown",
+          "value": null,
+          "evidence": "field not in answer"
+        },
+        "subtotal": {
+          "status": "observed",
+          "value": "$448.00",
+          "evidence": "\"Subtotal\" \"$448.00\""
+        },
+        "discounts": {
+          "status": "observed",
+          "value": "-$44.80",
+          "evidence": "\"Discount (WELCOME10)\" \"-$44.80\""
+        },
+        "tax": {
+          "status": "observed",
+          "value": "$32.26",
+          "evidence": "\"Tax (8%)\" \"$32.26\""
+        },
+        "total_due_now": {
+          "status": "observed",
+          "value": "$435.46",
+          "evidence": "\"Total\" \"$435.46\""
+        },
+        "renewal_terms": {
+          "status": "unknown",
+          "value": null,
+          "evidence": "field not in answer"
+        },
+        "trial_terms": {
+          "status": "unknown",
+          "value": null,
+          "evidence": "field not in answer"
+        },
+        "cancellation_terms": {
+          "status": "unknown",
+          "value": null,
+          "evidence": "field not in answer"
+        },
+        "other_conditions": {
+          "status": "unknown",
+          "value": null,
+          "evidence": "field not in answer"
+        },
+        "line_items": [
+          {
+            "name": {
+              "status": "observed",
+              "value": "Standing Desk Pro",
+              "evidence": "\"Standing Desk Pro\""
+            },
+            "quantity": {
+              "status": "observed",
+              "value": "1",
+              "evidence": "\"Qty 1\""
+            },
+            "term": {
+              "status": "unknown",
+              "value": null,
+              "evidence": "field not in answer"
+            },
+            "line_total": {
+              "status": "observed",
+              "value": "$349.00",
+              "evidence": "\"$349.00\""
+            }
+          },
+          {
+            "name": {
+              "status": "observed",
+              "value": "Monitor Arm",
+              "evidence": "\"Monitor Arm\""
+            },
+            "quantity": {
+              "status": "observed",
+              "value": "2",
+              "evidence": "\"Qty 2\""
+            },
+            "term": {
+              "status": "unknown",
+              "value": null,
+              "evidence": "field not in answer"
+            },
+            "line_total": {
+              "status": "observed",
+              "value": "$99.00",
+              "evidence": "\"$99.00\""
+            }
+          }
+        ],
+        "uncertainty_flags": []
+      }
+    },
+    {
+      "file": "cartwheel_wonder_run1.json",
+      "checkout": "cartwheel",
+      "model": "wonder",
+      "run": 1,
+      "compliance": {
+        "kit_names_used": 4,
+        "of": 12,
+        "fields_not_in_kit": [
+          "items",
+          "prices",
+          "total_due_today"
+        ],
+        "status_value_evidence_form": "0 of 6"
+      },
+      "mapping_notes": [
+        "original Wonder format: values copied; a value counts as observed, null as unknown",
+        "flags mapped by keyword; unmapped: renewal_terms_not_shown, cancellation_terms_not_shown"
+      ],
+      "unmapped_fields": [],
+      "statuses_from_model": false,
+      "facts_correct": 14,
+      "fields_scored": 14,
+      "status_correct": null,
+      "invented": [],
+      "extra_items": [],
+      "flags_found": [],
+      "flags_missed": [],
+      "wrong": [],
+      "math": [
+        {
+          "check": "line items add up to subtotal",
+          "ok": true
+        },
+        {
+          "check": "subtotal - discount + tax = total",
+          "ok": true
+        }
+      ],
+      "normalized": {
+        "merchant": {
+          "status": "observed",
+          "value": "Cartwheel Office",
+          "evidence": "not provided in original schema"
+        },
+        "line_items": [
+          {
+            "name": {
+              "status": "observed",
+              "value": "Standing Desk Pro",
+              "evidence": "not provided in original schema"
+            },
+            "quantity": {
+              "status": "observed",
+              "value": "1",
+              "evidence": "not provided in original schema"
+            },
+            "term": {
+              "status": "unknown",
+              "value": null,
+              "evidence": "field not in answer"
+            },
+            "line_total": {
+              "status": "observed",
+              "value": "$349.00",
+              "evidence": "not provided in original schema"
+            }
+          },
+          {
+            "name": {
+              "status": "observed",
+              "value": "Monitor Arm",
+              "evidence": "not provided in original schema"
+            },
+            "quantity": {
+              "status": "observed",
+              "value": "2",
+              "evidence": "not provided in original schema"
+            },
+            "term": {
+              "status": "unknown",
+              "value": null,
+              "evidence": "field not in answer"
+            },
+            "line_total": {
+              "status": "observed",
+              "value": "$99.00",
+              "evidence": "not provided in original schema"
+            }
+          }
+        ],
+        "subtotal": {
+          "status": "observed",
+          "value": "$448.00",
+          "evidence": "not provided in original schema"
+        },
+        "discounts": {
+          "status": "observed",
+          "value": "WELCOME10 -$44.80",
+          "evidence": "not provided in original schema"
+        },
+        "tax": {
+          "status": "observed",
+          "value": "$32.26",
+          "evidence": "not provided in original schema"
+        },
+        "total_due_now": {
+          "status": "observed",
+          "value": "$435.46",
+          "evidence": "not provided in original schema"
+        },
+        "renewal_terms": {
+          "status": "unknown",
+          "value": null,
+          "evidence": ""
+        },
+        "trial_terms": {
+          "status": "unknown",
+          "value": null,
+          "evidence": ""
+        },
+        "cancellation_terms": {
+          "status": "unknown",
+          "value": null,
+          "evidence": ""
+        },
+        "uncertainty_flags": [],
+        "currency": {
+          "status": "unknown",
+          "value": null,
+          "evidence": "field not in answer"
+        },
+        "other_conditions": {
+          "status": "unknown",
+          "value": null,
+          "evidence": "field not in answer"
+        }
+      }
+    },
+    {
+      "file": "domainly_spark_run1.json",
+      "checkout": "domainly",
+      "model": "spark",
+      "run": 1,
+      "compliance": {
+        "kit_names_used": 3,
+        "of": 12,
+        "fields_not_in_kit": [
+          "merchant_name",
+          "taxes",
+          "total_due_today",
+          "auto_renewal",
+          "renewal_price",
+          "renewal_term"
+        ],
+        "status_value_evidence_form": "7 of 7"
+      },
+      "mapping_notes": [
+        "merchant_name -> merchant",
+        "taxes -> tax",
+        "total_due_today -> total_due_now",
+        "auto_renewal: a true/false value; its evidence quote was used as the value",
+        "auto_renewal -> renewal_terms",
+        "line_items[0].price -> line_total",
+        "line_items[1].price -> line_total"
+      ],
+      "unmapped_fields": [
+        "renewal_price",
+        "renewal_term"
+      ],
+      "statuses_from_model": true,
+      "facts_correct": 12,
+      "fields_scored": 13,
+      "status_correct": 12,
+      "invented": [],
+      "extra_items": [],
+      "flags_found": [
+        "multi_year_upfront",
+        "renewal_price_not_shown"
+      ],
+      "flags_missed": [],
+      "wrong": [
+        {
+          "field": "cancellation_terms",
+          "expected": [
+            "observed",
+            "Auto-renew can be turned off in Settings"
+          ],
+          "got": [
+            "unknown",
+            null
+          ]
+        }
+      ],
+      "math": [
+        {
+          "check": "line items add up to subtotal",
+          "ok": true
+        },
+        {
+          "check": "subtotal - discount + tax = total",
+          "ok": true
+        },
+        {
+          "check": "renewal price stated for a recurring or multi-year charge",
+          "ok": false
+        }
+      ],
+      "normalized": {
+        "merchant": {
+          "status": "observed",
+          "value": "Domainly",
+          "evidence": "Domainly"
+        },
+        "currency": {
+          "status": "unknown",
+          "value": null,
+          "evidence": "field not in answer"
+        },
+        "subtotal": {
+          "status": "observed",
+          "value": "$100.00",
+          "evidence": "Subtotal $100.00"
+        },
+        "discounts": {
+          "status": "unknown",
+          "value": null,
+          "evidence": "field not in answer"
+        },
+        "tax": {
+          "status": "observed",
+          "value": "$0.00",
+          "evidence": "Taxes $0.00"
+        },
+        "total_due_now": {
+          "status": "observed",
+          "value": "$100.00",
+          "evidence": "Total due today $100.00"
+        },
+        "renewal_terms": {
+          "status": "observed",
+          "value": "Your domain renews automatically at the then-current rate.",
+          "evidence": "Your domain renews automatically at the then-current rate."
+        },
+        "trial_terms": {
+          "status": "unknown",
+          "value": null,
+          "evidence": "field not in answer"
+        },
+        "cancellation_terms": {
+          "status": "unknown",
+          "value": null,
+          "evidence": "field not in answer"
+        },
+        "other_conditions": {
+          "status": "unknown",
+          "value": null,
+          "evidence": "field not in answer"
+        },
+        "line_items": [
+          {
+            "name": {
+              "status": "observed",
+              "value": "acme-robotics.com",
+              "evidence": "acme-robotics.com"
+            },
+            "quantity": {
+              "status": "unknown",
+              "value": null,
+              "evidence": "field not in answer"
+            },
+            "term": {
+              "status": "observed",
+              "value": "3 years",
+              "evidence": "3 years"
+            },
+            "line_total": {
+              "status": "observed",
+              "value": "$100.00",
+              "evidence": "$100.00"
+            }
+          },
+          {
+            "name": {
+              "status": "observed",
+              "value": "WHOIS privacy protection",
+              "evidence": "WHOIS privacy protection"
+            },
+            "quantity": {
+              "status": "unknown",
+              "value": null,
+              "evidence": "field not in answer"
+            },
+            "term": {
+              "status": "unknown",
+              "value": null,
+              "evidence": "No term shown for this row"
+            },
+            "line_total": {
+              "status": "observed",
+              "value": "$0.00",
+              "evidence": "$0.00"
+            }
+          }
+        ],
+        "uncertainty_flags": [
+          "renewal_price_not_shown",
+          "multi_year_upfront"
+        ]
+      }
+    },
+    {
+      "file": "domainly_spark_run2.json",
+      "checkout": "domainly",
+      "model": "spark",
+      "run": 2,
+      "compliance": {
+        "kit_names_used": 4,
+        "of": 12,
+        "fields_not_in_kit": [
+          "taxes",
+          "total_due_today",
+          "initial_term",
+          "auto_renew",
+          "renewal_price",
+          "renewal_term"
+        ],
+        "status_value_evidence_form": "8 of 8"
+      },
+      "mapping_notes": [
+        "taxes -> tax",
+        "total_due_today -> total_due_now",
+        "auto_renew: a true/false value; its evidence quote was used as the value",
+        "auto_renew -> renewal_terms",
+        "line_items wrapped in status/value; inner rows use the wrapper's status",
+        "line_items[0].name: plain value with no status; counted as observed",
+        "line_items[0].term: plain value with no status; counted as observed",
+        "line_items[0].price: plain value with no status; counted as observed",
+        "line_items[0].price -> line_total",
+        "line_items[1].name: plain value with no status; counted as observed",
+        "line_items[1].price: plain value with no status; counted as observed",
+        "line_items[1].price -> line_total"
+      ],
+      "unmapped_fields": [
+        "initial_term",
+        "renewal_price",
+        "renewal_term"
+      ],
+      "statuses_from_model": true,
+      "facts_correct": 12,
+      "fields_scored": 13,
+      "status_correct": 12,
+      "invented": [],
+      "extra_items": [],
+      "flags_found": [
+        "multi_year_upfront",
+        "renewal_price_not_shown"
+      ],
+      "flags_missed": [],
+      "wrong": [
+        {
+          "field": "cancellation_terms",
+          "expected": [
+            "observed",
+            "Auto-renew can be turned off in Settings"
+          ],
+          "got": [
+            "unknown",
+            null
+          ]
+        }
+      ],
+      "math": [
+        {
+          "check": "line items add up to subtotal",
+          "ok": true
+        },
+        {
+          "check": "subtotal - discount + tax = total",
+          "ok": true
+        },
+        {
+          "check": "renewal price stated for a recurring or multi-year charge",
+          "ok": false
+        }
+      ],
+      "normalized": {
+        "merchant": {
+          "status": "observed",
+          "value": "Domainly",
+          "evidence": "Domainly"
+        },
+        "currency": {
+          "status": "unknown",
+          "value": null,
+          "evidence": "field not in answer"
+        },
+        "subtotal": {
+          "status": "observed",
+          "value": "$100.00",
+          "evidence": "Subtotal $100.00"
+        },
+        "discounts": {
+          "status": "unknown",
+          "value": null,
+          "evidence": "field not in answer"
+        },
+        "tax": {
+          "status": "observed",
+          "value": "$0.00",
+          "evidence": "Taxes $0.00"
+        },
+        "total_due_now": {
+          "status": "observed",
+          "value": "$100.00",
+          "evidence": "Total due today $100.00"
+        },
+        "renewal_terms": {
+          "status": "observed",
+          "value": "Your domain renews automatically at the then-current rate.",
+          "evidence": "Your domain renews automatically at the then-current rate."
+        },
+        "trial_terms": {
+          "status": "unknown",
+          "value": null,
+          "evidence": "field not in answer"
+        },
+        "cancellation_terms": {
+          "status": "unknown",
+          "value": null,
+          "evidence": "field not in answer"
+        },
+        "other_conditions": {
+          "status": "unknown",
+          "value": null,
+          "evidence": "field not in answer"
+        },
+        "line_items": [
+          {
+            "name": {
+              "status": "observed",
+              "value": "acme-robotics.com",
+              "evidence": "not provided"
+            },
+            "quantity": {
+              "status": "unknown",
+              "value": null,
+              "evidence": "field not in answer"
+            },
+            "term": {
+              "status": "observed",
+              "value": "3 years",
+              "evidence": "not provided"
+            },
+            "line_total": {
+              "status": "observed",
+              "value": "$100.00",
+              "evidence": "not provided"
+            }
+          },
+          {
+            "name": {
+              "status": "observed",
+              "value": "WHOIS privacy protection",
+              "evidence": "not provided"
+            },
+            "quantity": {
+              "status": "unknown",
+              "value": null,
+              "evidence": "field not in answer"
+            },
+            "term": {
+              "status": "unknown",
+              "value": null,
+              "evidence": "field not in answer"
+            },
+            "line_total": {
+              "status": "observed",
+              "value": "$0.00",
+              "evidence": "not provided"
+            }
+          }
+        ],
+        "uncertainty_flags": [
+          "renewal_price_not_shown",
+          "multi_year_upfront"
+        ]
+      }
+    },
+    {
+      "file": "domainly_wonder_run1.json",
+      "checkout": "domainly",
+      "model": "wonder",
+      "run": 1,
+      "compliance": {
+        "kit_names_used": 4,
+        "of": 12,
+        "fields_not_in_kit": [
+          "items",
+          "prices",
+          "total_due_today"
+        ],
+        "status_value_evidence_form": "0 of 6"
+      },
+      "mapping_notes": [
+        "original Wonder format: values copied; a value counts as observed, null as unknown",
+        "flags mapped by keyword; unmapped: renewal_date_not_specified, renewal_term_length_not_specified, cancellation_terms_not_stated"
+      ],
+      "unmapped_fields": [],
+      "statuses_from_model": false,
+      "facts_correct": 12,
+      "fields_scored": 13,
+      "status_correct": null,
+      "invented": [],
+      "extra_items": [],
+      "flags_found": [
+        "renewal_price_not_shown"
+      ],
+      "flags_missed": [
+        "multi_year_upfront"
+      ],
+      "wrong": [
+        {
+          "field": "cancellation_terms",
+          "expected": [
+            "observed",
+            "Auto-renew can be turned off in Settings"
+          ],
+          "got": [
+            "unknown",
+            null
+          ]
+        }
+      ],
+      "math": [
+        {
+          "check": "line items add up to subtotal",
+          "ok": true
+        },
+        {
+          "check": "subtotal - discount + tax = total",
+          "ok": true
+        },
+        {
+          "check": "renewal price stated for a recurring or multi-year charge",
+          "ok": false
+        }
+      ],
+      "normalized": {
+        "merchant": {
+          "status": "observed",
+          "value": "Domainly",
+          "evidence": "not provided in original schema"
+        },
+        "line_items": [
+          {
+            "name": {
+              "status": "observed",
+              "value": "acme-robotics.com",
+              "evidence": "not provided in original schema"
+            },
+            "quantity": {
+              "status": "unknown",
+              "value": null,
+              "evidence": "field not in answer"
+            },
+            "term": {
+              "status": "observed",
+              "value": "3 years",
+              "evidence": "not provided in original schema"
+            },
+            "line_total": {
+              "status": "observed",
+              "value": "$100.00",
+              "evidence": "not provided in original schema"
+            }
+          },
+          {
+            "name": {
+              "status": "observed",
+              "value": "WHOIS privacy protection",
+              "evidence": "not provided in original schema"
+            },
+            "quantity": {
+              "status": "unknown",
+              "value": null,
+              "evidence": "field not in answer"
+            },
+            "term": {
+              "status": "unknown",
+              "value": null,
+              "evidence": ""
+            },
+            "line_total": {
+              "status": "observed",
+              "value": "$0.00",
+              "evidence": "not provided in original schema"
+            }
+          }
+        ],
+        "subtotal": {
+          "status": "observed",
+          "value": "$100.00",
+          "evidence": "not provided in original schema"
+        },
+        "discounts": {
+          "status": "unknown",
+          "value": null,
+          "evidence": ""
+        },
+        "tax": {
+          "status": "observed",
+          "value": "$0.00",
+          "evidence": "not provided in original schema"
+        },
+        "total_due_now": {
+          "status": "observed",
+          "value": "$100.00",
+          "evidence": "not provided in original schema"
+        },
+        "renewal_terms": {
+          "status": "observed",
+          "value": "Your domain renews automatically at the then-current rate. You can turn off auto-renew in Settings.",
+          "evidence": "not provided in original schema"
+        },
+        "trial_terms": {
+          "status": "unknown",
+          "value": null,
+          "evidence": ""
+        },
+        "cancellation_terms": {
+          "status": "unknown",
+          "value": null,
+          "evidence": ""
+        },
+        "uncertainty_flags": [
+          "renewal_price_not_shown"
+        ],
+        "currency": {
+          "status": "unknown",
+          "value": null,
+          "evidence": "field not in answer"
+        },
+        "other_conditions": {
+          "status": "unknown",
+          "value": null,
+          "evidence": "field not in answer"
+        }
+      }
+    },
+    {
+      "file": "sparkforge_spark_run1.json",
+      "checkout": "sparkforge",
+      "model": "spark",
+      "run": 1,
+      "compliance": {
+        "kit_names_used": 6,
+        "of": 12,
+        "fields_not_in_kit": [
+          "plan_name",
+          "plan_price_display",
+          "plan_description",
+          "renewal_amount",
+          "renewal_interval",
+          "next_charge_date",
+          "trial_end_date",
+          "due_today",
+          "total_due_today",
+          "cta_text",
+          "card_requirement"
+        ],
+        "status_value_evidence_form": "15 of 15"
+      },
+      "mapping_notes": [
+        "total_due_today -> total_due_now",
+        "line_items wrapped in status/value; inner rows use the wrapper's status",
+        "plan_name, plan_price_display and renewal_interval read as the plan's line item",
+        "line_items[0].item_name -> name",
+        "line_items[0].item_amount -> line_total"
+      ],
+      "unmapped_fields": [
+        "plan_description",
+        "renewal_amount",
+        "next_charge_date",
+        "trial_end_date",
+        "due_today",
+        "cta_text",
+        "card_requirement"
+      ],
+      "statuses_from_model": true,
+      "facts_correct": 10,
+      "fields_scored": 10,
+      "status_correct": 9,
+      "invented": [],
+      "extra_items": [
+        "line_items[1]: extra line item 'Builder Pro trial' (on screen, likely counted twice)"
+      ],
+      "flags_found": [
+        "text_cut_off",
+        "trial_converts_to_paid"
+      ],
+      "flags_missed": [],
+      "wrong": [
+        {
+          "field": "line_items[0].term",
+          "expected": [
+            "observed",
+            "Monthly"
+          ],
+          "got": [
+            "inferred",
+            "monthly"
+          ]
+        }
+      ],
+      "math": [
+        {
+          "check": "renewal price stated for a recurring or multi-year charge",
+          "ok": true
+        }
+      ],
+      "normalized": {
+        "merchant": {
+          "status": "observed",
+          "value": "Sparkforge",
+          "evidence": "Sparkforge"
+        },
+        "currency": {
+          "status": "unknown",
+          "value": null,
+          "evidence": "field not in answer"
+        },
+        "subtotal": {
+          "status": "unknown",
+          "value": null,
+          "evidence": "field not in answer"
+        },
+        "discounts": {
+          "status": "unknown",
+          "value": null,
+          "evidence": "field not in answer"
+        },
+        "tax": {
+          "status": "unknown",
+          "value": null,
+          "evidence": "field not in answer"
+        },
+        "total_due_now": {
+          "status": "observed",
+          "value": "$0.00",
+          "evidence": "Total due today $0.00"
+        },
+        "renewal_terms": {
+          "status": "observed",
+          "value": "After your trial ends, your subscription renews automatically each month at $25.00 until you cancel.",
+          "evidence": "After your trial ends, your subscription renews automatically each month at $25.00 until you cancel."
+        },
+        "trial_terms": {
+          "status": "observed",
+          "value": "7-day free trial, then $25.00/month",
+          "evidence": "7-day free trial, then $25.00/month"
+        },
+        "cancellation_terms": {
+          "status": "observed",
+          "value": "To avoid being charged, cancel at least 24 hours before the trial ends in",
+          "evidence": "To avoid being charged, cancel at least 24 hours before the trial ends in"
+        },
+        "other_conditions": {
+          "status": "unknown",
+          "value": null,
+          "evidence": "field not in answer"
+        },
+        "line_items": [
+          {
+            "name": {
+              "status": "observed",
+              "value": "Builder Pro",
+              "evidence": "Builder Pro"
+            },
+            "quantity": {
+              "status": "unknown",
+              "value": null,
+              "evidence": "field not in answer"
+            },
+            "term": {
+              "status": "inferred",
+              "value": "monthly",
+              "evidence": "Derived from visible text 'renews automatically each month' and '$25.00/mo'"
+            },
+            "line_total": {
+              "status": "observed",
+              "value": "$25.00/mo",
+              "evidence": "$25.00/mo"
+            }
+          },
+          {
+            "name": {
+              "status": "observed",
+              "value": "Builder Pro trial",
+              "evidence": "Builder Pro trial"
+            },
+            "quantity": {
+              "status": "unknown",
+              "value": null,
+              "evidence": "field not in answer"
+            },
+            "term": {
+              "status": "unknown",
+              "value": null,
+              "evidence": "field not in answer"
+            },
+            "line_total": {
+              "status": "observed",
+              "value": "$0.00",
+              "evidence": "$0.00"
+            }
+          }
+        ],
+        "uncertainty_flags": [
+          "trial_converts_to_paid",
+          "text_cut_off"
+        ]
+      }
+    },
+    {
+      "file": "sparkforge_wonder_run1.json",
+      "checkout": "sparkforge",
+      "model": "wonder",
+      "run": 1,
+      "compliance": {
+        "kit_names_used": 4,
+        "of": 12,
+        "fields_not_in_kit": [
+          "items",
+          "prices",
+          "total_due_today"
+        ],
+        "status_value_evidence_form": "0 of 6"
+      },
+      "mapping_notes": [
+        "original Wonder format: values copied; a value counts as observed, null as unknown",
+        "flags mapped by keyword; unmapped: cancellation_location_unknown, exact_trial_end_date_and_time_not_specified, taxes_not_shown, card_required_to_start_trial"
+      ],
+      "unmapped_fields": [],
+      "statuses_from_model": false,
+      "facts_correct": 10,
+      "fields_scored": 10,
+      "status_correct": null,
+      "invented": [],
+      "extra_items": [
+        "line_items[1]: extra line item 'Builder Pro trial' (on screen, likely counted twice)"
+      ],
+      "flags_found": [
+        "text_cut_off"
+      ],
+      "flags_missed": [
+        "trial_converts_to_paid"
+      ],
+      "wrong": [],
+      "math": [
+        {
+          "check": "renewal price stated for a recurring or multi-year charge",
+          "ok": true
+        }
+      ],
+      "normalized": {
+        "merchant": {
+          "status": "observed",
+          "value": "Sparkforge",
+          "evidence": "not provided in original schema"
+        },
+        "line_items": [
+          {
+            "name": {
+              "status": "observed",
+              "value": "Builder Pro",
+              "evidence": "not provided in original schema"
+            },
+            "quantity": {
+              "status": "unknown",
+              "value": null,
+              "evidence": "field not in answer"
+            },
+            "term": {
+              "status": "observed",
+              "value": "7-day free trial, then $25.00/month",
+              "evidence": "not provided in original schema"
+            },
+            "line_total": {
+              "status": "observed",
+              "value": "$25.00/mo",
+              "evidence": "not provided in original schema"
+            }
+          },
+          {
+            "name": {
+              "status": "observed",
+              "value": "Builder Pro trial",
+              "evidence": "not provided in original schema"
+            },
+            "quantity": {
+              "status": "unknown",
+              "value": null,
+              "evidence": "field not in answer"
+            },
+            "term": {
+              "status": "observed",
+              "value": "7-day free trial",
+              "evidence": "not provided in original schema"
+            },
+            "line_total": {
+              "status": "observed",
+              "value": "$0.00",
+              "evidence": "not provided in original schema"
+            }
+          }
+        ],
+        "subtotal": {
+          "status": "unknown",
+          "value": null,
+          "evidence": ""
+        },
+        "discounts": {
+          "status": "unknown",
+          "value": null,
+          "evidence": ""
+        },
+        "tax": {
+          "status": "unknown",
+          "value": null,
+          "evidence": ""
+        },
+        "total_due_now": {
+          "status": "observed",
+          "value": "$0.00",
+          "evidence": "not provided in original schema"
+        },
+        "renewal_terms": {
+          "status": "observed",
+          "value": "$25.00/month After your trial ends, your subscription renews automatically each month at $25.00 until you cancel.",
+          "evidence": "not provided in original schema"
+        },
+        "trial_terms": {
+          "status": "observed",
+          "value": "7-day free trial then $25.00/month",
+          "evidence": "not provided in original schema"
+        },
+        "cancellation_terms": {
+          "status": "observed",
+          "value": "at least 24 hours before the trial ends To avoid being charged, cancel at least 24 hours before the trial ends in",
+          "evidence": "not provided in original schema"
+        },
+        "uncertainty_flags": [
+          "text_cut_off"
+        ],
+        "currency": {
+          "status": "unknown",
+          "value": null,
+          "evidence": "field not in answer"
+        },
+        "other_conditions": {
+          "status": "unknown",
+          "value": null,
+          "evidence": "field not in answer"
+        }
+      }
+    }
+  ],
+  "consistency": {
+    "cartwheel_spark": {
+      "fields_compared": 16,
+      "same": 16,
+      "differences": [],
+      "flags_same": true
+    },
+    "domainly_spark": {
+      "fields_compared": 16,
+      "same": 16,
+      "differences": [],
+      "flags_same": true
+    }
+  }
+}

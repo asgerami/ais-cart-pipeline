@@ -1,0 +1,125 @@
+"""Step 4: the BUY / TRIAL / WAIT / REJECT verdict, and the code checks that guard it.
+
+The verdict model sees only the verified facts and check results, never the screenshot, so it can't read
+anything new off the page. Code then checks its answer: every cited field must exist, and every dollar
+amount it mentions must come from the facts or simple arithmetic on them.
+"""
+import itertools
+import json
+import re
+
+from .checks import WITH_SYMBOL, money
+from .schema import ITEM_FIELDS, TOP_FIELDS
+
+DECISIONS = ["BUY", "TRIAL", "WAIT", "REJECT"]
+
+VERDICT_SYSTEM = """You advise a founder who is about to complete a purchase. You get the facts extracted from their
+checkout screenshot (each one observed, inferred or unknown, with evidence), the results of math checks on those
+facts, and the founder's question. Decide one of:
+
+- BUY: the facts are complete enough and the purchase fits the question.
+- TRIAL: a free or low-cost trial lets them test first. Say what to check before it converts to paid.
+- WAIT: something that matters is unknown or unclear, such as a renewal price, cut-off terms or totals that don't
+  add up. Say exactly what to check.
+- REJECT: the facts show the purchase is a poor deal or a trap for this goal.
+
+Rules:
+- Use only the facts given. Unknown fields are risks, not zeros.
+- Every reason lists the field paths it relies on, exactly as they appear in the facts (for example total_due_now,
+  renewal_terms, line_items[0].line_total).
+- Never state a price, saving or date that isn't in the facts. If you compute an amount, show the arithmetic.
+- If a math check failed, say so in a reason.
+Return only JSON that matches the schema."""
+
+VERDICT_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "decision": {"type": "string", "enum": DECISIONS},
+        "headline": {"type": "string"},
+        "reasons": {"type": "array", "items": {
+            "type": "object",
+            "properties": {"text": {"type": "string"}, "fields": {"type": "array", "items": {"type": "string"}}},
+            "required": ["text", "fields"], "additionalProperties": False}},
+        "check_before_buying": {"type": "array", "items": {"type": "string"}},
+        "confidence": {"type": "string", "enum": ["low", "medium", "high"]},
+    },
+    "required": ["decision", "headline", "reasons", "check_before_buying", "confidence"],
+    "additionalProperties": False,
+}
+
+
+def verdict_text(facts, math, question):
+    return "\n".join([
+        f"Founder's question: {question}",
+        "",
+        "Facts from the checkout screenshot:",
+        json.dumps(facts, indent=2),
+        "",
+        "Math checks on those facts:",
+        json.dumps(math, indent=2),
+    ])
+
+
+def field_paths(facts):
+    paths = set(TOP_FIELDS)
+    for i, _ in enumerate(facts.get("line_items") or []):
+        paths |= {f"line_items[{i}].{k}" for k in ITEM_FIELDS}
+    return paths
+
+
+def fact_amounts(facts):
+    """Every dollar amount that appears in a fact's value."""
+    vals = [facts.get(k) for k in TOP_FIELDS]
+    for it in facts.get("line_items") or []:
+        vals += [(it or {}).get(k) for k in ITEM_FIELDS]
+    out = set()
+    for f in vals:
+        if isinstance(f, dict) and f.get("status") != "unknown" and f.get("value"):
+            for m in WITH_SYMBOL.finditer(str(f["value"])):
+                out.add(round(float(m.group(3).replace(",", "")), 2))
+    return out
+
+
+def supported(amount, base):
+    """True if an amount is a fact, a sum or difference of two facts, or a fact times 2 to 12 (months, years)."""
+    if any(abs(amount - b) <= 0.01 for b in base):
+        return True
+    for a, b in itertools.combinations(sorted(base), 2):
+        if abs(amount - (a + b)) <= 0.01 or abs(amount - abs(a - b)) <= 0.01:
+            return True
+    return any(abs(amount - b * k) <= 0.01 for b in base for k in range(2, 13))
+
+
+def validate_verdict(v, facts, math):
+    """Code checks on the model's verdict. Returns a list of {check, ok, detail}; the verdict itself is not changed."""
+    out = []
+    if v.get("decision") not in DECISIONS:
+        out.append({"check": "decision is one of BUY, TRIAL, WAIT, REJECT", "ok": False, "detail": repr(v.get("decision"))})
+        return out
+    known = field_paths(facts)
+    cited = [f for r in v.get("reasons") or [] for f in (r.get("fields") or [])]
+    bad = sorted({f for f in cited if f not in known})
+    out.append({"check": "every cited field exists", "ok": not bad,
+                "detail": "all cited fields found" if not bad else "not in the facts: " + ", ".join(bad)})
+    out.append({"check": "every reason cites at least one field",
+                "ok": all(r.get("fields") for r in v.get("reasons") or []) and bool(v.get("reasons")),
+                "detail": f"{len(v.get('reasons') or [])} reason(s)"})
+
+    base = fact_amounts(facts)
+    texts = [v.get("headline") or ""] + [r.get("text") or "" for r in v.get("reasons") or []] + list(v.get("check_before_buying") or [])
+    unsupported = []
+    for t in texts:
+        for m in WITH_SYMBOL.finditer(t):
+            amt = round(float(m.group(3).replace(",", "")), 2)
+            if not supported(amt, base):
+                unsupported.append(m.group(0).strip())
+    out.append({"check": "every dollar amount comes from the facts", "ok": not unsupported,
+                "detail": "all amounts traced to the facts" if not unsupported else "not traceable: " + ", ".join(sorted(set(unsupported)))})
+
+    failed = [c["check"] for c in math if not c["ok"]]
+    if v["decision"] == "BUY" and failed:
+        out.append({"check": "no BUY while a math check fails", "ok": False, "detail": "failed: " + "; ".join(failed)})
+    renewal = facts.get("renewal_terms") or {}
+    if v["decision"] == "BUY" and any("renewal price" in c for c in failed) and money(renewal) is None:
+        out.append({"check": "no BUY while the renewal price is unknown", "ok": False, "detail": "renewal price not stated"})
+    return out

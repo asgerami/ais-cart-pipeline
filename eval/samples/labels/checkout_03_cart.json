@@ -1,0 +1,148 @@
+{
+  "id": "checkout_03_cart",
+  "merchant": {
+    "status": "observed",
+    "value": "Cartwheel Office",
+    "evidence": "page header",
+    "match": [
+      "cartwheel"
+    ]
+  },
+  "currency": {
+    "status": "inferred",
+    "value": "USD",
+    "evidence": "prices use $; no currency code shown",
+    "match": [
+      "usd"
+    ]
+  },
+  "line_items": [
+    {
+      "name": {
+        "status": "observed",
+        "value": "Standing Desk Pro",
+        "evidence": "cart row 1",
+        "match": [
+          "standing desk"
+        ]
+      },
+      "quantity": {
+        "status": "observed",
+        "value": "1",
+        "evidence": "'Qty 1'",
+        "match": [
+          "1"
+        ]
+      },
+      "term": {
+        "status": "ambiguous",
+        "value": null,
+        "evidence": "one-time purchase; no term shown"
+      },
+      "line_total": {
+        "status": "observed",
+        "value": "$349.00",
+        "evidence": "cart row 1",
+        "match": [
+          "$349"
+        ]
+      }
+    },
+    {
+      "name": {
+        "status": "observed",
+        "value": "Monitor Arm",
+        "evidence": "cart row 2",
+        "match": [
+          "monitor arm"
+        ]
+      },
+      "quantity": {
+        "status": "observed",
+        "value": "2",
+        "evidence": "'Qty 2'",
+        "match": [
+          "2"
+        ]
+      },
+      "term": {
+        "status": "ambiguous",
+        "value": null,
+        "evidence": "one-time purchase; no term shown"
+      },
+      "line_total": {
+        "status": "observed",
+        "value": "$99.00",
+        "evidence": "cart row 2",
+        "match": [
+          "$99"
+        ]
+      }
+    }
+  ],
+  "subtotal": {
+    "status": "observed",
+    "value": "$448.00",
+    "evidence": "order summary",
+    "match": [
+      "$448"
+    ]
+  },
+  "discounts": {
+    "status": "observed",
+    "value": "WELCOME10: -$44.80",
+    "evidence": "order summary",
+    "match": [
+      "44.80"
+    ]
+  },
+  "tax": {
+    "status": "observed",
+    "value": "$32.26",
+    "evidence": "order summary, 8%",
+    "match": [
+      "32.26"
+    ]
+  },
+  "total_due_now": {
+    "status": "observed",
+    "value": "$435.46",
+    "evidence": "order summary",
+    "match": [
+      "435.46"
+    ]
+  },
+  "renewal_terms": {
+    "status": "unknown",
+    "value": null,
+    "evidence": "not shown"
+  },
+  "trial_terms": {
+    "status": "unknown",
+    "value": null,
+    "evidence": "not shown"
+  },
+  "cancellation_terms": {
+    "status": "unknown",
+    "value": null,
+    "evidence": "not shown"
+  },
+  "other_conditions": {
+    "status": "observed",
+    "value": "Free shipping",
+    "evidence": "order summary",
+    "match": [
+      "free"
+    ]
+  },
+  "uncertainty_flags": [],
+  "screen_amounts": [
+    "$349.00",
+    "$99.00",
+    "$49.50",
+    "$448.00",
+    "$44.80",
+    "$32.26",
+    "$435.46"
+  ]
+}

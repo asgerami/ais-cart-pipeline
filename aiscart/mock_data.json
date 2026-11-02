@@ -1,0 +1,404 @@
+{
+ "c10a876ce2559a0d2f49b6c29c8a0f3c88cd490143f741d39082411b57dace6c": {
+  "id": "checkout_01_domain",
+  "merchant": {
+   "status": "observed",
+   "value": "Domainly",
+   "evidence": "page header",
+   "match": [
+    "domainly"
+   ]
+  },
+  "currency": {
+   "status": "inferred",
+   "value": "USD",
+   "evidence": "prices use $; no currency code shown",
+   "match": [
+    "usd"
+   ]
+  },
+  "line_items": [
+   {
+    "name": {
+     "status": "observed",
+     "value": "acme-robotics.com domain registration",
+     "evidence": "first cart row",
+     "match": [
+      "acme-robotics.com"
+     ]
+    },
+    "quantity": {
+     "status": "ambiguous",
+     "value": null,
+     "evidence": "no quantity shown; 1 is a reasonable inference"
+    },
+    "term": {
+     "status": "observed",
+     "value": "3 years",
+     "evidence": "term selector",
+     "match": [
+      "3 year"
+     ]
+    },
+    "line_total": {
+     "status": "observed",
+     "value": "$100.00",
+     "evidence": "first cart row",
+     "match": [
+      "$100"
+     ]
+    }
+   },
+   {
+    "name": {
+     "status": "observed",
+     "value": "WHOIS privacy protection",
+     "evidence": "second cart row",
+     "match": [
+      "privacy"
+     ]
+    },
+    "quantity": {
+     "status": "ambiguous",
+     "value": null,
+     "evidence": "no quantity shown"
+    },
+    "term": {
+     "status": "ambiguous",
+     "value": null,
+     "evidence": "no term shown for this add-on"
+    },
+    "line_total": {
+     "status": "observed",
+     "value": "$0.00",
+     "evidence": "second cart row",
+     "match": [
+      "$0"
+     ]
+    }
+   }
+  ],
+  "subtotal": {
+   "status": "observed",
+   "value": "$100.00",
+   "evidence": "order summary",
+   "match": [
+    "$100"
+   ]
+  },
+  "discounts": {
+   "status": "unknown",
+   "value": null,
+   "evidence": "not shown"
+  },
+  "tax": {
+   "status": "observed",
+   "value": "$0.00",
+   "evidence": "order summary",
+   "match": [
+    "$0"
+   ]
+  },
+  "total_due_now": {
+   "status": "observed",
+   "value": "$100.00",
+   "evidence": "order summary",
+   "match": [
+    "$100"
+   ]
+  },
+  "renewal_terms": {
+   "status": "observed",
+   "value": "Renews automatically at the then-current rate",
+   "evidence": "fine print; no renewal price given",
+   "match": [
+    "then current"
+   ]
+  },
+  "trial_terms": {
+   "status": "unknown",
+   "value": null,
+   "evidence": "not shown"
+  },
+  "cancellation_terms": {
+   "status": "observed",
+   "value": "Auto-renew can be turned off in Settings",
+   "evidence": "fine print",
+   "match": [
+    "auto renew"
+   ]
+  },
+  "other_conditions": {
+   "status": "ambiguous",
+   "value": null,
+   "evidence": "open-ended field"
+  },
+  "uncertainty_flags": [
+   "renewal_price_not_shown",
+   "multi_year_upfront"
+  ],
+  "screen_amounts": [
+   "$100.00",
+   "$0.00"
+  ]
+ },
+ "7a6b78d9ed0ea180179d0c56ffdcc12446ff809dd88e91f929e4a02d162722eb": {
+  "id": "checkout_02_trial",
+  "merchant": {
+   "status": "observed",
+   "value": "Sparkforge",
+   "evidence": "page header",
+   "match": [
+    "sparkforge"
+   ]
+  },
+  "currency": {
+   "status": "inferred",
+   "value": "USD",
+   "evidence": "prices use $; no currency code shown",
+   "match": [
+    "usd"
+   ]
+  },
+  "line_items": [
+   {
+    "name": {
+     "status": "observed",
+     "value": "Builder Pro",
+     "evidence": "plan row",
+     "match": [
+      "builder pro"
+     ]
+    },
+    "quantity": {
+     "status": "ambiguous",
+     "value": null,
+     "evidence": "no quantity shown"
+    },
+    "term": {
+     "status": "observed",
+     "value": "Monthly",
+     "evidence": "'$25.00/mo' and 'then $25.00/month'",
+     "match": [
+      "month"
+     ]
+    },
+    "line_total": {
+     "status": "ambiguous",
+     "value": null,
+     "evidence": "row shows $25.00/mo, but $0.00 is due today"
+    }
+   }
+  ],
+  "subtotal": {
+   "status": "unknown",
+   "value": null,
+   "evidence": "not shown"
+  },
+  "discounts": {
+   "status": "unknown",
+   "value": null,
+   "evidence": "not shown"
+  },
+  "tax": {
+   "status": "unknown",
+   "value": null,
+   "evidence": "not shown"
+  },
+  "total_due_now": {
+   "status": "observed",
+   "value": "$0.00",
+   "evidence": "due today box",
+   "match": [
+    "$0"
+   ]
+  },
+  "renewal_terms": {
+   "status": "observed",
+   "value": "Renews automatically each month at $25.00 until cancelled",
+   "evidence": "terms box",
+   "match": [
+    "$25",
+    "month"
+   ]
+  },
+  "trial_terms": {
+   "status": "observed",
+   "value": "7-day free trial, then $25.00/month",
+   "evidence": "plan row",
+   "match": [
+    "7",
+    "$25"
+   ]
+  },
+  "cancellation_terms": {
+   "status": "observed",
+   "value": "Cancel at least 24 hours before the trial ends",
+   "evidence": "terms box, second line; the rest is cut off",
+   "match": [
+    "24 hours"
+   ]
+  },
+  "other_conditions": {
+   "status": "ambiguous",
+   "value": null,
+   "evidence": "card requirement is visible; the refund line is cut off"
+  },
+  "uncertainty_flags": [
+   "text_cut_off",
+   "trial_converts_to_paid"
+  ],
+  "screen_amounts": [
+   "$25.00",
+   "$0.00"
+  ]
+ },
+ "9eb788f87e8f4bbdadac69237eefe7e93e0d53a8c10750700844af8806070a1b": {
+  "id": "checkout_03_cart",
+  "merchant": {
+   "status": "observed",
+   "value": "Cartwheel Office",
+   "evidence": "page header",
+   "match": [
+    "cartwheel"
+   ]
+  },
+  "currency": {
+   "status": "inferred",
+   "value": "USD",
+   "evidence": "prices use $; no currency code shown",
+   "match": [
+    "usd"
+   ]
+  },
+  "line_items": [
+   {
+    "name": {
+     "status": "observed",
+     "value": "Standing Desk Pro",
+     "evidence": "cart row 1",
+     "match": [
+      "standing desk"
+     ]
+    },
+    "quantity": {
+     "status": "observed",
+     "value": "1",
+     "evidence": "'Qty 1'",
+     "match": [
+      "1"
+     ]
+    },
+    "term": {
+     "status": "ambiguous",
+     "value": null,
+     "evidence": "one-time purchase; no term shown"
+    },
+    "line_total": {
+     "status": "observed",
+     "value": "$349.00",
+     "evidence": "cart row 1",
+     "match": [
+      "$349"
+     ]
+    }
+   },
+   {
+    "name": {
+     "status": "observed",
+     "value": "Monitor Arm",
+     "evidence": "cart row 2",
+     "match": [
+      "monitor arm"
+     ]
+    },
+    "quantity": {
+     "status": "observed",
+     "value": "2",
+     "evidence": "'Qty 2'",
+     "match": [
+      "2"
+     ]
+    },
+    "term": {
+     "status": "ambiguous",
+     "value": null,
+     "evidence": "one-time purchase; no term shown"
+    },
+    "line_total": {
+     "status": "observed",
+     "value": "$99.00",
+     "evidence": "cart row 2",
+     "match": [
+      "$99"
+     ]
+    }
+   }
+  ],
+  "subtotal": {
+   "status": "observed",
+   "value": "$448.00",
+   "evidence": "order summary",
+   "match": [
+    "$448"
+   ]
+  },
+  "discounts": {
+   "status": "observed",
+   "value": "WELCOME10: -$44.80",
+   "evidence": "order summary",
+   "match": [
+    "44.80"
+   ]
+  },
+  "tax": {
+   "status": "observed",
+   "value": "$32.26",
+   "evidence": "order summary, 8%",
+   "match": [
+    "32.26"
+   ]
+  },
+  "total_due_now": {
+   "status": "observed",
+   "value": "$435.46",
+   "evidence": "order summary",
+   "match": [
+    "435.46"
+   ]
+  },
+  "renewal_terms": {
+   "status": "unknown",
+   "value": null,
+   "evidence": "not shown"
+  },
+  "trial_terms": {
+   "status": "unknown",
+   "value": null,
+   "evidence": "not shown"
+  },
+  "cancellation_terms": {
+   "status": "unknown",
+   "value": null,
+   "evidence": "not shown"
+  },
+  "other_conditions": {
+   "status": "observed",
+   "value": "Free shipping",
+   "evidence": "order summary",
+   "match": [
+    "free"
+   ]
+  },
+  "uncertainty_flags": [],
+  "screen_amounts": [
+   "$349.00",
+   "$99.00",
+   "$49.50",
+   "$448.00",
+   "$44.80",
+   "$32.26",
+   "$435.46"
+  ]
+ }
+}

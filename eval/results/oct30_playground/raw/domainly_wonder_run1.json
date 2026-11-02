@@ -1,0 +1,34 @@
+{
+  "merchant": "Domainly",
+  "items": [
+    {
+      "name": "acme-robotics.com",
+      "description": "Domain registration",
+      "term": "3 years",
+      "price": "$100.00"
+    },
+    {
+      "name": "WHOIS privacy protection",
+      "description": "Hides your contact details",
+      "term": null,
+      "price": "$0.00"
+    }
+  ],
+  "prices": {
+    "subtotal": "$100.00",
+    "taxes": "$0.00"
+  },
+  "total_due_today": "$100.00",
+  "renewal_terms": {
+    "auto_renew": true,
+    "renewal_price": null,
+    "description": "Your domain renews automatically at the then-current rate. You can turn off auto-renew in Settings."
+  },
+  "cancellation_terms": null,
+  "uncertainty_flags": [
+    "renewal_price_not_specified_then_current_rate_unknown",
+    "renewal_date_not_specified",
+    "renewal_term_length_not_specified",
+    "cancellation_terms_not_stated"
+  ]
+}

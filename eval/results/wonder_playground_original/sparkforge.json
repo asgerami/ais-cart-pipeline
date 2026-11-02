@@ -1,0 +1,43 @@
+{
+  "merchant": "Sparkforge",
+  "items": [
+    {
+      "name": "Builder Pro",
+      "description": "For solo builders shipping full-stack apps",
+      "term": "7-day free trial, then $25.00/month",
+      "price": "$25.00/mo"
+    },
+    {
+      "name": "Builder Pro trial",
+      "description": null,
+      "term": "7-day free trial",
+      "price": "$0.00"
+    }
+  ],
+  "prices": {
+    "plan_price": "$25.00/mo",
+    "trial_price": "$0.00",
+    "subtotal": null,
+    "taxes": null
+  },
+  "total_due_today": "$0.00",
+  "renewal_terms": {
+    "auto_renew": true,
+    "renewal_price": "$25.00/month",
+    "renewal_interval": "each month",
+    "trial_period": "7-day free trial",
+    "description": "After your trial ends, your subscription renews automatically each month at $25.00 until you cancel."
+  },
+  "cancellation_terms": {
+    "description": "To avoid being charged, cancel at least 24 hours before the trial ends in",
+    "cancel_deadline": "at least 24 hours before the trial ends",
+    "cancellation_location": null
+  },
+  "uncertainty_flags": [
+    "cancellation_instructions_text_truncated",
+    "cancellation_location_unknown",
+    "exact_trial_end_date_and_time_not_specified",
+    "taxes_not_shown",
+    "card_required_to_start_trial"
+  ]
+}

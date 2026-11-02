@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI's Cart</title>
+<style>
+:root {
+  --bg: #f5f6f4; --card: #ffffff; --ink: #1a1f1c; --muted: #5f6862; --line: #dfe3df; --accent: #1f6f5c; --accent-ink: #ffffff;
+  --buy: #1f7a4d; --buy-bg: #e2f2e9; --trial: #2459a8; --trial-bg: #e3ecf8; --wait: #9a5b00; --wait-bg: #fbefd9;
+  --reject: #b42318; --reject-bg: #fdecea; --unk: #5f6862; --unk-bg: #eceeec; --chip: #eef1ee;
+  --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark) { :root {
+  --bg: #121614; --card: #1a201d; --ink: #e5ebe7; --muted: #9aa59f; --line: #2c3530; --accent: #57b39b; --accent-ink: #0f1412;
+  --buy: #6fd3a0; --buy-bg: #173426; --trial: #8db7f2; --trial-bg: #1b2a40; --wait: #f2b45a; --wait-bg: #3a2a12;
+  --reject: #ff8a80; --reject-bg: #3d1d1b; --unk: #a3ada7; --unk-bg: #262d29; --chip: #232a26; } }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.55 var(--sans); }
+.wrap { max-width: 1100px; margin: 0 auto; padding: 28px max(16px, env(safe-area-inset-left)) 64px; display: grid; gap: 22px; }
+header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px; }
+h1 { margin: 0; font-size: 26px; letter-spacing: -0.01em; }
+.tag { color: var(--muted); }
+.mode { margin-left: auto; font: 600 12px/1 var(--mono); padding: 6px 9px; border-radius: 999px; background: var(--chip); color: var(--muted); }
+.grid { display: grid; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); gap: 22px; align-items: start; }
+@media (max-width: 860px) { .grid { grid-template-columns: minmax(0, 1fr); } }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 18px; display: grid; gap: 14px; min-width: 0; }
+h2 { margin: 0; font-size: 16px; }
+h3 { margin: 0; font-size: 14px; }
+label { font-size: 13px; color: var(--muted); display: grid; gap: 6px; }
+textarea, select, input[type=password] { font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 9px 10px; width: 100%; }
+textarea { min-height: 70px; resize: vertical; }
+.drop { border: 1.5px dashed var(--line); border-radius: 10px; padding: 16px; text-align: center; color: var(--muted); cursor: pointer; display: grid; gap: 8px; }
+.drop.over { border-color: var(--accent); }
+.drop img { max-width: 100%; max-height: 260px; border-radius: 6px; border: 1px solid var(--line); justify-self: center; }
+.samples { display: flex; flex-wrap: wrap; gap: 8px; }
+button { font: 600 14px/1 var(--sans); border-radius: 8px; border: 1px solid var(--line); background: var(--card); color: var(--ink); padding: 9px 12px; cursor: pointer; }
+button.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); padding: 12px 14px; font-size: 15px; }
+button:disabled { opacity: .55; cursor: wait; }
+button:focus-visible, .drop:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+details summary { cursor: pointer; color: var(--muted); font-size: 13px; }
+.status { font-size: 14px; color: var(--muted); }
+.err { background: var(--reject-bg); color: var(--reject); border-radius: 8px; padding: 12px; font-size: 14px; white-space: pre-wrap; }
+.verdict { display: grid; gap: 12px; }
+.decision { display: inline-block; font: 700 13px/1 var(--mono); letter-spacing: .06em; padding: 8px 12px; border-radius: 8px; justify-self: start; }
+.d-BUY { color: var(--buy); background: var(--buy-bg); } .d-TRIAL { color: var(--trial); background: var(--trial-bg); }
+.d-WAIT { color: var(--wait); background: var(--wait-bg); } .d-REJECT { color: var(--reject); background: var(--reject-bg); }
+.headline { font-size: 19px; font-weight: 650; margin: 0; }
+ul { margin: 0; padding-left: 20px; display: grid; gap: 6px; }
+.chip { display: inline-block; font: 12px/1.2 var(--mono); background: var(--chip); color: var(--muted); border-radius: 5px; padding: 2px 6px; margin: 2px 4px 0 0; }
+.st { display: inline-block; font: 600 11.5px/1 var(--mono); padding: 4px 7px; border-radius: 5px; }
+.st-observed { color: var(--buy); background: var(--buy-bg); } .st-inferred { color: var(--wait); background: var(--wait-bg); }
+.st-unknown { color: var(--unk); background: var(--unk-bg); }
+.ok { color: var(--buy); font-weight: 600; } .flag { color: var(--reject); font-weight: 600; }
+.tw { overflow-x: auto; border: 1px solid var(--line); border-radius: 8px; }
+table { border-collapse: collapse; width: 100%; font-size: 13.5px; }
+th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+thead th { font: 600 11.5px/1.3 var(--mono); text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+tbody tr:last-child td, tbody tr:last-child th { border-bottom: 0; }
+td.ev { color: var(--muted); font-size: 12.5px; }
+td.num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.fixed { font: 600 11px/1 var(--mono); color: var(--trial); margin-left: 6px; }
+.muted { color: var(--muted); font-size: 13px; }
+.empty { color: var(--muted); padding: 30px 10px; text-align: center; }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <header>
+    <h1>AI's Cart</h1>
+    <span class="tag">One picture. One question. A better purchase.</span>
+    <span class="mode" id="mode">checking server</span>
+  </header>
+
+  <div class="grid">
+    <section class="card" aria-label="Your checkout">
+      <h2>Your checkout</h2>
+      <div class="drop" id="drop" tabindex="0" role="button" aria-label="Choose a checkout screenshot">
+        <span id="dropText">Drop a checkout screenshot here, or click to choose one</span>
+        <img id="preview" alt="Selected screenshot" hidden>
+      </div>
+      <input type="file" id="file" accept="image/png,image/jpeg,image/webp,image/gif" hidden>
+      <div>
+        <div class="muted" style="margin-bottom:6px">Or try a sample (fictional stores):</div>
+        <div class="samples">
+          <button type="button" data-sample="checkout_01_domain">Domainly</button>
+          <button type="button" data-sample="checkout_02_trial">Sparkforge</button>
+          <button type="button" data-sample="checkout_03_cart">Cartwheel Office</button>
+        </div>
+      </div>
+      <label for="q">Your question
+        <textarea id="q">Should I complete this purchase?</textarea>
+      </label>
+      <details>
+        <summary>Settings</summary>
+        <div style="display:grid;gap:10px;margin-top:10px">
+          <label for="review">Second review by Muse Wonder
+            <select id="review">
+              <option value="auto">Only when the checks flag something</option>
+              <option value="always">Always</option>
+              <option value="never">Never</option>
+            </select>
+          </label>
+          <label for="token">Service token (if the server requires one)
+            <input type="password" id="token" autocomplete="off">
+          </label>
+        </div>
+      </details>
+      <button class="primary" id="go" disabled>Check before I buy</button>
+      <div class="status" id="status" aria-live="polite"></div>
+    </section>
+
+    <section class="card" aria-label="Result" id="result">
+      <div class="empty">Choose a screenshot and press <strong>Check before I buy</strong>. The answer shows what was read from the screen, what was worked out, and what is unknown.</div>
+    </section>
+  </div>
+</main>
+
+<script>
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const NAMES = {merchant:"Merchant", currency:"Currency", subtotal:"Subtotal", discounts:"Discounts", tax:"Tax",
+  total_due_now:"Total due now", renewal_terms:"Renewal terms", trial_terms:"Trial terms",
+  cancellation_terms:"Cancellation terms", other_conditions:"Other conditions"};
+const ITEM = {name:"Name", quantity:"Quantity", term:"Term", line_total:"Line total"};
+let image = null;
+let token = "";
+try { token = sessionStorage.getItem("aiscart-token") || ""; } catch (e) {}
+$("token").value = token;
+
+fetch("/api/health").then(r => r.json()).then(h => {
+  $("mode").textContent = h.mode === "live" ? "live: Meta models" : h.mode === "mock" ? "mock: sample answers" : "not configured";
+}).catch(() => { $("mode").textContent = "server unreachable"; });
+
+function setImage(dataUrl) {
+  image = dataUrl;
+  $("preview").src = dataUrl; $("preview").hidden = false;
+  $("dropText").textContent = "Click to choose a different screenshot";
+  $("go").disabled = false;
+}
+
+async function shrink(file) {
+  // Vercel caps requests at 4.5 MB; re-encode large images as JPEG, max 2000 px wide.
+  const url = await new Promise(res => { const r = new FileReader(); r.onload = () => res(r.result); r.readAsDataURL(file); });
+  if (file.size <= 3000000) return url;
+  const img = await new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = url; });
+  const scale = Math.min(1, 2000 / img.width);
+  const c = document.createElement("canvas");
+  c.width = Math.round(img.width * scale); c.height = Math.round(img.height * scale);
+  c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+  return c.toDataURL("image/jpeg", 0.9);
+}
+
+async function useFile(file) {
+  if (!file || !file.type.startsWith("image/")) { $("status").textContent = "Choose a PNG, JPEG, WebP or GIF image."; return; }
+  setImage(await shrink(file));
+  $("status").textContent = "";
+}
+
+$("drop").onclick = () => $("file").click();
+$("drop").onkeydown = e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); $("file").click(); } };
+$("file").onchange = e => useFile(e.target.files[0]);
+$("drop").ondragover = e => { e.preventDefault(); $("drop").classList.add("over"); };
+$("drop").ondragleave = () => $("drop").classList.remove("over");
+$("drop").ondrop = e => { e.preventDefault(); $("drop").classList.remove("over"); useFile(e.dataTransfer.files[0]); };
+document.querySelectorAll("[data-sample]").forEach(b => b.onclick = async () => {
+  const blob = await (await fetch(`/eval/samples/${b.dataset.sample}.png`)).blob();
+  useFile(new File([blob], b.dataset.sample + ".png", {type: "image/png"}));
+});
+
+$("go").onclick = async () => {
+  if (!image) return;
+  token = $("token").value.trim();
+  try { sessionStorage.setItem("aiscart-token", token); } catch (e) {}
+  $("go").disabled = true;
+  const t0 = Date.now();
+  const tick = setInterval(() => { $("status").textContent = `Reading the screenshot and checking it… ${Math.round((Date.now() - t0) / 1000)} s (live runs take 15 to 60 s)`; }, 500);
+  try {
+    const headers = {"Content-Type": "application/json"};
+    if (token) headers.Authorization = `Bearer ${token}`;
+    const resp = await fetch("/api/analyze", {method: "POST", headers,
+      body: JSON.stringify({image, question: $("q").value, review: $("review").value})});
+    const data = await resp.json();
+    if (!resp.ok) throw data.error || {message: `HTTP ${resp.status}`};
+    render(data);
+    $("status").textContent = `Done in ${((Date.now() - t0) / 1000).toFixed(1)} s.`;
+  } catch (err) {
+    $("result").innerHTML = `<div class="err">${esc(err.message || err)}${err.step ? `\nStep: ${esc(err.step)}` : ""}${err.http_status ? ` (HTTP ${esc(err.http_status)})` : ""}</div>`;
+    $("status").textContent = "";
+  } finally {
+    clearInterval(tick);
+    $("go").disabled = false;
+  }
+};
+
+function chip(f) { return `<span class="chip">${esc(f)}</span>`; }
+function status(s) { return `<span class="st st-${esc(s)}">${esc(s)}</span>`; }
+function money(n) { return n == null ? "n/a" : "$" + n.toFixed(4); }
+
+function render(r) {
+  const v = r.verdict, fixed = new Set((r.review.changes || []).map(c => c.field));
+  const failed = r.verdict_checks.filter(c => !c.ok);
+  const row = (path, label, f) => f ? `<tr><th scope="row">${esc(label)}${fixed.has(path) ? '<span class="fixed">fixed by review</span>' : ""}</th>
+    <td>${status(f.status)}</td><td>${f.value == null ? '<span class="muted">not on screen</span>' : esc(f.value)}</td><td class="ev">${esc(f.evidence)}</td></tr>` : "";
+  let facts = Object.keys(NAMES).map(k => row(k, NAMES[k], r.facts[k])).join("");
+  (r.facts.line_items || []).forEach((it, i) => {
+    facts += Object.keys(ITEM).map(k => row(`line_items[${i}].${k}`, `Item ${i + 1}: ${ITEM[k]}`, it[k])).join("");
+  });
+  const math = r.checks.math.map(c => `<li><span class="${c.ok ? "ok" : "flag"}">${c.ok ? "Pass" : "Flag"}</span> ${esc(c.check)} <span class="muted">(${esc(c.detail)})</span></li>`).join("") || "<li class='muted'>No math checks apply.</li>";
+  const changes = (r.review.changes || []).map(c => `<li>${chip(c.field)} ${esc(c.before?.value ?? "empty")} → <strong>${esc(c.after.value ?? "unknown")}</strong> <span class="muted">${esc(c.reason || "")}</span></li>`).join("");
+  const calls = r.calls.map(c => `<tr><td>${esc(c.step)}</td><td>${esc(c.model)}</td><td class="num">${c.latency_s ?? ""} s</td>
+    <td class="num">${c.input_tokens ?? ""} / ${c.output_tokens ?? ""}</td><td class="num">${money(c.est_cost_usd)}</td></tr>`).join("");
+  $("result").innerHTML = `
+    <div class="verdict">
+      <span class="decision d-${esc(v.decision)}">${esc(v.decision)}</span>
+      <p class="headline">${esc(v.headline)}</p>
+      <ul>${v.reasons.map(x => `<li>${esc(x.text)}<div>${(x.fields || []).map(chip).join("")}</div></li>`).join("")}</ul>
+      ${v.check_before_buying.length ? `<div><h3>Check before buying</h3><ul>${v.check_before_buying.map(x => `<li>${esc(x)}</li>`).join("")}</ul></div>` : ""}
+      <div class="muted">Confidence: ${esc(v.confidence)}. Verdict checks: ${failed.length ? `<span class="flag">${failed.length} failed</span>: ${failed.map(c => esc(c.check + " (" + c.detail + ")")).join("; ")}` : '<span class="ok">all passed</span> (every cited field exists, every amount traces to the facts)'}</div>
+    </div>
+    <h3>What was read from the screenshot</h3>
+    <div class="tw"><table><thead><tr><th>Field</th><th>Status</th><th>Value</th><th>Evidence</th></tr></thead><tbody>${facts}</tbody></table></div>
+    <h3>Code checks</h3><ul>${math}</ul>
+    <h3>Second review</h3>
+    <div class="muted">${r.review.ran ? `${esc(r.review.model)} re-read ${Object.keys(r.checks.fields_flagged).length} flagged field(s): ${changes ? "" : "no changes."}` : `Skipped: ${esc(r.review.skipped_because)}.`}</div>
+    ${changes ? `<ul>${changes}</ul>` : ""}
+    <h3>Model calls</h3>
+    <div class="tw"><table><thead><tr><th>Step</th><th>Model</th><th>Time</th><th>Tokens in / out</th><th>Est. cost</th></tr></thead><tbody>${calls}</tbody></table></div>
+    <div class="muted">Total ${r.total_latency_s ?? "?"} s, est. ${money(r.total_est_cost_usd)}. Mode: ${esc(r.mode)}. Prompt versions: ${Object.entries(r.versions).map(([k, x]) => esc(k + " " + x)).join(", ")}.</div>`;
+}
+</script>
+</body>
+</html>

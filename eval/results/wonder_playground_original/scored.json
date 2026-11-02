@@ -1,0 +1,437 @@
+{
+  "domainly": {
+    "label": "checkout_01_domain",
+    "excluded_not_in_schema": [
+      "currency",
+      "other_conditions",
+      "line_items[*].quantity"
+    ],
+    "flags_original": [
+      "renewal_price_not_specified_then_current_rate_unknown",
+      "renewal_date_not_specified",
+      "renewal_term_length_not_specified",
+      "cancellation_terms_not_stated"
+    ],
+    "flags_unmapped": [
+      "renewal_date_not_specified",
+      "renewal_term_length_not_specified",
+      "cancellation_terms_not_stated"
+    ],
+    "math_checks": [
+      {
+        "check": "line items add up to subtotal",
+        "ok": true,
+        "detail": "items 100.00 vs subtotal 100.00"
+      },
+      {
+        "check": "subtotal - discount + tax = total",
+        "ok": true,
+        "detail": "subtotal 100.00 - discount 0.00 + tax 0.00 = 100.00 vs total 100.00 (treated as 0: discount)"
+      },
+      {
+        "check": "renewal price stated for a recurring or multi-year charge",
+        "ok": false,
+        "detail": "no renewal amount in renewal_terms"
+      }
+    ],
+    "score": {
+      "fields_scored": 13,
+      "status_accuracy": 0.923,
+      "value_accuracy": 0.923,
+      "invented_details": [],
+      "extra_line_items": [],
+      "flags_found": [
+        "renewal_price_not_shown"
+      ],
+      "flags_missed": [
+        "multi_year_upfront"
+      ],
+      "flags_extra": [],
+      "not_scored_ambiguous": [
+        "currency",
+        "other_conditions",
+        "line_items[0].quantity",
+        "line_items[1].quantity",
+        "line_items[1].term"
+      ],
+      "wrong_fields": [
+        {
+          "field": "cancellation_terms",
+          "gold": "observed",
+          "pred": "unknown",
+          "status_ok": false,
+          "value_ok": false,
+          "gold_value": "Auto-renew can be turned off in Settings",
+          "pred_value": null
+        }
+      ]
+    },
+    "adapted": {
+      "merchant": {
+        "status": "observed",
+        "value": "Domainly",
+        "evidence": "not provided in original schema"
+      },
+      "line_items": [
+        {
+          "name": {
+            "status": "observed",
+            "value": "acme-robotics.com",
+            "evidence": "not provided in original schema"
+          },
+          "quantity": {
+            "status": "unknown",
+            "value": null,
+            "evidence": ""
+          },
+          "term": {
+            "status": "observed",
+            "value": "3 years",
+            "evidence": "not provided in original schema"
+          },
+          "line_total": {
+            "status": "observed",
+            "value": "$100.00",
+            "evidence": "not provided in original schema"
+          }
+        },
+        {
+          "name": {
+            "status": "observed",
+            "value": "WHOIS privacy protection",
+            "evidence": "not provided in original schema"
+          },
+          "quantity": {
+            "status": "unknown",
+            "value": null,
+            "evidence": ""
+          },
+          "term": {
+            "status": "unknown",
+            "value": null,
+            "evidence": ""
+          },
+          "line_total": {
+            "status": "observed",
+            "value": "$0.00",
+            "evidence": "not provided in original schema"
+          }
+        }
+      ],
+      "subtotal": {
+        "status": "observed",
+        "value": "$100.00",
+        "evidence": "not provided in original schema"
+      },
+      "discounts": {
+        "status": "unknown",
+        "value": null,
+        "evidence": ""
+      },
+      "tax": {
+        "status": "observed",
+        "value": "$0.00",
+        "evidence": "not provided in original schema"
+      },
+      "total_due_now": {
+        "status": "observed",
+        "value": "$100.00",
+        "evidence": "not provided in original schema"
+      },
+      "renewal_terms": {
+        "status": "observed",
+        "value": "Your domain renews automatically at the then-current rate. You can turn off auto-renew in Settings.",
+        "evidence": "not provided in original schema"
+      },
+      "trial_terms": {
+        "status": "unknown",
+        "value": null,
+        "evidence": ""
+      },
+      "cancellation_terms": {
+        "status": "unknown",
+        "value": null,
+        "evidence": ""
+      },
+      "uncertainty_flags": [
+        "renewal_price_not_shown"
+      ]
+    }
+  },
+  "sparkforge": {
+    "label": "checkout_02_trial",
+    "excluded_not_in_schema": [
+      "currency",
+      "other_conditions",
+      "line_items[*].quantity"
+    ],
+    "flags_original": [
+      "cancellation_instructions_text_truncated",
+      "cancellation_location_unknown",
+      "exact_trial_end_date_and_time_not_specified",
+      "taxes_not_shown",
+      "card_required_to_start_trial"
+    ],
+    "flags_unmapped": [
+      "cancellation_location_unknown",
+      "exact_trial_end_date_and_time_not_specified",
+      "taxes_not_shown",
+      "card_required_to_start_trial"
+    ],
+    "math_checks": [
+      {
+        "check": "renewal price stated for a recurring or multi-year charge",
+        "ok": true,
+        "detail": "renewal amount found"
+      }
+    ],
+    "score": {
+      "fields_scored": 10,
+      "status_accuracy": 1.0,
+      "value_accuracy": 1.0,
+      "invented_details": [],
+      "extra_line_items": [
+        "line_items[1]: extra line item 'Builder Pro trial' (on screen, likely counted twice)"
+      ],
+      "flags_found": [
+        "text_cut_off"
+      ],
+      "flags_missed": [
+        "trial_converts_to_paid"
+      ],
+      "flags_extra": [],
+      "not_scored_ambiguous": [
+        "currency",
+        "other_conditions",
+        "line_items[0].quantity",
+        "line_items[0].line_total"
+      ],
+      "wrong_fields": []
+    },
+    "adapted": {
+      "merchant": {
+        "status": "observed",
+        "value": "Sparkforge",
+        "evidence": "not provided in original schema"
+      },
+      "line_items": [
+        {
+          "name": {
+            "status": "observed",
+            "value": "Builder Pro",
+            "evidence": "not provided in original schema"
+          },
+          "quantity": {
+            "status": "unknown",
+            "value": null,
+            "evidence": ""
+          },
+          "term": {
+            "status": "observed",
+            "value": "7-day free trial, then $25.00/month",
+            "evidence": "not provided in original schema"
+          },
+          "line_total": {
+            "status": "observed",
+            "value": "$25.00/mo",
+            "evidence": "not provided in original schema"
+          }
+        },
+        {
+          "name": {
+            "status": "observed",
+            "value": "Builder Pro trial",
+            "evidence": "not provided in original schema"
+          },
+          "quantity": {
+            "status": "unknown",
+            "value": null,
+            "evidence": ""
+          },
+          "term": {
+            "status": "observed",
+            "value": "7-day free trial",
+            "evidence": "not provided in original schema"
+          },
+          "line_total": {
+            "status": "observed",
+            "value": "$0.00",
+            "evidence": "not provided in original schema"
+          }
+        }
+      ],
+      "subtotal": {
+        "status": "unknown",
+        "value": null,
+        "evidence": ""
+      },
+      "discounts": {
+        "status": "unknown",
+        "value": null,
+        "evidence": ""
+      },
+      "tax": {
+        "status": "unknown",
+        "value": null,
+        "evidence": ""
+      },
+      "total_due_now": {
+        "status": "observed",
+        "value": "$0.00",
+        "evidence": "not provided in original schema"
+      },
+      "renewal_terms": {
+        "status": "observed",
+        "value": "$25.00/month After your trial ends, your subscription renews automatically each month at $25.00 until you cancel.",
+        "evidence": "not provided in original schema"
+      },
+      "trial_terms": {
+        "status": "observed",
+        "value": "7-day free trial then $25.00/month",
+        "evidence": "not provided in original schema"
+      },
+      "cancellation_terms": {
+        "status": "observed",
+        "value": "at least 24 hours before the trial ends To avoid being charged, cancel at least 24 hours before the trial ends in",
+        "evidence": "not provided in original schema"
+      },
+      "uncertainty_flags": [
+        "text_cut_off"
+      ]
+    }
+  },
+  "cartwheel": {
+    "label": "checkout_03_cart",
+    "excluded_not_in_schema": [
+      "currency",
+      "other_conditions",
+      "line_items[*].term"
+    ],
+    "flags_original": [
+      "renewal_terms_not_shown",
+      "cancellation_terms_not_shown"
+    ],
+    "flags_unmapped": [
+      "renewal_terms_not_shown",
+      "cancellation_terms_not_shown"
+    ],
+    "math_checks": [
+      {
+        "check": "line items add up to subtotal",
+        "ok": true,
+        "detail": "items 448.00 vs subtotal 448.00"
+      },
+      {
+        "check": "subtotal - discount + tax = total",
+        "ok": true,
+        "detail": "subtotal 448.00 - discount 44.80 + tax 32.26 = 435.46 vs total 435.46"
+      }
+    ],
+    "score": {
+      "fields_scored": 14,
+      "status_accuracy": 1.0,
+      "value_accuracy": 1.0,
+      "invented_details": [],
+      "extra_line_items": [],
+      "flags_found": [],
+      "flags_missed": [],
+      "flags_extra": [],
+      "not_scored_ambiguous": [
+        "currency",
+        "other_conditions",
+        "line_items[0].term",
+        "line_items[1].term"
+      ],
+      "wrong_fields": []
+    },
+    "adapted": {
+      "merchant": {
+        "status": "observed",
+        "value": "Cartwheel Office",
+        "evidence": "not provided in original schema"
+      },
+      "line_items": [
+        {
+          "name": {
+            "status": "observed",
+            "value": "Standing Desk Pro",
+            "evidence": "not provided in original schema"
+          },
+          "quantity": {
+            "status": "observed",
+            "value": "1",
+            "evidence": "not provided in original schema"
+          },
+          "term": {
+            "status": "unknown",
+            "value": null,
+            "evidence": ""
+          },
+          "line_total": {
+            "status": "observed",
+            "value": "$349.00",
+            "evidence": "not provided in original schema"
+          }
+        },
+        {
+          "name": {
+            "status": "observed",
+            "value": "Monitor Arm",
+            "evidence": "not provided in original schema"
+          },
+          "quantity": {
+            "status": "observed",
+            "value": "2",
+            "evidence": "not provided in original schema"
+          },
+          "term": {
+            "status": "unknown",
+            "value": null,
+            "evidence": ""
+          },
+          "line_total": {
+            "status": "observed",
+            "value": "$99.00",
+            "evidence": "not provided in original schema"
+          }
+        }
+      ],
+      "subtotal": {
+        "status": "observed",
+        "value": "$448.00",
+        "evidence": "not provided in original schema"
+      },
+      "discounts": {
+        "status": "observed",
+        "value": "WELCOME10 -$44.80",
+        "evidence": "not provided in original schema"
+      },
+      "tax": {
+        "status": "observed",
+        "value": "$32.26",
+        "evidence": "not provided in original schema"
+      },
+      "total_due_now": {
+        "status": "observed",
+        "value": "$435.46",
+        "evidence": "not provided in original schema"
+      },
+      "renewal_terms": {
+        "status": "unknown",
+        "value": null,
+        "evidence": ""
+      },
+      "trial_terms": {
+        "status": "unknown",
+        "value": null,
+        "evidence": ""
+      },
+      "cancellation_terms": {
+        "status": "unknown",
+        "value": null,
+        "evidence": ""
+      },
+      "uncertainty_flags": []
+    }
+  }
+}

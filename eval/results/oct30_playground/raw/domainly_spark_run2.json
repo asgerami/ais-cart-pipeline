@@ -1,0 +1,63 @@
+{
+  "merchant": {
+    "status": "observed",
+    "value": "Domainly",
+    "evidence": "Domainly"
+  },
+  "line_items": {
+    "status": "observed",
+    "value": [
+      {
+        "name": "acme-robotics.com",
+        "description": "Domain registration",
+        "term": "3 years",
+        "price": "$100.00"
+      },
+      {
+        "name": "WHOIS privacy protection",
+        "description": "Hides your contact details",
+        "price": "$0.00"
+      }
+    ],
+    "evidence": "acme-robotics.com Domain registration 3 years $100.00 | WHOIS privacy protection Hides your contact details $0.00"
+  },
+  "subtotal": {
+    "status": "observed",
+    "value": "$100.00",
+    "evidence": "Subtotal $100.00"
+  },
+  "taxes": {
+    "status": "observed",
+    "value": "$0.00",
+    "evidence": "Taxes $0.00"
+  },
+  "total_due_today": {
+    "status": "observed",
+    "value": "$100.00",
+    "evidence": "Total due today $100.00"
+  },
+  "initial_term": {
+    "status": "observed",
+    "value": "3 years",
+    "evidence": "3 years"
+  },
+  "auto_renew": {
+    "status": "observed",
+    "value": true,
+    "evidence": "Your domain renews automatically at the then-current rate."
+  },
+  "renewal_price": {
+    "status": "unknown",
+    "value": null,
+    "evidence": "No renewal price shown, only 'then-current rate' text visible"
+  },
+  "renewal_term": {
+    "status": "unknown",
+    "value": null,
+    "evidence": "No renewal term length shown in screenshot"
+  },
+  "uncertainty_flags": [
+    "renewal_price_not_shown",
+    "multi_year_upfront"
+  ]
+}

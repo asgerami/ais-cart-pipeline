@@ -1,0 +1,99 @@
+{
+  "merchant": {
+    "status": "observed",
+    "value": "Sparkforge",
+    "evidence": "Sparkforge"
+  },
+  "plan_name": {
+    "status": "observed",
+    "value": "Builder Pro",
+    "evidence": "Builder Pro"
+  },
+  "plan_price_display": {
+    "status": "observed",
+    "value": "$25.00/mo",
+    "evidence": "$25.00/mo"
+  },
+  "plan_description": {
+    "status": "observed",
+    "value": "For solo builders shipping full-stack apps",
+    "evidence": "For solo builders shipping full-stack apps"
+  },
+  "trial_terms": {
+    "status": "observed",
+    "value": "7-day free trial, then $25.00/month",
+    "evidence": "7-day free trial, then $25.00/month"
+  },
+  "renewal_terms": {
+    "status": "observed",
+    "value": "After your trial ends, your subscription renews automatically each month at $25.00 until you cancel.",
+    "evidence": "After your trial ends, your subscription renews automatically each month at $25.00 until you cancel."
+  },
+  "renewal_amount": {
+    "status": "observed",
+    "value": "$25.00",
+    "evidence": "renews automatically each month at $25.00"
+  },
+  "renewal_interval": {
+    "status": "inferred",
+    "value": "monthly",
+    "evidence": "Derived from visible text 'renews automatically each month' and '$25.00/mo'"
+  },
+  "cancellation_terms": {
+    "status": "observed",
+    "value": "To avoid being charged, cancel at least 24 hours before the trial ends in",
+    "evidence": "To avoid being charged, cancel at least 24 hours before the trial ends in"
+  },
+  "next_charge_date": {
+    "status": "unknown",
+    "value": null,
+    "evidence": "Not visible in screenshot"
+  },
+  "trial_end_date": {
+    "status": "unknown",
+    "value": null,
+    "evidence": "Not visible in screenshot"
+  },
+  "line_items": {
+    "status": "observed",
+    "value": [
+      {
+        "item_name": {
+          "status": "observed",
+          "value": "Builder Pro trial",
+          "evidence": "Builder Pro trial"
+        },
+        "item_amount": {
+          "status": "observed",
+          "value": "$0.00",
+          "evidence": "$0.00"
+        }
+      }
+    ],
+    "evidence": "Builder Pro trial $0.00"
+  },
+  "due_today": {
+    "status": "observed",
+    "value": "$0.00",
+    "evidence": "$0.00"
+  },
+  "total_due_today": {
+    "status": "observed",
+    "value": "$0.00",
+    "evidence": "Total due today $0.00"
+  },
+  "cta_text": {
+    "status": "observed",
+    "value": "Start free trial",
+    "evidence": "Start free trial"
+  },
+  "card_requirement": {
+    "status": "observed",
+    "value": "Card required to start your trial.",
+    "evidence": "Card required to start your trial."
+  },
+  "uncertainty_flags": [
+    "trial_converts_to_paid",
+    "text_cut_off"
+  ]
+}

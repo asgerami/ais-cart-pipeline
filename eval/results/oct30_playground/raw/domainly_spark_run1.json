@@ -1,0 +1,14 @@
+{
+  "merchant_name": {"status": "observed", "value": "Domainly", "evidence": "Domainly"},
+  "line_items": [
+    {"name": {"status": "observed", "value": "acme-robotics.com", "evidence": "acme-robotics.com"}, "description": {"status": "observed", "value": "Domain registration", "evidence": "Domain registration"}, "term": {"status": "observed", "value": "3 years", "evidence": "3 years"}, "price": {"status": "observed", "value": "$100.00", "evidence": "$100.00"}},
+    {"name": {"status": "observed", "value": "WHOIS privacy protection", "evidence": "WHOIS privacy protection"}, "description": {"status": "observed", "value": "Hides your contact details", "evidence": "Hides your contact details"}, "term": {"status": "unknown", "value": null, "evidence": "No term shown for this row"}, "price": {"status": "observed", "value": "$0.00", "evidence": "$0.00"}}
+  ],
+  "subtotal": {"status": "observed", "value": "$100.00", "evidence": "Subtotal $100.00"},
+  "taxes": {"status": "observed", "value": "$0.00", "evidence": "Taxes $0.00"},
+  "total_due_today": {"status": "observed", "value": "$100.00", "evidence": "Total due today $100.00"},
+  "auto_renewal": {"status": "observed", "value": true, "evidence": "Your domain renews automatically at the then-current rate."},
+  "renewal_price": {"status": "unknown", "value": null, "evidence": "Renewal amount not shown, only 'then-current rate' text"},
+  "renewal_term": {"status": "unknown", "value": null, "evidence": "Renewal term length not shown"},
+  "uncertainty_flags": ["renewal_price_not_shown", "multi_year_upfront"]
+}

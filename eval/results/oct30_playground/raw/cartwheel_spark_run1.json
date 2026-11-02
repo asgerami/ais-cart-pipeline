@@ -1,0 +1,19 @@
+{
+  "merchant": {"status": "observed", "value": "Cartwheel Office", "evidence": "Cartwheel Office"},
+  "cart_count": {"status": "observed", "value": 3, "evidence": "Cart (3 items)"},
+  "line_items": [
+    {"name": {"status": "observed", "value": "Standing Desk Pro", "evidence": "Standing Desk Pro"}, "quantity": {"status": "observed", "value": 1, "evidence": "Qty 1"}, "unit_price": {"status": "inferred", "value": "$349.00", "evidence": "Inferred from line total $349.00 with Qty 1"}, "line_total": {"status": "observed", "value": "$349.00", "evidence": "$349.00"}},
+    {"name": {"status": "observed", "value": "Monitor Arm", "evidence": "Monitor Arm"}, "quantity": {"status": "observed", "value": 2, "evidence": "Qty 2 · $49.50 each"}, "unit_price": {"status": "observed", "value": "$49.50", "evidence": "Qty 2 · $49.50 each"}, "line_total": {"status": "observed", "value": "$99.00", "evidence": "$99.00"}}
+  ],
+  "subtotal": {"status": "observed", "value": "$448.00", "evidence": "$448.00"},
+  "discount_code": {"status": "observed", "value": "WELCOME10", "evidence": "Discount (WELCOME10)"},
+  "discount_amount": {"status": "observed", "value": "-$44.80", "evidence": "-$44.80"},
+  "shipping": {"status": "observed", "value": "Free", "evidence": "Free"},
+  "tax_rate": {"status": "observed", "value": "8%", "evidence": "Tax (8%)"},
+  "tax_amount": {"status": "observed", "value": "$32.26", "evidence": "$32.26"},
+  "total": {"status": "observed", "value": "$435.46", "evidence": "$435.46"},
+  "renewal_price": {"status": "unknown", "value": null, "evidence": "No renewal price visible in screenshot"},
+  "renewal_date": {"status": "unknown", "value": null, "evidence": "No renewal date visible in screenshot"},
+  "billing_terms": {"status": "unknown", "value": null, "evidence": "No billing terms visible in screenshot"},
+  "uncertainty_flags": []
+}
