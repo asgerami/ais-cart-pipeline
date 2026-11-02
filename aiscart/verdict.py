@@ -8,7 +8,7 @@ import itertools
 import json
 import re
 
-from .checks import WITH_SYMBOL, money
+from .checks import WITH_SYMBOL
 from .schema import ITEM_FIELDS, TOP_FIELDS
 
 DECISIONS = ["BUY", "TRIAL", "WAIT", "REJECT"]
@@ -117,9 +117,44 @@ def validate_verdict(v, facts, math):
                 "detail": "all amounts traced to the facts" if not unsupported else "not traceable: " + ", ".join(sorted(set(unsupported)))})
 
     failed = [c["check"] for c in math if not c["ok"]]
-    if v["decision"] == "BUY" and failed:
-        out.append({"check": "no BUY while a math check fails", "ok": False, "detail": "failed: " + "; ".join(failed)})
-    renewal = facts.get("renewal_terms") or {}
-    if v["decision"] == "BUY" and any("renewal price" in c for c in failed) and money(renewal) is None:
-        out.append({"check": "no BUY while the renewal price is unknown", "ok": False, "detail": "renewal price not stated"})
+    if v["decision"] in APPROVALS:
+        out.append({"check": "no BUY or TRIAL while a code check fails", "ok": not failed,
+                    "detail": "all code checks passed" if not failed else "failed: " + "; ".join(failed)})
     return out
+
+
+APPROVALS = ("BUY", "TRIAL")
+
+
+def finalize(v, checks):
+    """What users see. If any verdict check failed, the answer is held back as WAIT: a failed check can never
+    reach the user as BUY or TRIAL. The model's own answer is kept in model_* fields for the record."""
+    failed = [c for c in checks if not c["ok"]]
+    out = dict(v, model_decision=v.get("decision"), held_back=bool(failed))
+    if failed:
+        # Plain explanations only. The model's own words can carry the very error that was caught (an invented
+        # amount, say), so they stay in model_* fields and in verdict_checks, not in what users read.
+        out.update(
+            decision="WAIT",
+            headline="Not approved yet: this recommendation didn't pass our checks, so look at these points before buying",
+            reasons=[{"text": PLAIN.get(c["check"], "The recommendation didn't pass a check.") +
+                      (f" ({c['detail'][len('failed: '):]})" if c["check"] == APPROVAL_CHECK else ""),
+                      "fields": FIELDS_FOR.get(c["check"], [])} for c in failed],
+            check_before_buying=["Compare the facts table with the checkout before paying"],
+            confidence="low",
+            model_headline=v.get("headline"),
+            model_reasons=v.get("reasons"),
+            model_check_before_buying=v.get("check_before_buying"),
+        )
+    return out
+
+
+APPROVAL_CHECK = "no BUY or TRIAL while a code check fails"
+PLAIN = {
+    "decision is one of BUY, TRIAL, WAIT, REJECT": "The recommendation wasn't a valid decision.",
+    "every cited field exists": "The recommendation relied on information that isn't in the checkout.",
+    "every reason cites at least one field": "Part of the recommendation wasn't tied to anything in the checkout.",
+    "every dollar amount comes from the facts": "The recommendation mentioned an amount that isn't in the checkout.",
+    APPROVAL_CHECK: "The checkout's numbers don't add up, or a key price is missing.",
+}
+FIELDS_FOR = {APPROVAL_CHECK: ["subtotal", "discounts", "tax", "total_due_now", "renewal_terms"]}

@@ -155,6 +155,7 @@ try:
           and [c["field"] for c in r["review"]["changes"]] == ["total_due_now"], r["review"])
     check("live: math passes after review", all(c["ok"] for c in r["checks"]["math"]), r["checks"]["math"])
     check("live: verdict guardrails pass (computed amounts are traced)", r["verdict_checks_passed"], r["verdict_checks"])
+    check("live: a passing BUY is shown as BUY, not held back", r["verdict"]["decision"] == "BUY" and r["verdict"]["held_back"] is False)
     check("live: call log has 3 calls with latency and cost",
           len(r["calls"]) == 3 and r["total_est_cost_usd"] and all(c["latency_s"] is not None for c in r["calls"]), r["calls"])
     check("live: prompt versions are stamped", set(r["versions"]) == {"extract_prompt", "review_prompt", "verdict_prompt"})
@@ -169,6 +170,41 @@ try:
           s == 200 and not r["verdict_checks_passed"] and "every dollar amount comes from the facts" in bad
           and "every cited field exists" in bad, r["verdict_checks"])
     check("guardrails: clean checkout skips the review call", [c["name"] for c in UP["calls"]] == ["cart_extraction", "cart_verdict"])
+    v = r["verdict"]
+    check("hold-back: a failed BUY is shown as WAIT, with the model's answer kept for the record",
+          v["decision"] == "WAIT" and v["held_back"] and v["model_decision"] == "BUY" and v["model_headline"] == "You save $999.00", v)
+    check("hold-back: the invented amount is not in what users see",
+          "$999" not in v["headline"] and all("$999" not in x["text"] for x in v["reasons"])
+          and all("$999" not in x for x in v["check_before_buying"]), v)
+
+    # The screenshot itself doesn't add up: review keeps the shown total, the model still says BUY
+    wrong_total = from_label(CART_LABEL)
+    wrong_total["total_due_now"] = {"status": "observed", "value": "$445.46", "evidence": "Total $445.46"}
+    UP.update(calls=[], extract=wrong_total,
+              review={"corrections": [{"field": "total_due_now", "status": "observed", "value": "$445.46", "evidence": "Total $445.46",
+                                       "changed": False, "reason": "the page really shows $445.46"}]},
+              verdict={"decision": "BUY", "headline": "Order total is $445.46", "reasons": [{"text": "Total $445.46", "fields": ["total_due_now"]}],
+                       "check_before_buying": [], "confidence": "high"})
+    s, r = req(f"{url}/api/analyze", "POST", {"image": CART})
+    check("hold-back: BUY on a checkout whose totals don't add up is shown as WAIT",
+          r["verdict"]["decision"] == "WAIT" and r["verdict"]["held_back"]
+          and any(c["check"] == "no BUY or TRIAL while a code check fails" and not c["ok"] for c in r["verdict_checks"]), r["verdict_checks"])
+
+    # Renewal price unknown, model says TRIAL
+    UP.update(calls=[], extract=from_label(json.loads((ROOT / "eval/samples/labels/checkout_01_domain.json").read_text())), review={"corrections": []},
+              verdict={"decision": "TRIAL", "headline": "Try it for $100.00", "reasons": [{"text": "Due today $100.00", "fields": ["total_due_now"]}],
+                       "check_before_buying": [], "confidence": "medium"})
+    s, r = req(f"{url}/api/analyze", "POST", {"image": DOMAIN})
+    check("hold-back: TRIAL while the renewal price is unknown is shown as WAIT",
+          r["verdict"]["decision"] == "WAIT" and r["verdict"]["model_decision"] == "TRIAL", r["verdict"])
+
+    # Exhaustive: whatever the model says, a failed check never reaches users as BUY or TRIAL
+    sys.path.insert(0, str(ROOT))
+    from aiscart.verdict import DECISIONS, finalize
+    shown = {(d, ok): finalize({"decision": d, "headline": "h", "reasons": [], "check_before_buying": [], "confidence": "high"},
+                               [{"check": "c", "ok": ok, "detail": "d"}])["decision"] for d in DECISIONS for ok in (True, False)}
+    check("hold-back: every decision with a failed check comes out as WAIT; passing decisions are unchanged",
+          all(shown[(d, False)] == "WAIT" for d in DECISIONS) and all(shown[(d, True)] == d for d in DECISIONS), shown)
 
     # Upstream failure is reported, not hidden
     UP.update(calls=[], fail="cart_extraction")

@@ -13,7 +13,7 @@ from .checks import check_schema, math_checks
 from .meta import MetaError, est_cost
 from .review import REVIEW_SYSTEM, merge, review_schema, review_text, select_fields
 from .schema import DEFAULT_QUESTION, SCHEMA, SYSTEM_PROMPT
-from .verdict import VERDICT_SCHEMA, VERDICT_SYSTEM, validate_verdict, verdict_text
+from .verdict import VERDICT_SCHEMA, VERDICT_SYSTEM, finalize, validate_verdict, verdict_text
 
 ALWAYS_REVIEW = ["subtotal", "discounts", "tax", "total_due_now", "renewal_terms", "trial_terms", "cancellation_terms"]
 
@@ -80,9 +80,10 @@ def analyze(image, mime, question, client, settings, review="auto"):
     math = math_checks(facts)
 
     # 4. Verdict (text only: the verdict model never sees the screenshot)
-    verdict = call("verdict", settings["verdict_model"], VERDICT_SYSTEM, verdict_text(facts, math, question),
-                   None, "cart_verdict", VERDICT_SCHEMA, hint={"facts": facts, "math": math})
-    verdict_checks = validate_verdict(verdict, facts, math)
+    model_verdict = call("verdict", settings["verdict_model"], VERDICT_SYSTEM, verdict_text(facts, math, question),
+                         None, "cart_verdict", VERDICT_SCHEMA, hint={"facts": facts, "math": math})
+    verdict_checks = validate_verdict(model_verdict, facts, math)
+    verdict = finalize(model_verdict, verdict_checks)  # a failed check is held back as WAIT, never shown as BUY/TRIAL
 
     lat = [c["latency_s"] for c in calls if c["latency_s"] is not None]
     cost = [c["est_cost_usd"] for c in calls if c["est_cost_usd"] is not None]

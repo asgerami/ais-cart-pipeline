@@ -41,6 +41,7 @@ button:disabled { opacity: .55; cursor: wait; }
 button:focus-visible, .drop:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 details summary { cursor: pointer; color: var(--muted); font-size: 13px; }
 .status { font-size: 14px; color: var(--muted); }
+.held { background: var(--wait-bg); color: var(--wait); border-radius: 8px; padding: 10px 12px; font-size: 14px; }
 .err { background: var(--reject-bg); color: var(--reject); border-radius: 8px; padding: 12px; font-size: 14px; white-space: pre-wrap; }
 .verdict { display: grid; gap: 12px; }
 .decision { display: inline-block; font: 700 13px/1 var(--mono); letter-spacing: .06em; padding: 8px 12px; border-radius: 8px; justify-self: start; }
@@ -214,9 +215,11 @@ function render(r) {
   $("result").innerHTML = `
     <div class="verdict">
       <span class="decision d-${esc(v.decision)}">${esc(v.decision)}</span>
+      ${v.held_back ? `<div class="held">Held back: the model recommended <strong>${esc(v.model_decision)}</strong>, but its answer failed our checks, so it is shown as WAIT.</div>` : ""}
       <p class="headline">${esc(v.headline)}</p>
       <ul>${v.reasons.map(x => `<li>${esc(x.text)}<div>${(x.fields || []).map(chip).join("")}</div></li>`).join("")}</ul>
       ${v.check_before_buying.length ? `<div><h3>Check before buying</h3><ul>${v.check_before_buying.map(x => `<li>${esc(x)}</li>`).join("")}</ul></div>` : ""}
+      ${v.held_back ? `<details><summary>The model's original answer (not shown as the verdict)</summary><p>${esc(v.model_headline)}</p><ul>${(v.model_reasons || []).map(x => `<li>${esc(x.text)}</li>`).join("")}</ul></details>` : ""}
       <div class="muted">Confidence: ${esc(v.confidence)}. Verdict checks: ${failed.length ? `<span class="flag">${failed.length} failed</span>: ${failed.map(c => esc(c.check + " (" + c.detail + ")")).join("; ")}` : '<span class="ok">all passed</span> (every cited field exists, every amount traces to the facts)'}</div>
     </div>
     <h3>What was read from the screenshot</h3>

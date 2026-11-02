@@ -16,11 +16,29 @@ the hackathon.
 | 1. Extract | Muse Spark 1.3 | Reads every field from the screenshot: items, prices, totals, discounts, tax, renewal, trial and cancellation terms. Each field is observed, inferred or unknown, with evidence. |
 | 2. Check | Plain code | Checks the math (items add up to the subtotal; subtotal minus discount plus tax equals the total; a renewal price is stated for recurring or multi-year charges) and picks fields worth a second look. |
 | 3. Review | Muse Wonder 1.0 | Re-reads **only the flagged fields** against the screenshot. Skipped when nothing is flagged, so clean checkouts cost one fewer call. |
-| 4. Verdict | Muse Spark 1.3, then code | Decides BUY / TRIAL / WAIT / REJECT from the checked facts only. The verdict model never sees the screenshot. Code then checks the verdict: every cited field must exist, and every dollar amount must come from the facts or simple arithmetic on them. |
+| 4. Verdict | Muse Spark 1.3, then code | Decides BUY / TRIAL / WAIT / REJECT from the checked facts only. The verdict model never sees the screenshot. Code then checks the verdict: every cited field must exist, every dollar amount must come from the facts or simple arithmetic on them, and there's no BUY or TRIAL while a code check fails. **If any check fails, the verdict is held back and shown as WAIT**, so a failed check can never reach a user as an approval. The model's original answer is kept in `model_*` fields for the record. |
 
 Why this design: in our tests both models read clean checkouts correctly, and the code checks alone caught a
 checkout whose total didn't add up and a model that listed the same item twice. So the cheap check runs every time,
 and the second model is only paid for when the check finds something.
+
+## First live test
+
+The three sample checkouts in `eval/samples/` have answer keys, so a live run can be scored automatically.
+Whoever holds the service token runs:
+
+```
+export AISCART_TOKEN=...      # read from the environment only, never written to disk
+python3 eval/live_run.py --url https://<your-app>.vercel.app --runs 2
+```
+
+It saves every raw response and writes `eval/runs/live_<time>/REPORT.md` with, per checkout and run: facts and
+statuses correct, invented details, fields flagged, what the review changed, the model's decision and the decision
+shown, verdict checks, time per call, tokens and estimated cost, plus consistency between the two runs and a count of
+failed checks shown as approvals (which must be 0). Note the usage on Meta's dashboard before and after: the report's
+costs are estimates at list prices, and the dashboard has the real charges.
+
+The version the team reviewed before the first live test is kept on the `baseline-2026-11-02` branch.
 
 ## Try it locally
 
@@ -72,6 +90,10 @@ Content-Type: application/json
 
 `review` is `auto` (default: only when checks flag something), `always` or `never`.
 
+`verdict.decision` is what to show users. `verdict.held_back` is true when the model's answer failed a check; then
+`decision` is WAIT, `reasons` explain why in plain words, and `model_decision`, `model_headline` and `model_reasons`
+keep the model's original answer.
+
 Response, shortened (the numbers are examples, not measurements):
 
 ```json
@@ -82,7 +104,9 @@ Response, shortened (the numbers are examples, not measurements):
     "headline": "You'd pay $100.00 now, but the renewal price isn't shown",
     "reasons": [{"text": "The renewal price is not stated.", "fields": ["renewal_terms"]}],
     "check_before_buying": ["Find the renewal price before paying"],
-    "confidence": "medium"
+    "confidence": "medium",
+    "model_decision": "WAIT",
+    "held_back": false
   },
   "verdict_checks_passed": true,
   "verdict_checks": [{"check": "every dollar amount comes from the facts", "ok": true, "detail": "..."}],
@@ -121,8 +145,8 @@ side if you can, so the service token isn't visible in the browser.
 | `aiscart/` | The pipeline: schema and prompt, code checks, review logic, verdict and guardrails, Meta client, HTTP layer |
 | `api/` | Vercel functions (`/api/analyze`, `/api/health`) |
 | `server.py`, `index.html` | Local server and the demo page |
-| `tests/test_service.py` | End-to-end tests against a fake Meta API: live path, mock mode, guardrails, auth, errors, Vercel function |
-| `eval/` | The evaluation kit: sample checkouts with answer keys, scoring, the pipeline experiment and our Oct 30 playground results |
+| `tests/test_service.py` | End-to-end tests against a fake Meta API: live path, mock mode, guardrails and hold-back, auth, errors, Vercel function |
+| `eval/` | The evaluation kit: sample checkouts with answer keys, scoring, the live test runner (`live_run.py`), the pipeline experiment and our Oct 30 playground results |
 
 ## Tests
 
