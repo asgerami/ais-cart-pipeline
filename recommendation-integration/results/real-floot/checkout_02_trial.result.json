@@ -1,0 +1,172 @@
+{
+  "adapter": {
+    "name": "ais-cart-recommendation-adapter",
+    "version": "0.3.0"
+  },
+  "dataSource": {
+    "recommendations": "provided recommendation library",
+    "source": "Floot AI's Cart / helpers/editorialRecommendations.tsx",
+    "sourceProjectId": "3385a158-119a-476b-92f6-161779970bf8",
+    "status": "real-floot-editorial",
+    "dataStatus": "Founder editorial assessments, not controlled rankings or verified live prices",
+    "pricingStatus": "not provided in source; do not infer",
+    "recordCount": 12
+  },
+  "inputMode": "bare-facts",
+  "checkout": {
+    "merchant": "Sparkforge",
+    "currency": "USD",
+    "items": [
+      {
+        "name": "Builder Pro",
+        "term": "Monthly",
+        "lineTotal": null
+      }
+    ],
+    "totalDueNow": 0,
+    "totalDueNowText": "$0.00",
+    "inferredCategories": [
+      "graphics",
+      "apps"
+    ],
+    "uncertaintyFlags": [
+      "text_cut_off",
+      "trial_converts_to_paid"
+    ]
+  },
+  "pipelineVerdict": null,
+  "founderGoal": "automate my workflow",
+  "status": "related_alternative_with_risks",
+  "matchQuality": "related_alternative",
+  "matchQualityLabel": "Related alternative — not a direct substitute",
+  "recommendation": {
+    "id": "mvp-base44",
+    "toolName": "Base44",
+    "tool": "Base44",
+    "category": "apps",
+    "sourceCategory": "Apps & MVPs",
+    "bestFor": "Rapidly exploring an app concept and alternative interface",
+    "why": "Used in SongWrite and other founder prototypes; independent outputs revealed useful interface ideas.",
+    "caution": "Feature demonstrations and generated UI do not guarantee production behavior or exportability.",
+    "confidence": "Firsthand use",
+    "evidenceIds": [
+      "base44-app"
+    ],
+    "alternative": "Floot when server-side persistence needs verification",
+    "pricing": {
+      "status": "unknown",
+      "model": "unknown",
+      "monthlyUsd": null,
+      "annualUsd": null,
+      "freeTier": null,
+      "notes": "Pricing was not provided in the Floot source; do not infer."
+    },
+    "strengths": [
+      "Used in SongWrite and other founder prototypes; independent outputs revealed useful interface ideas."
+    ],
+    "limitations": [
+      "Feature demonstrations and generated UI do not guarantee production behavior or exportability."
+    ],
+    "evidence": [
+      "base44-app"
+    ],
+    "editorial": {
+      "id": "mvp-base44",
+      "category": "Apps & MVPs",
+      "tool": "Base44",
+      "bestFor": "Rapidly exploring an app concept and alternative interface",
+      "why": "Used in SongWrite and other founder prototypes; independent outputs revealed useful interface ideas.",
+      "caution": "Feature demonstrations and generated UI do not guarantee production behavior or exportability.",
+      "evidenceIds": [
+        "base44-app"
+      ],
+      "confidence": "Firsthand use",
+      "alternative": "Floot when server-side persistence needs verification"
+    },
+    "match": {
+      "quality": "related_alternative",
+      "label": "Related alternative — not a direct substitute",
+      "explanation": "Related through the stated goal (workflow automation), but the checkout item itself does not directly identify that kind of purchase.",
+      "checkoutJobs": [
+        "automation"
+      ],
+      "sharedJobs": [
+        "automation"
+      ],
+      "missingDirectJobs": []
+    },
+    "matchScore": 45,
+    "whyItFits": [
+      "Related alternative — not a direct substitute: Related through the stated goal (workflow automation), but the checkout item itself does not directly identify that kind of purchase.",
+      "Same category as this checkout (apps).",
+      "Fits the stated goal (workflow).",
+      "Floot editorial why: Used in SongWrite and other founder prototypes; independent outputs revealed useful interface ideas.",
+      "Floot caution: Feature demonstrations and generated UI do not guarantee production behavior or exportability."
+    ],
+    "savings": {
+      "kind": "pricing_unknown",
+      "amountUsd": null,
+      "basis": "Pricing unknown: Floot did not provide pricing for this recommendation, so no price, saving, or placeholder amount is shown."
+    }
+  },
+  "otherCandidates": [
+    {
+      "id": "photos-canva",
+      "toolName": "Canva",
+      "category": "graphics",
+      "matchScore": 45,
+      "matchQuality": "related_alternative",
+      "matchQualityLabel": "Related alternative — not a direct substitute"
+    },
+    {
+      "id": "mvp-floot",
+      "toolName": "Floot",
+      "category": "apps",
+      "matchScore": 45,
+      "matchQuality": "related_alternative",
+      "matchQualityLabel": "Related alternative — not a direct substitute"
+    },
+    {
+      "id": "mvp-replit",
+      "toolName": "Replit",
+      "category": "apps",
+      "matchScore": 45,
+      "matchQuality": "related_alternative",
+      "matchQualityLabel": "Related alternative — not a direct substitute"
+    }
+  ],
+  "risks": [
+    {
+      "source": "pipeline_flag",
+      "flag": "trial_converts_to_paid",
+      "severity": "high",
+      "title": "Trial converts to paid automatically",
+      "detail": "The free/low-cost start becomes a paid subscription automatically. The risk is forgetting, not the trial itself.",
+      "check": "Set a cancellation reminder at least 24h before the trial ends, and note the first paid amount."
+    },
+    {
+      "source": "pipeline_flag",
+      "flag": "text_cut_off",
+      "severity": "medium",
+      "title": "Terms are cut off on screen",
+      "detail": "Part of the terms could not be read from the screenshot, so something relevant may be missing.",
+      "check": "Scroll / expand the full terms and re-check refund and cancellation wording."
+    }
+  ],
+  "checkBeforeBuying": [
+    "Set a cancellation reminder at least 24h before the trial ends, and note the first paid amount.",
+    "Scroll / expand the full terms and re-check refund and cancellation wording."
+  ],
+  "honesty": {
+    "simulated": [],
+    "unverified": [
+      "Floot records are founder editorial assessments, not controlled rankings or verified live prices.",
+      "Pricing is unknown for Floot records because the source did not provide it; no placeholder prices are used.",
+      "Founder-goal fit uses explainable keyword overlap, not user research or embeddings."
+    ],
+    "notClaimed": [
+      "No saving is claimed unless savings.basis shows the arithmetic.",
+      "A no_match result means no library record matched — not that no alternative exists anywhere."
+    ]
+  }
+}

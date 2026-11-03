@@ -1,0 +1,111 @@
+{
+  "id": "checkout_02_trial",
+  "merchant": {
+    "status": "observed",
+    "value": "Sparkforge",
+    "evidence": "page header",
+    "match": [
+      "sparkforge"
+    ]
+  },
+  "currency": {
+    "status": "inferred",
+    "value": "USD",
+    "evidence": "prices use $; no currency code shown",
+    "match": [
+      "usd"
+    ]
+  },
+  "line_items": [
+    {
+      "name": {
+        "status": "observed",
+        "value": "Builder Pro",
+        "evidence": "plan row",
+        "match": [
+          "builder pro"
+        ]
+      },
+      "quantity": {
+        "status": "ambiguous",
+        "value": null,
+        "evidence": "no quantity shown"
+      },
+      "term": {
+        "status": "observed",
+        "value": "Monthly",
+        "evidence": "'$25.00/mo' and 'then $25.00/month'",
+        "match": [
+          "month"
+        ]
+      },
+      "line_total": {
+        "status": "ambiguous",
+        "value": null,
+        "evidence": "row shows $25.00/mo, but $0.00 is due today"
+      }
+    }
+  ],
+  "subtotal": {
+    "status": "unknown",
+    "value": null,
+    "evidence": "not shown"
+  },
+  "discounts": {
+    "status": "unknown",
+    "value": null,
+    "evidence": "not shown"
+  },
+  "tax": {
+    "status": "unknown",
+    "value": null,
+    "evidence": "not shown"
+  },
+  "total_due_now": {
+    "status": "observed",
+    "value": "$0.00",
+    "evidence": "due today box",
+    "match": [
+      "$0"
+    ]
+  },
+  "renewal_terms": {
+    "status": "observed",
+    "value": "Renews automatically each month at $25.00 until cancelled",
+    "evidence": "terms box",
+    "match": [
+      "$25",
+      "month"
+    ]
+  },
+  "trial_terms": {
+    "status": "observed",
+    "value": "7-day free trial, then $25.00/month",
+    "evidence": "plan row",
+    "match": [
+      "7",
+      "$25"
+    ]
+  },
+  "cancellation_terms": {
+    "status": "observed",
+    "value": "Cancel at least 24 hours before the trial ends",
+    "evidence": "terms box, second line; the rest is cut off",
+    "match": [
+      "24 hours"
+    ]
+  },
+  "other_conditions": {
+    "status": "ambiguous",
+    "value": null,
+    "evidence": "card requirement is visible; the refund line is cut off"
+  },
+  "uncertainty_flags": [
+    "text_cut_off",
+    "trial_converts_to_paid"
+  ],
+  "screen_amounts": [
+    "$25.00",
+    "$0.00"
+  ]
+}
