@@ -8,6 +8,8 @@ Before and after the run, note the usage shown on Meta's dashboard (Usage page):
 from token counts at list prices, and the dashboard has the real charges.
 
 Writes eval/runs/live_<time>/ with every raw response, REPORT.md and summary.json. Python 3.9+, standard library only.
+
+To rebuild the report of an earlier run from its saved responses: python3 eval/live_run.py --rescore <folder>
 """
 import argparse
 import base64
@@ -23,11 +25,33 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parent))
 sys.path.insert(0, str(HERE / "tools"))
-from aiscart.checks import score  # noqa: E402
-from score_drift import consistency  # noqa: E402
+from aiscart.checks import norm, score  # noqa: E402
+from aiscart.schema import ITEM_FIELDS, TOP_FIELDS  # noqa: E402
 
 SAMPLES = {"checkout_01_domain": "Domainly", "checkout_02_trial": "Sparkforge", "checkout_03_cart": "Cartwheel Office"}
 QUESTION = "Should I complete this purchase?"
+
+
+UNKNOWN = {"status": "unknown", "value": None}
+
+
+def consistency(a, b):
+    """Compare two runs field by field: every top-level field (currency and other_conditions included) and every
+    line-item field. Lists each difference so the report can show it."""
+    def paths(x):
+        out = {k: x.get(k) for k in TOP_FIELDS}
+        for i, it in enumerate(x.get("line_items") or []):
+            for k in ITEM_FIELDS:
+                out[f"line_items[{i}].{k}"] = (it or {}).get(k)
+        return out
+    pa, pb = paths(a), paths(b)
+    keys = sorted(set(pa) | set(pb))
+    diffs = []
+    for k in keys:
+        fa, fb = pa.get(k) or UNKNOWN, pb.get(k) or UNKNOWN
+        if (fa.get("status"), norm(fa.get("value") or "")) != (fb.get("status"), norm(fb.get("value") or "")):
+            diffs.append(f"{k}: {fa.get('status')} {fa.get('value')!r} vs {fb.get('status')} {fb.get('value')!r}")
+    return {"fields_compared": len(keys), "same": len(keys) - len(diffs), "differences": diffs}
 
 
 def post(url, payload, token):
@@ -105,9 +129,10 @@ def report(rows, cons, url, runs, started):
         tot = sum(x["est_cost_usd"] or 0 for x in ok)
         L += ["", f"Estimated cost of this run: ${tot:.4f} at list prices. Real charges: Meta dashboard, Usage page (before and after this run)."]
     if cons:
-        L += ["", "## Consistency between runs", "", "| Checkout | Same status and value | Same flags |", "| --- | --- | --- |"]
+        L += ["", "## Consistency between runs", "", "Every field is compared, currency and other_conditions included.", "",
+              "| Checkout | Same status and value | Differences |", "| --- | --- | --- |"]
         for k, c in cons.items():
-            L.append(f"| {SAMPLES[k]} | {c['same']} of {c['fields_compared']} fields | {'yes' if c['flags_same'] else 'no'} |")
+            L.append(f"| {SAMPLES[k]} | {c['same']} of {c['fields_compared']} fields | {'; '.join(c['differences']) or 'none'} |")
     L += ["", "## Details", ""]
     for x in ok:
         L.append(f"### {x['checkout']}, run {x['run']}")
@@ -133,7 +158,31 @@ def report(rows, cons, url, runs, started):
     return "\n".join(L) + "\n"
 
 
+def rescore(folder):
+    """Rebuild REPORT.md and summary.json from a run's saved responses, without calling the service."""
+    folder = Path(folder)
+    old = json.loads((folder / "summary.json").read_text()) if (folder / "summary.json").exists() else {}
+    walls = {(x["checkout"], x["run"]): x.get("wall_s") for x in old.get("rows", [])}
+    rows, facts, runs = [], {}, 0
+    for sample in SAMPLES:
+        for f in sorted(folder.glob(f"{sample}_run*.json")):
+            run = int(f.stem.rsplit("run", 1)[1])
+            runs = max(runs, run)
+            r = json.loads(f.read_text())
+            status = 200 if "verdict" in r else None
+            rows.append(summarize(sample, run, status, r, walls.get((SAMPLES[sample], run))))
+            if status == 200:
+                facts[(sample, run)] = r["facts"]
+    cons = {s: consistency(facts[(s, 1)], facts[(s, 2)]) for s in SAMPLES if (s, 1) in facts and (s, 2) in facts}
+    url = old.get("url", "(not recorded)")
+    (folder / "summary.json").write_text(json.dumps({"url": url, "rows": rows, "consistency": cons}, indent=2))
+    (folder / "REPORT.md").write_text(report(rows, cons, url, runs, folder.name.replace("live_", "")))
+    print(f"Rebuilt {folder / 'REPORT.md'}")
+
+
 def main():
+    if len(sys.argv) == 3 and sys.argv[1] == "--rescore":
+        return rescore(sys.argv[2])
     ap = argparse.ArgumentParser(description="Run the sample checkouts against a deployed AI's Cart")
     ap.add_argument("--url", required=True, help="e.g. https://your-app.vercel.app")
     ap.add_argument("--runs", type=int, default=1)

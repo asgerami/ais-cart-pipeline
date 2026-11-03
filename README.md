@@ -43,6 +43,21 @@ costs are estimates at list prices, and the dashboard has the real charges.
 
 The version the team reviewed before the first live test is kept on the `baseline-2026-11-02` branch.
 
+## Live results (Nov 3, 2026)
+
+The final version, run against Meta's live models, two runs per sample checkout. Raw responses and the full report
+are in [`eval/results/live_20261103T134644Z/`](eval/results/live_20261103T134644Z/REPORT.md).
+
+| Checkout | Shown both runs | Facts correct (run 1, run 2) | Time per check | Est. cost per check |
+| --- | --- | --- | --- | --- |
+| Domainly (no renewal price) | WAIT | 13 of 14, 12 of 14 | 51 to 55 s | $0.040 to $0.042 |
+| Sparkforge (free trial) | TRIAL, shown as TEST | 10 of 11, 10 of 11 | 66 to 68 s | $0.056 to $0.057 |
+| Cartwheel Office (desk and arm) | BUY | 16 of 16, 15 of 16 | 44 to 52 s | $0.020 to $0.022 |
+
+All six returned HTTP 200, every check on the answers passed, and no failed check was ever shown as an approval.
+Nothing was invented. Estimated cost for all six: $0.2378 at list prices. The misses are listed under Known
+limitations.
+
 ## Try it locally
 
 Python 3.9 or later, no packages to install.
@@ -174,6 +189,10 @@ Nov 3, 2026, with `eval/live_run.py`.
   line total varies between runs ($0.00 or $25.00/mo). Our answer key marks it ambiguous and doesn't score it. The
   line total doesn't feed the math checks when no subtotal is shown, and in both Nov 3 reruns the amount due today
   was read correctly as $0.00.
+- Currency: when a checkout shows only "$", the answer key expects `inferred USD`. Four of the six live runs gave
+  `observed $` instead. Totals and verdicts are unaffected, since the math uses the amounts.
+- Domainly's line "You can turn off auto-renew in Settings" was read in both runs, but filed under `renewal_terms`,
+  leaving `cancellation_terms` unknown. A shopper still sees the sentence; the field it sits in is wrong.
 
 ## Team
 
