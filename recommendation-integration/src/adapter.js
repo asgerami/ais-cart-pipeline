@@ -147,7 +147,9 @@ const JOB_PATTERNS = [
   { job: 'video_editing', label: 'video creation/editing', patterns: [/\bvideo\b/i, /\bpremiere\b/i, /\bclip\b/i, /\bediting\b/i] },
   { job: 'graphics_design', label: 'graphics/design work', patterns: [/\bgraphics?\b/i, /\bdesign\b/i, /\bphotoshop\b/i, /\bimage\b/i] },
   { job: 'writing', label: 'writing/research assistance', patterns: [/\bwriting\b/i, /\bgrammar/i, /\bcopywriting\b/i, /\bwriter\b/i] },
-  { job: 'app_building', label: 'building an app/MVP', patterns: [/\bbuilder\b/i, /\bapp\b/i, /\bmvp\b/i, /\bprototype\b/i, /\bplatform\b/i, /\bsoftware\b/i] },
+  // Specific: the text says the product builds MVPs or prototypes. Generic: words like "builder" or "app" alone.
+  { job: 'mvp_building', label: 'building an MVP or prototype', patterns: [/\bmvps?\b/i, /\bprototypes?\b/i, /\bapp builder\b/i, /\bno-code\b/i] },
+  { job: 'app_building', label: 'building an app', patterns: [/\bbuilder\b/i, /\bapps?\b/i, /\bplatform\b/i, /\bsoftware\b/i] },
   { job: 'website_building', label: 'building/launching a website', patterns: [/\bwebsite\b/i, /\blanding page\b/i, /\bweb builder\b/i, /\bsite builder\b/i] },
 ];
 
@@ -178,11 +180,25 @@ function classifyMatch(rec, checkout, founderGoal = '') {
   const missingDirect = checkoutJobs.filter((entry) => !recJobs.some((recEntry) => recEntry.job === entry.job));
 
   const weakGoalOnly = !specificPurchaseJobs.length && goalSpecificJobs.some((entry) => !purchaseJobs.some((purchase) => purchase.job === entry.job)) && sharedJobs.length;
-  if (sharedJobs.length && sameCategory && !weakGoalOnly) {
+  // A generic job (a word like "builder" or "app") says what kind of product it is, not what it does, so it can
+  // never establish functional equivalence on its own. A direct match needs a shared specific job.
+  const sharedSpecificJobs = sharedJobs.filter((entry) => !genericPurchaseJobs.has(entry.job));
+  if (sharedSpecificJobs.length && sameCategory && !weakGoalOnly) {
     return {
       quality: 'direct_match',
       label: 'Direct match',
       explanation: `The checkout itself and this Floot record both concern ${sharedJobs.map((entry) => entry.label).join(', ')}.`,
+      checkoutJobs: checkoutJobs.map((entry) => entry.job),
+      sharedJobs: sharedJobs.map((entry) => entry.job),
+      missingDirectJobs: [],
+    };
+  }
+
+  if (sharedJobs.length && !sharedSpecificJobs.length && !weakGoalOnly) {
+    return {
+      quality: 'related_alternative',
+      label: 'Related alternative — not a direct substitute',
+      explanation: `Both concern ${sharedJobs.map((entry) => entry.label).join(', ')}, but the checkout does not say what this product does, so it is not claimed as a direct substitute.`,
       checkoutJobs: checkoutJobs.map((entry) => entry.job),
       sharedJobs: sharedJobs.map((entry) => entry.job),
       missingDirectJobs: [],
@@ -334,7 +350,7 @@ function recommend(input, recommendationLibrary, options = {}) {
 
   const isRealFloot = library.dataStatus !== 'unknown' || recs.some((rec) => rec.dataStatus === 'real-floot-editorial');
   return {
-    adapter: { name: 'ais-cart-recommendation-adapter', version: '0.3.0' },
+    adapter: { name: 'ais-cart-recommendation-adapter', version: '0.3.1' },
     dataSource: {
       recommendations: options.recommendationsPath || 'provided recommendation library',
       source: library.source,

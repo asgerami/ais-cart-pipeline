@@ -1,7 +1,7 @@
 {
   "adapter": {
     "name": "ais-cart-recommendation-adapter",
-    "version": "0.3.0"
+    "version": "0.3.1"
   },
   "dataSource": {
     "recommendations": "provided recommendation library",

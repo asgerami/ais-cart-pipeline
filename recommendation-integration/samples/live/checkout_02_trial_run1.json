@@ -1,0 +1,310 @@
+{
+  "mode": "live",
+  "question": "Should I complete this purchase?",
+  "verdict": {
+    "check_before_buying": [
+      "Confirm the full cancellation steps \u2014 the on-screen text is cut off after 'ends in'",
+      "Set a reminder to cancel more than 24 hours before the 7-day trial ends if you do not want the $25.00/month charge",
+      "Confirm whether the $25.00 renewal is before tax/fees and whether any discounts apply"
+    ],
+    "confidence": "medium",
+    "decision": "TRIAL",
+    "headline": "Start the $0 7-day trial to test Builder Pro, do not commit to $25/mo yet.",
+    "reasons": [
+      {
+        "fields": [
+          "total_due_now",
+          "line_items[0].line_total",
+          "line_items[0].name",
+          "trial_terms"
+        ],
+        "text": "Total due today is $0.00 for Builder Pro trial on a 7-day free trial, so you can test without paying now."
+      },
+      {
+        "fields": [
+          "renewal_terms",
+          "trial_terms",
+          "line_items[0].term",
+          "other_conditions"
+        ],
+        "text": "Trial converts automatically to $25.00/month until you cancel and card is required to start, so paid billing follows unless you act."
+      },
+      {
+        "fields": [
+          "cancellation_terms"
+        ],
+        "text": "Cancellation requires at least 24 hours before the trial ends, but the evidence text is cut off after 'ends in', so the exact location/method is unclear."
+      },
+      {
+        "fields": [
+          "tax",
+          "subtotal",
+          "discounts",
+          "renewal_terms"
+        ],
+        "text": "Tax, subtotal and discounts are unknown, so the future monthly amount could be more than the stated $25.00 renewal."
+      }
+    ],
+    "model_decision": "TRIAL",
+    "held_back": false
+  },
+  "verdict_checks": [
+    {
+      "check": "every cited field exists",
+      "ok": true,
+      "detail": "all cited fields found"
+    },
+    {
+      "check": "every reason cites at least one field",
+      "ok": true,
+      "detail": "4 reason(s)"
+    },
+    {
+      "check": "every dollar amount comes from the facts",
+      "ok": true,
+      "detail": "all amounts traced to the facts"
+    },
+    {
+      "check": "no BUY or TRIAL while a code check fails",
+      "ok": true,
+      "detail": "all code checks passed"
+    }
+  ],
+  "verdict_checks_passed": true,
+  "citations_normalized": [],
+  "facts": {
+    "cancellation_terms": {
+      "evidence": "To avoid being charged, cancel at least 24 hours before the trial ends in",
+      "status": "observed",
+      "value": "To avoid being charged, cancel at least 24 hours before the trial ends in"
+    },
+    "currency": {
+      "evidence": "$25.00/mo, $0.00",
+      "status": "observed",
+      "value": "$"
+    },
+    "discounts": {
+      "evidence": "No discounts shown on screen",
+      "status": "unknown",
+      "value": null
+    },
+    "line_items": [
+      {
+        "line_total": {
+          "evidence": "Builder Pro trial $0.00",
+          "status": "observed",
+          "value": "$0.00"
+        },
+        "name": {
+          "evidence": "Builder Pro trial",
+          "status": "observed",
+          "value": "Builder Pro trial"
+        },
+        "quantity": {
+          "evidence": "No quantity shown on screen",
+          "status": "unknown",
+          "value": null
+        },
+        "term": {
+          "evidence": "7-day free trial, then $25.00/month",
+          "status": "observed",
+          "value": "7-day free trial, then $25.00/month"
+        }
+      }
+    ],
+    "merchant": {
+      "evidence": "Sparkforge",
+      "status": "observed",
+      "value": "Sparkforge"
+    },
+    "other_conditions": {
+      "evidence": "Card required to start your trial.",
+      "status": "observed",
+      "value": "Card required to start your trial."
+    },
+    "renewal_terms": {
+      "evidence": "After your trial ends, your subscription renews automatically each month at $25.00 until you cancel.",
+      "status": "observed",
+      "value": "After your trial ends, your subscription renews automatically each month at $25.00 until you cancel."
+    },
+    "subtotal": {
+      "evidence": "No subtotal shown on screen",
+      "status": "unknown",
+      "value": null
+    },
+    "tax": {
+      "evidence": "No tax shown on screen",
+      "status": "unknown",
+      "value": null
+    },
+    "total_due_now": {
+      "evidence": "Total due today $0.00",
+      "status": "observed",
+      "value": "$0.00"
+    },
+    "trial_terms": {
+      "evidence": "7-day free trial, then $25.00/month",
+      "status": "observed",
+      "value": "7-day free trial, then $25.00/month"
+    },
+    "uncertainty_flags": [
+      "trial_converts_to_paid",
+      "text_cut_off"
+    ]
+  },
+  "checks": {
+    "math": [
+      {
+        "check": "renewal price stated for a recurring or multi-year charge",
+        "ok": true,
+        "detail": "renewal amount found"
+      }
+    ],
+    "math_before_review": [
+      {
+        "check": "renewal price stated for a recurring or multi-year charge",
+        "ok": true,
+        "detail": "renewal amount found"
+      }
+    ],
+    "schema_problems": [],
+    "fields_flagged": {
+      "renewal_terms": [
+        "model raised flag text_cut_off"
+      ],
+      "trial_terms": [
+        "model raised flag text_cut_off"
+      ],
+      "cancellation_terms": [
+        "model raised flag text_cut_off"
+      ]
+    }
+  },
+  "review": {
+    "ran": true,
+    "model": "muse-wonder-1.0",
+    "changes": [],
+    "skipped_because": null
+  },
+  "facts_before_review": {
+    "cancellation_terms": {
+      "evidence": "To avoid being charged, cancel at least 24 hours before the trial ends in",
+      "status": "observed",
+      "value": "To avoid being charged, cancel at least 24 hours before the trial ends in"
+    },
+    "currency": {
+      "evidence": "$25.00/mo, $0.00",
+      "status": "observed",
+      "value": "$"
+    },
+    "discounts": {
+      "evidence": "No discounts shown on screen",
+      "status": "unknown",
+      "value": null
+    },
+    "line_items": [
+      {
+        "line_total": {
+          "evidence": "Builder Pro trial $0.00",
+          "status": "observed",
+          "value": "$0.00"
+        },
+        "name": {
+          "evidence": "Builder Pro trial",
+          "status": "observed",
+          "value": "Builder Pro trial"
+        },
+        "quantity": {
+          "evidence": "No quantity shown on screen",
+          "status": "unknown",
+          "value": null
+        },
+        "term": {
+          "evidence": "7-day free trial, then $25.00/month",
+          "status": "observed",
+          "value": "7-day free trial, then $25.00/month"
+        }
+      }
+    ],
+    "merchant": {
+      "evidence": "Sparkforge",
+      "status": "observed",
+      "value": "Sparkforge"
+    },
+    "other_conditions": {
+      "evidence": "Card required to start your trial.",
+      "status": "observed",
+      "value": "Card required to start your trial."
+    },
+    "renewal_terms": {
+      "evidence": "After your trial ends, your subscription renews automatically each month at $25.00 until you cancel.",
+      "status": "observed",
+      "value": "After your trial ends, your subscription renews automatically each month at $25.00 until you cancel."
+    },
+    "subtotal": {
+      "evidence": "No subtotal shown on screen",
+      "status": "unknown",
+      "value": null
+    },
+    "tax": {
+      "evidence": "No tax shown on screen",
+      "status": "unknown",
+      "value": null
+    },
+    "total_due_now": {
+      "evidence": "Total due today $0.00",
+      "status": "observed",
+      "value": "$0.00"
+    },
+    "trial_terms": {
+      "evidence": "7-day free trial, then $25.00/month",
+      "status": "observed",
+      "value": "7-day free trial, then $25.00/month"
+    },
+    "uncertainty_flags": [
+      "trial_converts_to_paid",
+      "text_cut_off"
+    ]
+  },
+  "calls": [
+    {
+      "step": "extract",
+      "model": "muse-spark-1.3",
+      "latency_s": 31.166,
+      "input_tokens": 2207,
+      "output_tokens": 2844,
+      "est_cost_usd": 0.014846
+    },
+    {
+      "step": "review",
+      "model": "muse-wonder-1.0",
+      "latency_s": 9.391,
+      "input_tokens": 1388,
+      "output_tokens": 1305,
+      "est_cost_usd": 0.031652
+    },
+    {
+      "step": "verdict",
+      "model": "muse-spark-1.3",
+      "latency_s": 24.958,
+      "input_tokens": 1204,
+      "output_tokens": 1949,
+      "est_cost_usd": 0.009788
+    }
+  ],
+  "total_latency_s": 65.515,
+  "total_est_cost_usd": 0.056286,
+  "settings": {
+    "extract_model": "muse-spark-1.3",
+    "review_model": "muse-wonder-1.0",
+    "verdict_model": "muse-spark-1.3",
+    "temperature": 0.0,
+    "reasoning": "medium"
+  },
+  "versions": {
+    "extract_prompt": "d33cd6c8",
+    "review_prompt": "4c693e1f",
+    "verdict_prompt": "0a3a360f"
+  },
+  "image_sha256": "7a6b78d9ed0ea180179d0c56ffdcc12446ff809dd88e91f929e4a02d162722eb"
+}
