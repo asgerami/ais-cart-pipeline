@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI's Cart — Recommendation Integration Demo</title>
+<style>
+body{font-family:system-ui,Arial,sans-serif;max-width:980px;margin:24px auto;padding:0 16px;color:#17202a}
+.badge{display:inline-block;background:#fff3cd;border:1px solid #e6c200;border-radius:6px;padding:4px 8px;font-size:13px}
+.card{border:1px solid #ddd;border-radius:10px;padding:16px;margin:14px 0}
+.risk-high{border-left:6px solid #c0392b}.risk-medium{border-left:6px solid #e67e22}.risk-low{border-left:6px solid #888}
+button,select,input{font-size:15px;padding:8px;margin:4px 4px 4px 0} pre{background:#f6f8fa;padding:12px;overflow:auto;border-radius:8px}
+textarea{width:100%;min-height:130px} .muted{color:#666} .good{color:#1e7e34}
+</style></head>
+<body>
+<h1>AI's Cart — Recommendation Integration</h1>
+<p>Pipeline JSON (Amir) → recommendation adapter (Kala) → alternative, why it fits, and purchasing risks.</p>
+<p><span class="badge">Recommendation library: REAL Floot editorial export (12 records). Pricing is unknown where Floot did not provide it — no placeholder prices.</span></p>
+
+<div class="card">
+<label>Sample checkout:
+<select id="sample"></select></label>
+<label>Founder goal (optional): <input id="goal" size="52" placeholder="e.g. launch a landing page and validate my startup idea cheaply"></label>
+<button id="run">Get recommendation</button>
+<p class="muted">Or paste any pipeline <code>/api/analyze</code> response / facts JSON:</p>
+<textarea id="custom" placeholder='{"pipeline": {...}, "founderGoal": "..."}  — or just the facts object'></textarea>
+<button id="runCustom">Run pasted JSON</button>
+</div>
+<div id="out"></div>
+<details><summary>Raw adapter JSON</summary><pre id="raw">Not run yet.</pre></details>
+
+<script>
+let samples=[];
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+async function load(){
+  const r=await fetch('/api/samples'); const d=await r.json(); samples=d.samples;
+  document.getElementById('sample').innerHTML=samples.map((s,i)=>`<option value="${i}">${esc(s.id)}</option>`).join('');
+}
+async function run(body){
+  const r=await fetch('/api/recommend',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+  const d=await r.json(); document.getElementById('raw').textContent=JSON.stringify(d,null,2); render(d);
+}
+function render(d){
+  const el=document.getElementById('out');
+  if(d.error){el.innerHTML=`<div class="card risk-high"><h2>Error</h2><p>${esc(d.error.message)}</p></div>`;return}
+  const rec=d.recommendation;
+  el.innerHTML=`
+  <div class="card"><h2>Checkout: ${esc(d.checkout.merchant||'Unknown merchant')}</h2>
+  <p>${d.checkout.items.map(i=>`${esc(i.name)}${i.term?' — '+esc(i.term):''}`).join('<br>')}</p>
+  <p><strong>Due now:</strong> ${esc(d.checkout.totalDueNowText||'not stated')} &nbsp; <strong>Categories:</strong> ${esc(d.checkout.inferredCategories.join(', ')||'none inferred')}
+  ${d.pipelineVerdict?`<br><strong>Pipeline verdict:</strong> ${esc(d.pipelineVerdict.decision)} — ${esc(d.pipelineVerdict.headline)}`:''}</p></div>
+  ${rec?`<div class="card"><h2 class="good">${d.matchQuality==='direct_match'?'Direct match':'Related alternative — not a direct substitute'}: ${esc(rec.toolName)}</h2>
+  <p><strong>Match quality:</strong> ${esc(d.matchQualityLabel)}<br><span class="muted">${esc(rec.match.explanation)}</span></p>
+  <p><strong>Why it fits:</strong></p><ul>${rec.whyItFits.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>
+  ${rec.bestFor?`<p><strong>Best for:</strong> ${esc(rec.bestFor)}</p>`:''}
+  <p><strong>Confidence (Floot editorial):</strong> ${esc(rec.confidence)} &nbsp; <strong>Evidence IDs:</strong> ${esc((rec.evidenceIds||rec.evidence||[]).join(', ')||'none provided')}</p>
+  ${rec.caution?`<p><strong>Caution:</strong> ${esc(rec.caution)}</p>`:''}
+  <p><strong>Alternative noted by Floot:</strong> ${esc(rec.alternative||'none provided')}</p>
+  <p><strong>Pricing:</strong> ${rec.pricing && rec.pricing.status==='unknown' ? 'Unknown — Floot did not provide pricing; no placeholder price is shown.' : esc(JSON.stringify(rec.pricing||{}))}</p>
+  <p><strong>Savings:</strong> ${rec.savings.amountUsd==null?'No saving claimed.':('$'+rec.savings.amountUsd.toFixed(2))}<br><span class="muted">${esc(rec.savings.basis)}</span></p>
+  ${d.otherCandidates.length?`<p><strong>Other candidates:</strong> ${d.otherCandidates.map(c=>esc(c.toolName)).join(', ')}</p>`:''}</div>`
+  :`<div class="card"><h2>No library match</h2><p>${esc(d.recommendation===null?'No recommendation record matched this checkout. This is a library-coverage result, not proof no alternative exists.':'')}</p></div>`}
+  <div class="card"><h2>Purchasing risks (${d.risks.length})</h2>
+  ${d.risks.length?d.risks.map(r=>`<div class="card risk-${esc(r.severity)}"><strong>[${esc(r.severity.toUpperCase())}] ${esc(r.title)}</strong><p>${esc(r.detail)}</p><p><em>Check:</em> ${esc(r.check)}</p></div>`).join(''):'<p>No risk flags were produced from the pipeline flags or adapter rules for this checkout.</p>'}
+  ${d.checkBeforeBuying.length?`<p><strong>Check before buying:</strong></p><ul>${d.checkBeforeBuying.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`:''}</div>
+  <div class="card"><h2>Honesty</h2>${d.honesty.simulated.length?`<p><strong>Simulated:</strong> ${esc(d.honesty.simulated.join(' '))}</p>`:''}<p><strong>Unverified:</strong> ${esc(d.honesty.unverified.join(' '))}</p><p><strong>Data source:</strong> ${esc(d.dataSource.source||'provided library')} — ${esc(d.dataSource.status)}</p></div>`;
+}
+document.getElementById('run').onclick=()=>{const s=samples[Number(document.getElementById('sample').value)]; run({pipeline:s.input,founderGoal:document.getElementById('goal').value})};
+document.getElementById('runCustom').onclick=()=>{try{const v=JSON.parse(document.getElementById('custom').value); run(v.pipeline? v : {pipeline:v,founderGoal:document.getElementById('goal').value})}catch(e){alert('Invalid JSON: '+e.message)}};
+load();
+</script></body></html>

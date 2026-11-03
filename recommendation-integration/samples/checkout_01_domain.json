@@ -1,0 +1,143 @@
+{
+  "id": "checkout_01_domain",
+  "merchant": {
+    "status": "observed",
+    "value": "Domainly",
+    "evidence": "page header",
+    "match": [
+      "domainly"
+    ]
+  },
+  "currency": {
+    "status": "inferred",
+    "value": "USD",
+    "evidence": "prices use $; no currency code shown",
+    "match": [
+      "usd"
+    ]
+  },
+  "line_items": [
+    {
+      "name": {
+        "status": "observed",
+        "value": "acme-robotics.com domain registration",
+        "evidence": "first cart row",
+        "match": [
+          "acme-robotics.com"
+        ]
+      },
+      "quantity": {
+        "status": "ambiguous",
+        "value": null,
+        "evidence": "no quantity shown; 1 is a reasonable inference"
+      },
+      "term": {
+        "status": "observed",
+        "value": "3 years",
+        "evidence": "term selector",
+        "match": [
+          "3 year"
+        ]
+      },
+      "line_total": {
+        "status": "observed",
+        "value": "$100.00",
+        "evidence": "first cart row",
+        "match": [
+          "$100"
+        ]
+      }
+    },
+    {
+      "name": {
+        "status": "observed",
+        "value": "WHOIS privacy protection",
+        "evidence": "second cart row",
+        "match": [
+          "privacy"
+        ]
+      },
+      "quantity": {
+        "status": "ambiguous",
+        "value": null,
+        "evidence": "no quantity shown"
+      },
+      "term": {
+        "status": "ambiguous",
+        "value": null,
+        "evidence": "no term shown for this add-on"
+      },
+      "line_total": {
+        "status": "observed",
+        "value": "$0.00",
+        "evidence": "second cart row",
+        "match": [
+          "$0"
+        ]
+      }
+    }
+  ],
+  "subtotal": {
+    "status": "observed",
+    "value": "$100.00",
+    "evidence": "order summary",
+    "match": [
+      "$100"
+    ]
+  },
+  "discounts": {
+    "status": "unknown",
+    "value": null,
+    "evidence": "not shown"
+  },
+  "tax": {
+    "status": "observed",
+    "value": "$0.00",
+    "evidence": "order summary",
+    "match": [
+      "$0"
+    ]
+  },
+  "total_due_now": {
+    "status": "observed",
+    "value": "$100.00",
+    "evidence": "order summary",
+    "match": [
+      "$100"
+    ]
+  },
+  "renewal_terms": {
+    "status": "observed",
+    "value": "Renews automatically at the then-current rate",
+    "evidence": "fine print; no renewal price given",
+    "match": [
+      "then current"
+    ]
+  },
+  "trial_terms": {
+    "status": "unknown",
+    "value": null,
+    "evidence": "not shown"
+  },
+  "cancellation_terms": {
+    "status": "observed",
+    "value": "Auto-renew can be turned off in Settings",
+    "evidence": "fine print",
+    "match": [
+      "auto renew"
+    ]
+  },
+  "other_conditions": {
+    "status": "ambiguous",
+    "value": null,
+    "evidence": "open-ended field"
+  },
+  "uncertainty_flags": [
+    "renewal_price_not_shown",
+    "multi_year_upfront"
+  ],
+  "screen_amounts": [
+    "$100.00",
+    "$0.00"
+  ]
+}

@@ -1,0 +1,57 @@
+{
+  "adapter": {
+    "name": "ais-cart-recommendation-adapter",
+    "version": "0.3.0"
+  },
+  "dataSource": {
+    "recommendations": "provided recommendation library",
+    "source": "Floot AI's Cart / helpers/editorialRecommendations.tsx",
+    "sourceProjectId": "3385a158-119a-476b-92f6-161779970bf8",
+    "status": "real-floot-editorial",
+    "dataStatus": "Founder editorial assessments, not controlled rankings or verified live prices",
+    "pricingStatus": "not provided in source; do not infer",
+    "recordCount": 12
+  },
+  "inputMode": "bare-facts",
+  "checkout": {
+    "merchant": "Cartwheel Office",
+    "currency": "USD",
+    "items": [
+      {
+        "name": "Standing Desk Pro",
+        "term": "",
+        "lineTotal": 349
+      },
+      {
+        "name": "Monitor Arm",
+        "term": "",
+        "lineTotal": 99
+      }
+    ],
+    "totalDueNow": 435.46,
+    "totalDueNowText": "$435.46",
+    "inferredCategories": [],
+    "uncertaintyFlags": []
+  },
+  "pipelineVerdict": null,
+  "founderGoal": "buy office equipment",
+  "status": "no_match",
+  "matchQuality": "no_suitable_match",
+  "matchQualityLabel": "No suitable match",
+  "recommendation": null,
+  "otherCandidates": [],
+  "risks": [],
+  "checkBeforeBuying": [],
+  "honesty": {
+    "simulated": [],
+    "unverified": [
+      "Floot records are founder editorial assessments, not controlled rankings or verified live prices.",
+      "Pricing is unknown for Floot records because the source did not provide it; no placeholder prices are used.",
+      "Founder-goal fit uses explainable keyword overlap, not user research or embeddings."
+    ],
+    "notClaimed": [
+      "No saving is claimed unless savings.basis shows the arithmetic.",
+      "A no_match result means no library record matched — not that no alternative exists anywhere."
+    ]
+  }
+}
