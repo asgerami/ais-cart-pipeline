@@ -26,7 +26,7 @@ const server = http.createServer((req, res) => {
   const url = new URL(req.url, 'http://localhost');
   if (req.method === 'OPTIONS') { res.writeHead(204, { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'Content-Type', 'Access-Control-Allow-Methods': 'GET,POST,OPTIONS' }); return res.end(); }
   if (url.pathname === '/') return send(res, 200, fs.readFileSync(path.join(ROOT, 'public', 'index.html'), 'utf8'), 'text/html; charset=utf-8');
-  if (url.pathname === '/api/health') return send(res, 200, { ok: true, adapter: 'ais-cart-recommendation-adapter 0.3.1', recommendations: recs.recommendations.length, recommendationsStatus: recs.status, dataStatus: recs.dataStatus, pricingStatus: recs.pricingStatus, samples: samples.map((s) => s.id) });
+  if (url.pathname === '/api/health') return send(res, 200, { ok: true, adapter: 'ais-cart-recommendation-adapter 0.3.2', recommendations: recs.recommendations.length, recommendationsStatus: recs.status, dataStatus: recs.dataStatus, pricingStatus: recs.pricingStatus, samples: samples.map((s) => s.id) });
   if (url.pathname === '/api/recommendations') return send(res, 200, recs);
   if (url.pathname === '/api/samples') return send(res, 200, { samples });
   if (url.pathname === '/api/recommend' && req.method === 'POST') {

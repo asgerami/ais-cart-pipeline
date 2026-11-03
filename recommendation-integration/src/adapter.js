@@ -74,7 +74,16 @@ const CATEGORY_KEYWORDS = {
   websites: ['website', 'landing', 'domain', 'site', 'framer', 'wordpress', 'webflow', 'portfolio', 'squarespace'],
 };
 
-const STOPWORDS = new Set(('the a an and or for to of in on at pro plan monthly annual year years month months free trial then each until cancelled cancel settings turn off can be is are with no not shown from this that it its per via buy get started today now due total subtotal tax discount code at-cost').split(' '));
+const STOPWORDS = new Set(('the a an and or for to of in on at pro plan monthly annual year years month months free trial then each until cancelled cancel settings turn off can be is are with no not shown from this that it its per via buy get started today now due total subtotal tax discount code at-cost your card start day days hour hours you our their them they will would should could before after into over under more most other than then there these those been being have has had were was are').split(' '));
+
+function wordSet(text) {
+  return new Set(tokens(text));
+}
+function wholeWordIncludes(text, word) {
+  const normalizedWord = String(word || '').toLowerCase();
+  if (!normalizedWord) return false;
+  return wordSet(text).has(normalizedWord);
+}
 
 function textOf(field) {
   if (!field || typeof field !== 'object') return '';
@@ -131,9 +140,10 @@ function describeCheckout(facts) {
 }
 
 function inferCategories(checkout) {
+  const wordsInCheckout = checkout.searchableTokens;
   const scores = {};
   for (const [cat, words] of Object.entries(CATEGORY_KEYWORDS)) {
-    scores[cat] = words.reduce((n, w) => n + (checkout.searchableText.includes(w) ? 1 : 0), 0);
+    scores[cat] = words.reduce((n, w) => n + (wordsInCheckout.has(w) ? 1 : 0), 0);
   }
   return Object.entries(scores).filter(([, n]) => n > 0).sort((a, b) => b[1] - a[1]).map(([c]) => c);
 }
@@ -216,12 +226,15 @@ function classifyMatch(rec, checkout, founderGoal = '') {
   }
 
   const missingDirect = checkoutJobs.filter((entry) => !directJobs.some((direct) => direct.job === entry.job));
+  const genericPlanOnly = purchaseJobs.length && !strongPurchaseJobs.length;
   return {
     quality: 'related_alternative',
     label: 'Related alternative — not a direct substitute',
-    explanation: missingDirect.length
-      ? `Related guidance only: the checkout concerns ${missingDirect.map((entry) => entry.label).join(', ')}, while this record covers a neighbouring use case. Direct classification is withheld because the checkout/goal evidence is generic or adjacent, not an explicit direct-purchase match.`
-      : 'Related guidance only: this record shares a broad category with the checkout, but the evidence is too generic to call it a direct substitute.',
+    explanation: genericPlanOnly
+      ? 'Related guidance only: the checkout only names a generic plan (for example "Builder Pro"), so the purchase does not explicitly identify a direct substitute category.'
+      : (missingDirect.length
+        ? `Related guidance only: the checkout concerns ${missingDirect.map((entry) => entry.label).join(', ')}, while this record covers a neighbouring use case. Direct classification is withheld because the checkout/goal evidence is generic or adjacent, not an explicit direct-purchase match.`
+        : 'Related guidance only: this record shares a broad category with the checkout, but the evidence is too generic to call it a direct substitute.'),
     checkoutJobs: checkoutJobs.map((entry) => entry.job),
     sharedJobs: directJobs.map((entry) => entry.job),
     missingDirectJobs: missingDirect.map((entry) => entry.job),
@@ -231,18 +244,21 @@ function classifyMatch(rec, checkout, founderGoal = '') {
 function scoreRecord(rec, checkout, founderGoal) {
   const reasons = [];
   let score = 0;
-  const recText = norm([rec.toolName, rec.category, rec.bestFor, rec.why, rec.caution, rec.alternative, ...(rec.useCases || []), ...(rec.keywords || []), ...(rec.alternativesFor || [])].join(' '));
+  const recFields = [rec.toolName, rec.category, rec.bestFor, rec.why, rec.caution, rec.alternative, ...(rec.useCases || []), ...(rec.keywords || []), ...(rec.alternativesFor || [])];
+  const recWords = wordSet(recFields.join(' '));
+  const recText = norm(recFields.join(' '));
   if (checkout.categories.includes(rec.category)) {
     score += 40;
     reasons.push(`Same category as this checkout (${rec.category}).`);
   }
-  const overlap = [...checkout.searchableTokens].filter((t) => recText.includes(t));
+  const overlap = [...checkout.searchableTokens].filter((t) => recWords.has(t));
   if (overlap.length) {
     score += Math.min(30, overlap.length * 6);
     reasons.push(`Matches checkout terms: ${overlap.slice(0, 6).join(', ')}.`);
   }
   const goalTokens = tokens(founderGoal || '');
-  const goalOverlap = goalTokens.filter((t) => recText.includes(t) || (rec.useCases || []).some((u) => norm(u).includes(t)));
+  const useCaseWords = wordSet((rec.useCases || []).join(' '));
+  const goalOverlap = goalTokens.filter((t) => recWords.has(t) || useCaseWords.has(t));
   if (goalOverlap.length) {
     score += Math.min(20, goalOverlap.length * 5);
     reasons.push(`Fits the stated goal (${[...new Set(goalOverlap)].slice(0, 5).join(', ')}).`);
@@ -350,7 +366,7 @@ function recommend(input, recommendationLibrary, options = {}) {
 
   const isRealFloot = library.dataStatus !== 'unknown' || recs.some((rec) => rec.dataStatus === 'real-floot-editorial');
   return {
-    adapter: { name: 'ais-cart-recommendation-adapter', version: '0.3.1' },
+    adapter: { name: 'ais-cart-recommendation-adapter', version: '0.3.2' },
     dataSource: {
       recommendations: options.recommendationsPath || 'provided recommendation library',
       source: library.source,
