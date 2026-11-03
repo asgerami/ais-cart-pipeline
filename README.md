@@ -175,3 +175,7 @@ Nov 3, 2026, with `eval/live_run.py`.
 | --- | --- |
 | Steven Lance Rocker | Founder/Product & Editorial Research |
 | Amir Aman | AI Pipeline/Engineering |
+
+## License
+
+MIT. See [LICENSE](LICENSE).
