@@ -90,9 +90,11 @@ free-tier bonus (+5, only when a priced baseline record actually matched; Floot 
 unknown, so no such bonus or price claim applies there). The item already in the
 cart is never recommended as its own alternative (−50).
 
-Match quality is classified separately from score: `direct_match` requires the checkout
-itself (or a specific purchase job confirmed by the goal) and the recommendation to cover
-the same kind of purchase. Broad website/app adjacency is `related_alternative`, and no
-record is returned for `no_suitable_match`. This prevents Floot-for-Domainly or
-Base44-for-automation from being presented as direct substitutes. By design (Lance's brief):
-no database, no embeddings, no redesign.
+Match quality is classified separately from score: `direct_match` requires strong evidence
+from the checkout itself (or a specific founder goal confirming that same purchase job) and
+the recommendation to cover the same kind of purchase. The default is conservative: generic
+pipeline questions ("Should I complete this purchase?") and generic vendor plan labels such
+as "Builder Pro" cannot by themselves create a direct match. Broad website/app adjacency is
+`related_alternative`, and no record is returned for `no_suitable_match`. This prevents
+Floot-for-Domainly or Base44-for-automation from being presented as direct substitutes.
+By design (Lance's brief): no database, no embeddings, no redesign.

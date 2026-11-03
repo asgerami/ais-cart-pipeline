@@ -1,6 +1,6 @@
 # Baseline vs real Floot — 3 sample rerun
 
-Updated: 2026-11-03 for adapter v0.3.0 match-quality labels. Same adapter scoring and 3 pipeline sample inputs. The library change and the later match-quality change are reported separately below.
+Updated: 2026-11-03 for adapter v0.3.1 conservative match-quality labels. Same adapter scoring and 3 pipeline sample inputs. The library change and the later match-quality changes are reported separately below.
 
 - Baseline (simulated): `data/baseline/recommendations.simulated.json`, outputs in `results/baseline-mock/`
 - Real Floot: Lance's untouched export preserved at `data/floot/aiscart_floot_recommendations.original.json`, normalized active library at `data/recommendations.json`, outputs in `results/real-floot/`
@@ -36,6 +36,10 @@ Adapter v0.3.0 distinguishes:
 | Cartwheel Office | None | **No suitable match** | Physical goods have no suitable software recommendation in this library. |
 
 A control test confirms direct status is still used when justified: a checkout explicitly for an "App builder platform for MVP prototype" yields a direct Apps & MVPs match.
+
+### Conservative-default follow-up (Lance, 2026-11-03 14:23)
+
+Lance's replay found that Sparkforge became `direct_match` when the pipeline supplied only the generic question "Should I complete this purchase?" Adapter v0.3.1 makes the default conservative: generic questions are ignored for directness, and a vendor plan label such as "Builder Pro" is no longer strong evidence of the founder's job. Direct classification now needs an explicit strong purchase term (for example app/MVP/prototype) or a specific founder goal confirming that same job. Sparkforge is now `related_alternative` with the generic question and with the automation goal; the explicit MVP control remains `direct_match`.
 
 ## Interpretation for the team
 

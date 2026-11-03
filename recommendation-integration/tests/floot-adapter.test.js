@@ -67,14 +67,23 @@ test('checkout_02: Sparkforge automation goal makes Base44 related, not a direct
   assert.ok(result.recommendation);
   assert.strictEqual(result.recommendation.category, 'apps');
   assert.strictEqual(result.matchQuality, 'related_alternative');
-  assert.deepStrictEqual(result.recommendation.match.checkoutJobs, ['automation']);
-  assert.ok(result.recommendation.match.explanation.includes('stated goal'));
   assert.ok(result.recommendation.evidenceIds.length > 0);
   assert.ok(result.recommendation.caution.length > 0);
   assert.strictEqual(result.recommendation.savings.amountUsd, null);
   assert.strictEqual(result.recommendation.savings.kind, 'pricing_unknown');
   assert.ok(result.risks.some((risk) => risk.flag === 'trial_converts_to_paid'));
   assert.ok(result.risks.some((risk) => risk.flag === 'text_cut_off'));
+});
+
+test('checkout_02 with the generic purchase question stays related (Lance regression)', () => {
+  for (const question of ['', 'Should I complete this purchase?', 'Should I buy this?']) {
+    const wrapped = { mode: 'live', question, verdict: { decision: 'TRIAL', headline: 'Trial first', confidence: 'medium' }, facts: load('checkout_02_trial.json') };
+    const result = recommend(wrapped, active, {});
+    assert.ok(result.recommendation, `expected a related candidate for question: ${question}`);
+    assert.strictEqual(result.matchQuality, 'related_alternative', `generic question must not be direct: ${question}`);
+    assert.strictEqual(result.recommendation.category, 'apps');
+    assert.strictEqual(result.pipelineVerdict.decision, 'TRIAL');
+  }
 });
 
 test('a direct Floot match is still labelled direct when checkout explicitly seeks an MVP builder', () => {

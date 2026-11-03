@@ -1,7 +1,7 @@
 {
   "adapter": {
     "name": "ais-cart-recommendation-adapter",
-    "version": "0.3.0"
+    "version": "0.3.1"
   },
   "dataSource": {
     "recommendations": "provided recommendation library",
@@ -76,12 +76,14 @@
       "label": "Related alternative — not a direct substitute",
       "explanation": "Related through the stated goal (workflow automation), but the checkout item itself does not directly identify that kind of purchase.",
       "checkoutJobs": [
-        "automation"
+        "app_building"
       ],
       "sharedJobs": [
         "automation"
       ],
-      "missingDirectJobs": []
+      "missingDirectJobs": [
+        "app_building"
+      ]
     },
     "matchScore": 61,
     "whyItFits": [

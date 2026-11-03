@@ -142,13 +142,15 @@ function inferCategories(checkout) {
 // same kind of purchase in both the checkout and the recommendation's own editorial
 // scope; sharing only a broad category makes it a related alternative instead.
 const JOB_PATTERNS = [
-  { job: 'domain_registration', label: 'domain registration', patterns: [/\bdomain\b/i, /\bregistrar\b/i, /whois/i, /\.com\b/i, /\.io\b/i, /\.ai\b/i] },
-  { job: 'automation', label: 'workflow automation', patterns: [/\bautomation\b/i, /\bautomate\b/i, /\bworkflow\b/i, /\bintegration(s)?\b/i, /\bzapier\b/i, /\bzap(s)?\b/i] },
-  { job: 'video_editing', label: 'video creation/editing', patterns: [/\bvideo\b/i, /\bpremiere\b/i, /\bclip\b/i, /\bediting\b/i] },
-  { job: 'graphics_design', label: 'graphics/design work', patterns: [/\bgraphics?\b/i, /\bdesign\b/i, /\bphotoshop\b/i, /\bimage\b/i] },
-  { job: 'writing', label: 'writing/research assistance', patterns: [/\bwriting\b/i, /\bgrammar/i, /\bcopywriting\b/i, /\bwriter\b/i] },
-  { job: 'app_building', label: 'building an app/MVP', patterns: [/\bbuilder\b/i, /\bapp\b/i, /\bmvp\b/i, /\bprototype\b/i, /\bplatform\b/i, /\bsoftware\b/i] },
-  { job: 'website_building', label: 'building/launching a website', patterns: [/\bwebsite\b/i, /\blanding page\b/i, /\bweb builder\b/i, /\bsite builder\b/i] },
+  { job: 'domain_registration', label: 'domain registration', strongCheckoutPatterns: [/\bdomain\b/i, /\bregistrar\b/i, /whois/i, /\.com\b/i, /\.io\b/i, /\.ai\b/i], patterns: [/\bdomain\b/i, /\bregistrar\b/i, /whois/i, /\.com\b/i, /\.io\b/i, /\.ai\b/i] },
+  { job: 'automation', label: 'workflow automation', strongCheckoutPatterns: [/\bautomation\b/i, /\bautomate\b/i, /\bworkflow\b/i, /\bintegration(s)?\b/i, /\bzapier\b/i, /\bzap(s)?\b/i], patterns: [/\bautomation\b/i, /\bautomate\b/i, /\bworkflow\b/i, /\bintegration(s)?\b/i, /\bzapier\b/i, /\bzap(s)?\b/i] },
+  { job: 'video_editing', label: 'video creation/editing', strongCheckoutPatterns: [/\bvideo\b/i, /\bpremiere\b/i, /\bclip\b/i, /\bediting\b/i], patterns: [/\bvideo\b/i, /\bpremiere\b/i, /\bclip\b/i, /\bediting\b/i] },
+  { job: 'graphics_design', label: 'graphics/design work', strongCheckoutPatterns: [/\bgraphics?\b/i, /\bdesign\b/i, /\bphotoshop\b/i, /\bimage\b/i], patterns: [/\bgraphics?\b/i, /\bdesign\b/i, /\bphotoshop\b/i, /\bimage\b/i] },
+  { job: 'writing', label: 'writing/research assistance', strongCheckoutPatterns: [/\bwriting\b/i, /\bgrammar/i, /\bcopywriting\b/i, /\bwriter\b/i], patterns: [/\bwriting\b/i, /\bgrammar/i, /\bcopywriting\b/i, /\bwriter\b/i] },
+  // A plan literally called "Builder Pro" is a vendor label, not evidence of the
+  // founder's job. Directness therefore needs an explicit app/MVP/prototype term.
+  { job: 'app_building', label: 'building an app/MVP', strongCheckoutPatterns: [/\bapp\b/i, /\bmvp\b/i, /\bprototype\b/i, /\bfull-stack\b/i, /\bapplication builder\b/i], patterns: [/\bbuilder\b/i, /\bapp\b/i, /\bmvp\b/i, /\bprototype\b/i, /\bplatform\b/i, /\bsoftware\b/i] },
+  { job: 'website_building', label: 'building/launching a website', strongCheckoutPatterns: [/\bwebsite\b/i, /\blanding page\b/i, /\bweb builder\b/i, /\bsite builder\b/i], patterns: [/\bwebsite\b/i, /\blanding page\b/i, /\bweb builder\b/i, /\bsite builder\b/i] },
 ];
 
 function detectJob(text) {
@@ -156,58 +158,72 @@ function detectJob(text) {
   return JOB_PATTERNS.filter(({ patterns }) => patterns.some((pattern) => pattern.test(value)));
 }
 
-function classifyMatch(rec, checkout, founderGoal = '') {
-  const checkoutJobText = checkout.searchableText;
-  const goalJobs = detectJob(founderGoal);
-  const purchaseJobs = detectJob(checkoutJobText);
-  const genericPurchaseJobs = new Set(['app_building']);
-  const specificPurchaseJobs = purchaseJobs.filter((entry) => !genericPurchaseJobs.has(entry.job));
-  const goalSpecificJobs = goalJobs.filter((entry) => !genericPurchaseJobs.has(entry.job));
-  const goalJobsOutsidePurchase = goalSpecificJobs.filter((entry) => !specificPurchaseJobs.some((purchase) => purchase.job === entry.job));
-  // Specific purchase facts win over the goal: buying a domain to launch a website
-  // remains domain registration. If the checkout only names a generic product and
-  // the goal states a specific job (for example automation), that goal identifies
-  // the coverage question, so an app builder is related rather than direct.
-  const checkoutJobs = specificPurchaseJobs.length
-    ? specificPurchaseJobs
-    : (goalJobsOutsidePurchase.length ? goalJobsOutsidePurchase : purchaseJobs);
-  const recJobs = detectJob([rec.toolName, rec.bestFor, rec.why, ...(rec.useCases || []), ...(rec.keywords || [])].join(' '));
-  const checkoutJobIds = checkoutJobs.map((entry) => entry.job);
-  const sharedJobs = recJobs.filter((entry) => checkoutJobIds.includes(entry.job));
-  const sameCategory = checkout.categories.includes(rec.category);
-  const missingDirect = checkoutJobs.filter((entry) => !recJobs.some((recEntry) => recEntry.job === entry.job));
+function detectStrongCheckoutJob(text) {
+  const value = String(text || '');
+  return JOB_PATTERNS.filter(({ strongCheckoutPatterns }) => strongCheckoutPatterns.some((pattern) => pattern.test(value)));
+}
 
-  const weakGoalOnly = !specificPurchaseJobs.length && goalSpecificJobs.some((entry) => !purchaseJobs.some((purchase) => purchase.job === entry.job)) && sharedJobs.length;
-  if (sharedJobs.length && sameCategory && !weakGoalOnly) {
+const GENERIC_QUESTIONS = new Set([
+  '',
+  'should i complete this purchase?',
+  'should i buy this?',
+  'should i complete this purchase',
+  'extract the facts from this checkout screenshot.',
+]);
+
+function classifyMatch(rec, checkout, founderGoal = '') {
+  const goalText = String(founderGoal || '').trim().toLowerCase().replace(/\s+/g, ' ');
+  const hasSpecificGoal = goalText && !GENERIC_QUESTIONS.has(goalText);
+  const goalJobs = hasSpecificGoal ? detectJob(founderGoal) : [];
+  const purchaseJobs = detectJob(checkout.searchableText);
+  const strongPurchaseJobs = detectStrongCheckoutJob(checkout.searchableText);
+  const recJobs = detectJob([rec.toolName, rec.bestFor, rec.why, ...(rec.useCases || []), ...(rec.keywords || [])].join(' '));
+
+  // Conservative default: directness must be supported by the checkout itself
+  // with a strong job term, or by a specific founder goal that names the same job.
+  // A generic vendor/plan label — for example "Builder Pro" — or the pipeline's
+  // generic question is not enough to call an adjacent tool a direct substitute.
+  const strongGoalJobList = detectStrongCheckoutJob(founderGoal);
+  const goalConfirmsPurchase = strongGoalJobList.some((goal) => strongPurchaseJobs.some((purchase) => purchase.job === goal.job));
+  const directCandidateJobs = goalConfirmsPurchase
+    ? strongGoalJobList.filter((goal) => strongPurchaseJobs.some((purchase) => purchase.job === goal.job))
+    : strongPurchaseJobs;
+  const directJobs = directCandidateJobs.filter((entry) => recJobs.some((recEntry) => recEntry.job === entry.job));
+  const checkoutJobs = strongPurchaseJobs.length ? strongPurchaseJobs : purchaseJobs;
+  const sameCategory = checkout.categories.includes(rec.category);
+
+  if (directJobs.length && sameCategory) {
     return {
       quality: 'direct_match',
       label: 'Direct match',
-      explanation: `The checkout itself and this Floot record both concern ${sharedJobs.map((entry) => entry.label).join(', ')}.`,
+      explanation: `The checkout (or a specific founder goal) and this Floot record both directly concern ${directJobs.map((entry) => entry.label).join(', ')}.`,
       checkoutJobs: checkoutJobs.map((entry) => entry.job),
-      sharedJobs: sharedJobs.map((entry) => entry.job),
-      missingDirectJobs: [],
+      sharedJobs: directJobs.map((entry) => entry.job),
+      missingDirectJobs: checkoutJobs.filter((entry) => !directJobs.some((direct) => direct.job === entry.job)).map((entry) => entry.job),
     };
   }
 
-  if (weakGoalOnly) {
+  const goalOnlyJobs = goalJobs.filter((entry) => !strongPurchaseJobs.some((purchase) => purchase.job === entry.job));
+  if (goalOnlyJobs.length && recJobs.some((entry) => goalOnlyJobs.some((goal) => goal.job === entry.job))) {
     return {
       quality: 'related_alternative',
       label: 'Related alternative — not a direct substitute',
-      explanation: `Related through the stated goal (${goalJobs.map((entry) => entry.label).join(', ')}), but the checkout item itself does not directly identify that kind of purchase.`,
+      explanation: `Related through the stated goal (${goalOnlyJobs.map((entry) => entry.label).join(', ')}), but the checkout item itself does not directly identify that kind of purchase.`,
       checkoutJobs: checkoutJobs.map((entry) => entry.job),
-      sharedJobs: sharedJobs.map((entry) => entry.job),
-      missingDirectJobs: [],
+      sharedJobs: recJobs.filter((entry) => goalOnlyJobs.some((goal) => goal.job === entry.job)).map((entry) => entry.job),
+      missingDirectJobs: checkoutJobs.map((entry) => entry.job),
     };
   }
 
+  const missingDirect = checkoutJobs.filter((entry) => !directJobs.some((direct) => direct.job === entry.job));
   return {
     quality: 'related_alternative',
     label: 'Related alternative — not a direct substitute',
     explanation: missingDirect.length
-      ? `Related guidance only: the checkout concerns ${missingDirect.map((entry) => entry.label).join(', ')}, while this record covers a neighbouring use case.`
-      : 'Related guidance only: this record shares a broad category or goal with the checkout, but does not directly cover the same kind of purchase.',
+      ? `Related guidance only: the checkout concerns ${missingDirect.map((entry) => entry.label).join(', ')}, while this record covers a neighbouring use case. Direct classification is withheld because the checkout/goal evidence is generic or adjacent, not an explicit direct-purchase match.`
+      : 'Related guidance only: this record shares a broad category with the checkout, but the evidence is too generic to call it a direct substitute.',
     checkoutJobs: checkoutJobs.map((entry) => entry.job),
-    sharedJobs: sharedJobs.map((entry) => entry.job),
+    sharedJobs: directJobs.map((entry) => entry.job),
     missingDirectJobs: missingDirect.map((entry) => entry.job),
   };
 }
@@ -334,7 +350,7 @@ function recommend(input, recommendationLibrary, options = {}) {
 
   const isRealFloot = library.dataStatus !== 'unknown' || recs.some((rec) => rec.dataStatus === 'real-floot-editorial');
   return {
-    adapter: { name: 'ais-cart-recommendation-adapter', version: '0.3.0' },
+    adapter: { name: 'ais-cart-recommendation-adapter', version: '0.3.1' },
     dataSource: {
       recommendations: options.recommendationsPath || 'provided recommendation library',
       source: library.source,

@@ -1,7 +1,7 @@
 {
   "adapter": {
     "name": "ais-cart-recommendation-adapter",
-    "version": "0.3.0"
+    "version": "0.3.1"
   },
   "dataSource": {
     "recommendations": "provided recommendation library",
@@ -79,7 +79,7 @@
     "match": {
       "quality": "direct_match",
       "label": "Direct match",
-      "explanation": "The checkout itself and this Floot record both concern domain registration.",
+      "explanation": "The checkout (or a specific founder goal) and this Floot record both directly concern domain registration.",
       "checkoutJobs": [
         "domain_registration"
       ],
@@ -90,7 +90,7 @@
     },
     "matchScore": 74,
     "whyItFits": [
-      "Direct match: The checkout itself and this Floot record both concern domain registration.",
+      "Direct match: The checkout (or a specific founder goal) and this Floot record both directly concern domain registration.",
       "Same category as this checkout (websites).",
       "Matches checkout terms: domainly, domain, registration, whois.",
       "Fits the stated goal (launch, website).",
