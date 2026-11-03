@@ -1,0 +1,162 @@
+{
+  "adapter": {
+    "name": "ais-cart-recommendation-adapter",
+    "version": "0.3.1"
+  },
+  "dataSource": {
+    "recommendations": "provided recommendation library",
+    "source": "Floot AI's Cart / helpers/editorialRecommendations.tsx",
+    "sourceProjectId": "3385a158-119a-476b-92f6-161779970bf8",
+    "status": "real-floot-editorial",
+    "dataStatus": "Founder editorial assessments, not controlled rankings or verified live prices",
+    "pricingStatus": "not provided in source; do not infer",
+    "recordCount": 12
+  },
+  "inputMode": "bare-facts",
+  "checkout": {
+    "merchant": "Domainly",
+    "currency": "USD",
+    "items": [
+      {
+        "name": "acme-robotics.com domain registration",
+        "term": "3 years",
+        "lineTotal": 100
+      },
+      {
+        "name": "WHOIS privacy protection",
+        "term": "",
+        "lineTotal": 0
+      }
+    ],
+    "totalDueNow": 100,
+    "totalDueNowText": "$100.00",
+    "inferredCategories": [
+      "websites"
+    ],
+    "uncertaintyFlags": [
+      "renewal_price_not_shown",
+      "multi_year_upfront"
+    ]
+  },
+  "pipelineVerdict": null,
+  "founderGoal": "launch a website for my startup",
+  "status": "related_alternative_with_risks",
+  "matchQuality": "related_alternative",
+  "matchQualityLabel": "Related alternative — not a direct substitute",
+  "recommendation": {
+    "id": "website-floot",
+    "toolName": "Floot",
+    "tool": "Floot",
+    "category": "websites",
+    "sourceCategory": "Websites",
+    "bestFor": "A website that also needs custom user accounts and application behavior",
+    "why": "AI’s Cart combines public pages, user accounts, server endpoints and persistent data in one project.",
+    "caution": "More custom engineering and security testing than a standard content website.",
+    "confidence": "Strong firsthand use",
+    "evidenceIds": [
+      "floot-app"
+    ],
+    "alternative": "Squarespace for a simpler informational website",
+    "pricing": {
+      "status": "unknown",
+      "model": "unknown",
+      "monthlyUsd": null,
+      "annualUsd": null,
+      "freeTier": null,
+      "notes": "Pricing was not provided in the Floot source; do not infer."
+    },
+    "strengths": [
+      "AI’s Cart combines public pages, user accounts, server endpoints and persistent data in one project."
+    ],
+    "limitations": [
+      "More custom engineering and security testing than a standard content website."
+    ],
+    "evidence": [
+      "floot-app"
+    ],
+    "editorial": {
+      "id": "website-floot",
+      "category": "Websites",
+      "tool": "Floot",
+      "bestFor": "A website that also needs custom user accounts and application behavior",
+      "why": "AI’s Cart combines public pages, user accounts, server endpoints and persistent data in one project.",
+      "caution": "More custom engineering and security testing than a standard content website.",
+      "evidenceIds": [
+        "floot-app"
+      ],
+      "confidence": "Strong firsthand use",
+      "alternative": "Squarespace for a simpler informational website"
+    },
+    "match": {
+      "quality": "related_alternative",
+      "label": "Related alternative — not a direct substitute",
+      "explanation": "Related through the stated goal (building/launching a website), but the checkout item itself does not directly identify that kind of purchase.",
+      "checkoutJobs": [
+        "domain_registration"
+      ],
+      "sharedJobs": [
+        "website_building"
+      ],
+      "missingDirectJobs": [
+        "domain_registration"
+      ]
+    },
+    "matchScore": 50,
+    "whyItFits": [
+      "Related alternative — not a direct substitute: Related through the stated goal (building/launching a website), but the checkout item itself does not directly identify that kind of purchase.",
+      "Same category as this checkout (websites).",
+      "Fits the stated goal (launch, website).",
+      "Floot editorial why: AI’s Cart combines public pages, user accounts, server endpoints and persistent data in one project.",
+      "Floot caution: More custom engineering and security testing than a standard content website."
+    ],
+    "savings": {
+      "kind": "pricing_unknown",
+      "amountUsd": null,
+      "basis": "Pricing unknown: Floot did not provide pricing for this recommendation, so no price, saving, or placeholder amount is shown."
+    }
+  },
+  "otherCandidates": [
+    {
+      "id": "website-squarespace",
+      "toolName": "Squarespace",
+      "category": "websites",
+      "matchScore": 50,
+      "matchQuality": "related_alternative",
+      "matchQualityLabel": "Related alternative — not a direct substitute"
+    }
+  ],
+  "risks": [
+    {
+      "source": "pipeline_flag",
+      "flag": "renewal_price_not_shown",
+      "severity": "high",
+      "title": "Renewal price not shown",
+      "detail": "The checkout commits you to a renewal but does not state the renewal price. Find it before paying.",
+      "check": "Find the exact renewal price (screenshot or account page) before paying."
+    },
+    {
+      "source": "pipeline_flag",
+      "flag": "multi_year_upfront",
+      "severity": "high",
+      "title": "Multi-year payment upfront",
+      "detail": "You pay several years now for something not yet validated. A shorter first term lowers the cost of changing your mind.",
+      "check": "Check whether a 1-year / monthly first term exists and what it costs."
+    }
+  ],
+  "checkBeforeBuying": [
+    "Find the exact renewal price (screenshot or account page) before paying.",
+    "Check whether a 1-year / monthly first term exists and what it costs."
+  ],
+  "honesty": {
+    "simulated": [],
+    "unverified": [
+      "Floot records are founder editorial assessments, not controlled rankings or verified live prices.",
+      "Pricing is unknown for Floot records because the source did not provide it; no placeholder prices are used.",
+      "Founder-goal fit uses explainable keyword overlap, not user research or embeddings."
+    ],
+    "notClaimed": [
+      "No saving is claimed unless savings.basis shows the arithmetic.",
+      "A no_match result means no library record matched — not that no alternative exists anywhere."
+    ]
+  }
+}

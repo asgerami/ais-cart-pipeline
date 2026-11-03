@@ -1,0 +1,166 @@
+{
+  "adapter": {
+    "name": "ais-cart-recommendation-adapter",
+    "version": "0.3.1"
+  },
+  "dataSource": {
+    "recommendations": "provided recommendation library",
+    "source": "SIMULATED Floot export — placeholder for the real Floot AI's Cart recommendation library",
+    "sourceProjectId": null,
+    "status": "simulated-or-unspecified",
+    "dataStatus": "unknown",
+    "pricingStatus": "not specified",
+    "recordCount": 12
+  },
+  "inputMode": "bare-facts",
+  "checkout": {
+    "merchant": "Sparkforge",
+    "currency": "USD",
+    "items": [
+      {
+        "name": "Builder Pro",
+        "term": "Monthly",
+        "lineTotal": null
+      }
+    ],
+    "totalDueNow": 0,
+    "totalDueNowText": "$0.00",
+    "inferredCategories": [
+      "graphics",
+      "apps"
+    ],
+    "uncertaintyFlags": [
+      "text_cut_off",
+      "trial_converts_to_paid"
+    ]
+  },
+  "pipelineVerdict": null,
+  "founderGoal": "automate my workflow",
+  "status": "related_alternative_with_risks",
+  "matchQuality": "related_alternative",
+  "matchQualityLabel": "Related alternative — not a direct substitute",
+  "recommendation": {
+    "id": "rec-apps-automation-make",
+    "toolName": "Make (free tier, then Core)",
+    "tool": "Make (free tier, then Core)",
+    "category": "apps",
+    "sourceCategory": "apps",
+    "bestFor": null,
+    "why": null,
+    "caution": null,
+    "confidence": "medium",
+    "evidenceIds": [],
+    "alternative": null,
+    "pricing": {
+      "model": "freemium",
+      "monthlyUsd": 0,
+      "annualUsd": 108,
+      "freeTier": true,
+      "notes": "Free tier includes monthly operations; paid is usage-based, cheaper at starter volumes than per-task rivals (simulated comparison)."
+    },
+    "strengths": [
+      "Free tier to prove the workflow first",
+      "Visual scenario builder",
+      "Lower starter cost than per-task pricing"
+    ],
+    "limitations": [
+      "Usage (operations) pricing needs monitoring",
+      "Learning curve for complex scenarios"
+    ],
+    "evidence": [
+      "Floot curated comparison (simulated): best starter automation value"
+    ],
+    "editorial": null,
+    "match": {
+      "quality": "related_alternative",
+      "label": "Related alternative — not a direct substitute",
+      "explanation": "Related through the stated goal (workflow automation), but the checkout item itself does not directly identify that kind of purchase.",
+      "checkoutJobs": [
+        "app_building"
+      ],
+      "sharedJobs": [
+        "automation"
+      ],
+      "missingDirectJobs": [
+        "app_building"
+      ]
+    },
+    "matchScore": 61,
+    "whyItFits": [
+      "Related alternative — not a direct substitute: Related through the stated goal (workflow automation), but the checkout item itself does not directly identify that kind of purchase.",
+      "Same category as this checkout (apps).",
+      "Matches checkout terms: builder.",
+      "Fits the stated goal (automate, workflow).",
+      "Has a free tier, so it can be tested before paying.",
+      "Strengths: Free tier to prove the workflow first; Visual scenario builder; Lower starter cost than per-task pricing.",
+      "Limitations to check: Usage (operations) pricing needs monitoring; Learning curve for complex scenarios."
+    ],
+    "savings": {
+      "kind": "free_alternative",
+      "amountUsd": 0,
+      "basis": "Make (free tier, then Core) can be tested at $0.00 before committing the $0.00 due now here."
+    }
+  },
+  "otherCandidates": [
+    {
+      "id": "rec-graphics-canva",
+      "toolName": "Canva (free tier, then Pro annual)",
+      "category": "graphics",
+      "matchScore": 45,
+      "matchQuality": "related_alternative",
+      "matchQualityLabel": "Related alternative — not a direct substitute"
+    },
+    {
+      "id": "rec-graphics-figma",
+      "toolName": "Figma (Starter)",
+      "category": "graphics",
+      "matchScore": 45,
+      "matchQuality": "related_alternative",
+      "matchQualityLabel": "Related alternative — not a direct substitute"
+    },
+    {
+      "id": "rec-apps-supabase",
+      "toolName": "Supabase (free tier)",
+      "category": "apps",
+      "matchScore": 45,
+      "matchQuality": "related_alternative",
+      "matchQualityLabel": "Related alternative — not a direct substitute"
+    }
+  ],
+  "risks": [
+    {
+      "source": "pipeline_flag",
+      "flag": "trial_converts_to_paid",
+      "severity": "high",
+      "title": "Trial converts to paid automatically",
+      "detail": "The free/low-cost start becomes a paid subscription automatically. The risk is forgetting, not the trial itself.",
+      "check": "Set a cancellation reminder at least 24h before the trial ends, and note the first paid amount."
+    },
+    {
+      "source": "pipeline_flag",
+      "flag": "text_cut_off",
+      "severity": "medium",
+      "title": "Terms are cut off on screen",
+      "detail": "Part of the terms could not be read from the screenshot, so something relevant may be missing.",
+      "check": "Scroll / expand the full terms and re-check refund and cancellation wording."
+    }
+  ],
+  "checkBeforeBuying": [
+    "Set a cancellation reminder at least 24h before the trial ends, and note the first paid amount.",
+    "Scroll / expand the full terms and re-check refund and cancellation wording."
+  ],
+  "honesty": {
+    "simulated": [
+      "Recommendation records use the preserved simulated baseline library."
+    ],
+    "unverified": [
+      "Recommendation prices are unverified snapshots.",
+      "Pricing is unknown for Floot records because the source did not provide it; no placeholder prices are used.",
+      "Founder-goal fit uses explainable keyword overlap, not user research or embeddings."
+    ],
+    "notClaimed": [
+      "No saving is claimed unless savings.basis shows the arithmetic.",
+      "A no_match result means no library record matched — not that no alternative exists anywhere."
+    ]
+  }
+}

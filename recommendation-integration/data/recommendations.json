@@ -1,0 +1,749 @@
+{
+  "source": "Floot AI's Cart / helpers/editorialRecommendations.tsx",
+  "sourceProjectId": "3385a158-119a-476b-92f6-161779970bf8",
+  "recordCount": 12,
+  "status": "real-floot-editorial",
+  "dataStatus": "Founder editorial assessments, not controlled rankings or verified live prices",
+  "pricingStatus": "not provided in source; do not infer",
+  "note": "Active library generated from data/floot/aiscart_floot_recommendations.original.json. Editorial text, evidence IDs, confidence and cautions are preserved; pricing remains unknown because Floot did not provide it.",
+  "recommendations": [
+    {
+      "id": "video-canva",
+      "sourceId": "video-canva",
+      "category": "video",
+      "sourceCategory": "Video",
+      "toolName": "Canva",
+      "tool": "Canva",
+      "bestFor": "Assembling short promotional videos, captions and social assets",
+      "why": "Used in the SongWrite and FloodHive creative workflow; a practical starting point when the task is assembling and polishing assets rather than generating every shot.",
+      "caution": "No measured conversion or head-to-head video quality result. Confirm export and licensing needs.",
+      "evidenceIds": [
+        "canva-creative",
+        "elevenlabs-narration"
+      ],
+      "confidence": "Firsthand use",
+      "alternative": "Runway for experimental AI-generated visuals",
+      "useCases": [
+        "Assembling short promotional videos, captions and social assets"
+      ],
+      "keywords": [
+        "video",
+        "visual",
+        "voice",
+        "narration",
+        "captions",
+        "promotional"
+      ],
+      "strengths": [
+        "Used in the SongWrite and FloodHive creative workflow; a practical starting point when the task is assembling and polishing assets rather than generating every shot."
+      ],
+      "limitations": [
+        "No measured conversion or head-to-head video quality result. Confirm export and licensing needs."
+      ],
+      "evidence": [
+        "canva-creative",
+        "elevenlabs-narration"
+      ],
+      "alternativesFor": [
+        "Runway for experimental AI-generated visuals"
+      ],
+      "pricing": {
+        "status": "unknown",
+        "model": "unknown",
+        "monthlyUsd": null,
+        "annualUsd": null,
+        "freeTier": null,
+        "notes": "Pricing was not provided in the Floot source; do not infer."
+      },
+      "dataStatus": "real-floot-editorial",
+      "editorial": {
+        "id": "video-canva",
+        "category": "Video",
+        "tool": "Canva",
+        "bestFor": "Assembling short promotional videos, captions and social assets",
+        "why": "Used in the SongWrite and FloodHive creative workflow; a practical starting point when the task is assembling and polishing assets rather than generating every shot.",
+        "caution": "No measured conversion or head-to-head video quality result. Confirm export and licensing needs.",
+        "evidenceIds": [
+          "canva-creative",
+          "elevenlabs-narration"
+        ],
+        "confidence": "Firsthand use",
+        "alternative": "Runway for experimental AI-generated visuals"
+      }
+    },
+    {
+      "id": "video-runway",
+      "sourceId": "video-runway",
+      "category": "video",
+      "sourceCategory": "Video",
+      "toolName": "Runway",
+      "tool": "Runway",
+      "bestFor": "Experimenting with generative visual treatments",
+      "why": "Used in independent creative refinement experiments, making it a candidate for exploratory visual generation.",
+      "caution": "The tested logo refinements were not chosen over the original. Video performance has not been benchmarked.",
+      "evidenceIds": [
+        "runway-creative"
+      ],
+      "confidence": "Limited firsthand use",
+      "alternative": "Canva for assembling a finished piece",
+      "useCases": [
+        "Experimenting with generative visual treatments"
+      ],
+      "keywords": [
+        "video",
+        "visual",
+        "voice",
+        "narration",
+        "captions",
+        "promotional"
+      ],
+      "strengths": [
+        "Used in independent creative refinement experiments, making it a candidate for exploratory visual generation."
+      ],
+      "limitations": [
+        "The tested logo refinements were not chosen over the original. Video performance has not been benchmarked."
+      ],
+      "evidence": [
+        "runway-creative"
+      ],
+      "alternativesFor": [
+        "Canva for assembling a finished piece"
+      ],
+      "pricing": {
+        "status": "unknown",
+        "model": "unknown",
+        "monthlyUsd": null,
+        "annualUsd": null,
+        "freeTier": null,
+        "notes": "Pricing was not provided in the Floot source; do not infer."
+      },
+      "dataStatus": "real-floot-editorial",
+      "editorial": {
+        "id": "video-runway",
+        "category": "Video",
+        "tool": "Runway",
+        "bestFor": "Experimenting with generative visual treatments",
+        "why": "Used in independent creative refinement experiments, making it a candidate for exploratory visual generation.",
+        "caution": "The tested logo refinements were not chosen over the original. Video performance has not been benchmarked.",
+        "evidenceIds": [
+          "runway-creative"
+        ],
+        "confidence": "Limited firsthand use",
+        "alternative": "Canva for assembling a finished piece"
+      }
+    },
+    {
+      "id": "video-elevenlabs",
+      "sourceId": "video-elevenlabs",
+      "category": "video",
+      "sourceCategory": "Video",
+      "toolName": "ElevenLabs",
+      "tool": "ElevenLabs",
+      "bestFor": "Narration and AI voice tracks for videos",
+      "why": "Provided narration in SongWrite and FloodHive workflows; use alongside an editor when the job specifically requires speech.",
+      "caution": "Not a substitute for a full video editor; narration quality, price and licensing are not benchmarked.",
+      "evidenceIds": [
+        "elevenlabs-narration"
+      ],
+      "confidence": "Firsthand use",
+      "alternative": "Canva for visual assembly",
+      "useCases": [
+        "Narration and AI voice tracks for videos"
+      ],
+      "keywords": [
+        "video",
+        "visual",
+        "voice",
+        "narration",
+        "captions",
+        "promotional"
+      ],
+      "strengths": [
+        "Provided narration in SongWrite and FloodHive workflows; use alongside an editor when the job specifically requires speech."
+      ],
+      "limitations": [
+        "Not a substitute for a full video editor; narration quality, price and licensing are not benchmarked."
+      ],
+      "evidence": [
+        "elevenlabs-narration"
+      ],
+      "alternativesFor": [
+        "Canva for visual assembly"
+      ],
+      "pricing": {
+        "status": "unknown",
+        "model": "unknown",
+        "monthlyUsd": null,
+        "annualUsd": null,
+        "freeTier": null,
+        "notes": "Pricing was not provided in the Floot source; do not infer."
+      },
+      "dataStatus": "real-floot-editorial",
+      "editorial": {
+        "id": "video-elevenlabs",
+        "category": "Video",
+        "tool": "ElevenLabs",
+        "bestFor": "Narration and AI voice tracks for videos",
+        "why": "Provided narration in SongWrite and FloodHive workflows; use alongside an editor when the job specifically requires speech.",
+        "caution": "Not a substitute for a full video editor; narration quality, price and licensing are not benchmarked.",
+        "evidenceIds": [
+          "elevenlabs-narration"
+        ],
+        "confidence": "Firsthand use",
+        "alternative": "Canva for visual assembly"
+      }
+    },
+    {
+      "id": "photos-canva",
+      "sourceId": "photos-canva",
+      "category": "graphics",
+      "sourceCategory": "Photos & graphics",
+      "toolName": "Canva",
+      "tool": "Canva",
+      "bestFor": "Social graphics, presentation visuals and cover layouts",
+      "why": "Used for creative assets and production across founder projects, with a familiar design-and-edit workflow.",
+      "caution": "Does not establish best image-generation quality. Check whether existing tools already cover the design task.",
+      "evidenceIds": [
+        "canva-creative"
+      ],
+      "confidence": "Firsthand use",
+      "alternative": "Runway for exploratory AI visual refinements",
+      "useCases": [
+        "Social graphics, presentation visuals and cover layouts"
+      ],
+      "keywords": [
+        "graphics",
+        "photos",
+        "image",
+        "design",
+        "layout",
+        "social"
+      ],
+      "strengths": [
+        "Used for creative assets and production across founder projects, with a familiar design-and-edit workflow."
+      ],
+      "limitations": [
+        "Does not establish best image-generation quality. Check whether existing tools already cover the design task."
+      ],
+      "evidence": [
+        "canva-creative"
+      ],
+      "alternativesFor": [
+        "Runway for exploratory AI visual refinements"
+      ],
+      "pricing": {
+        "status": "unknown",
+        "model": "unknown",
+        "monthlyUsd": null,
+        "annualUsd": null,
+        "freeTier": null,
+        "notes": "Pricing was not provided in the Floot source; do not infer."
+      },
+      "dataStatus": "real-floot-editorial",
+      "editorial": {
+        "id": "photos-canva",
+        "category": "Photos & graphics",
+        "tool": "Canva",
+        "bestFor": "Social graphics, presentation visuals and cover layouts",
+        "why": "Used for creative assets and production across founder projects, with a familiar design-and-edit workflow.",
+        "caution": "Does not establish best image-generation quality. Check whether existing tools already cover the design task.",
+        "evidenceIds": [
+          "canva-creative"
+        ],
+        "confidence": "Firsthand use",
+        "alternative": "Runway for exploratory AI visual refinements"
+      }
+    },
+    {
+      "id": "photos-runway",
+      "sourceId": "photos-runway",
+      "category": "graphics",
+      "sourceCategory": "Photos & graphics",
+      "toolName": "Runway",
+      "tool": "Runway",
+      "bestFor": "Trying alternative AI visual concepts",
+      "why": "Used for independent logo refinement, providing direct evidence of a creative-iteration workflow.",
+      "caution": "Neither tested refinement replaced the original. Treat it as an experiment, not a guaranteed improvement.",
+      "evidenceIds": [
+        "runway-creative"
+      ],
+      "confidence": "Limited firsthand use",
+      "alternative": "Canva for controlled layout and editing",
+      "useCases": [
+        "Trying alternative AI visual concepts"
+      ],
+      "keywords": [
+        "graphics",
+        "photos",
+        "image",
+        "design",
+        "layout",
+        "social"
+      ],
+      "strengths": [
+        "Used for independent logo refinement, providing direct evidence of a creative-iteration workflow."
+      ],
+      "limitations": [
+        "Neither tested refinement replaced the original. Treat it as an experiment, not a guaranteed improvement."
+      ],
+      "evidence": [
+        "runway-creative"
+      ],
+      "alternativesFor": [
+        "Canva for controlled layout and editing"
+      ],
+      "pricing": {
+        "status": "unknown",
+        "model": "unknown",
+        "monthlyUsd": null,
+        "annualUsd": null,
+        "freeTier": null,
+        "notes": "Pricing was not provided in the Floot source; do not infer."
+      },
+      "dataStatus": "real-floot-editorial",
+      "editorial": {
+        "id": "photos-runway",
+        "category": "Photos & graphics",
+        "tool": "Runway",
+        "bestFor": "Trying alternative AI visual concepts",
+        "why": "Used for independent logo refinement, providing direct evidence of a creative-iteration workflow.",
+        "caution": "Neither tested refinement replaced the original. Treat it as an experiment, not a guaranteed improvement.",
+        "evidenceIds": [
+          "runway-creative"
+        ],
+        "confidence": "Limited firsthand use",
+        "alternative": "Canva for controlled layout and editing"
+      }
+    },
+    {
+      "id": "writing-chatgpt",
+      "sourceId": "writing-chatgpt",
+      "category": "writing",
+      "sourceCategory": "Writing & research",
+      "toolName": "ChatGPT",
+      "tool": "ChatGPT",
+      "bestFor": "Drafting, editing, research planning and coordinating complex project stories",
+      "why": "Repeatedly used to develop CiteShare, SongWrite, FloodHive and structured experimental documentation.",
+      "caution": "Strong founder experience does not prove superior writing accuracy or value against Claude.",
+      "evidenceIds": [
+        "chatgpt-assistant"
+      ],
+      "confidence": "Strong firsthand use",
+      "alternative": "Claude as an independent second perspective",
+      "useCases": [
+        "Drafting, editing, research planning and coordinating complex project stories"
+      ],
+      "keywords": [
+        "writing",
+        "research",
+        "draft",
+        "editing",
+        "drafting",
+        "assistant"
+      ],
+      "strengths": [
+        "Repeatedly used to develop CiteShare, SongWrite, FloodHive and structured experimental documentation."
+      ],
+      "limitations": [
+        "Strong founder experience does not prove superior writing accuracy or value against Claude."
+      ],
+      "evidence": [
+        "chatgpt-assistant"
+      ],
+      "alternativesFor": [
+        "Claude as an independent second perspective"
+      ],
+      "pricing": {
+        "status": "unknown",
+        "model": "unknown",
+        "monthlyUsd": null,
+        "annualUsd": null,
+        "freeTier": null,
+        "notes": "Pricing was not provided in the Floot source; do not infer."
+      },
+      "dataStatus": "real-floot-editorial",
+      "editorial": {
+        "id": "writing-chatgpt",
+        "category": "Writing & research",
+        "tool": "ChatGPT",
+        "bestFor": "Drafting, editing, research planning and coordinating complex project stories",
+        "why": "Repeatedly used to develop CiteShare, SongWrite, FloodHive and structured experimental documentation.",
+        "caution": "Strong founder experience does not prove superior writing accuracy or value against Claude.",
+        "evidenceIds": [
+          "chatgpt-assistant"
+        ],
+        "confidence": "Strong firsthand use",
+        "alternative": "Claude as an independent second perspective"
+      }
+    },
+    {
+      "id": "writing-claude",
+      "sourceId": "writing-claude",
+      "category": "writing",
+      "sourceCategory": "Writing & research",
+      "toolName": "Claude",
+      "tool": "Claude",
+      "bestFor": "An independent second draft or critique of writing and code",
+      "why": "Used or explored as a separate assistant in founder workflows; useful to compare perspectives without assuming one model is always better.",
+      "caution": "No controlled identical-prompt writing benchmark has been recorded.",
+      "evidenceIds": [
+        "claude-assistant"
+      ],
+      "confidence": "Limited firsthand use",
+      "alternative": "ChatGPT for the documented primary workflow",
+      "useCases": [
+        "An independent second draft or critique of writing and code"
+      ],
+      "keywords": [
+        "writing",
+        "research",
+        "draft",
+        "editing",
+        "drafting",
+        "assistant"
+      ],
+      "strengths": [
+        "Used or explored as a separate assistant in founder workflows; useful to compare perspectives without assuming one model is always better."
+      ],
+      "limitations": [
+        "No controlled identical-prompt writing benchmark has been recorded."
+      ],
+      "evidence": [
+        "claude-assistant"
+      ],
+      "alternativesFor": [
+        "ChatGPT for the documented primary workflow"
+      ],
+      "pricing": {
+        "status": "unknown",
+        "model": "unknown",
+        "monthlyUsd": null,
+        "annualUsd": null,
+        "freeTier": null,
+        "notes": "Pricing was not provided in the Floot source; do not infer."
+      },
+      "dataStatus": "real-floot-editorial",
+      "editorial": {
+        "id": "writing-claude",
+        "category": "Writing & research",
+        "tool": "Claude",
+        "bestFor": "An independent second draft or critique of writing and code",
+        "why": "Used or explored as a separate assistant in founder workflows; useful to compare perspectives without assuming one model is always better.",
+        "caution": "No controlled identical-prompt writing benchmark has been recorded.",
+        "evidenceIds": [
+          "claude-assistant"
+        ],
+        "confidence": "Limited firsthand use",
+        "alternative": "ChatGPT for the documented primary workflow"
+      }
+    },
+    {
+      "id": "mvp-floot",
+      "sourceId": "mvp-floot",
+      "category": "apps",
+      "sourceCategory": "Apps & MVPs",
+      "toolName": "Floot",
+      "tool": "Floot",
+      "bestFor": "Building a working full-stack MVP with storage and server endpoints",
+      "why": "AI’s Cart has working app code, authenticated subscription workflows, a database and passing code tests built in Floot.",
+      "caution": "Authentication, access control and first-user experience still require end-to-end verification; not proof of production readiness.",
+      "evidenceIds": [
+        "floot-app"
+      ],
+      "confidence": "Strong firsthand use",
+      "alternative": "Base44 for an independent prototype",
+      "useCases": [
+        "Building a working full-stack MVP with storage and server endpoints"
+      ],
+      "keywords": [
+        "app",
+        "mvp",
+        "prototype",
+        "full-stack",
+        "database",
+        "server",
+        "workflow"
+      ],
+      "strengths": [
+        "AI’s Cart has working app code, authenticated subscription workflows, a database and passing code tests built in Floot."
+      ],
+      "limitations": [
+        "Authentication, access control and first-user experience still require end-to-end verification; not proof of production readiness."
+      ],
+      "evidence": [
+        "floot-app"
+      ],
+      "alternativesFor": [
+        "Base44 for an independent prototype"
+      ],
+      "pricing": {
+        "status": "unknown",
+        "model": "unknown",
+        "monthlyUsd": null,
+        "annualUsd": null,
+        "freeTier": null,
+        "notes": "Pricing was not provided in the Floot source; do not infer."
+      },
+      "dataStatus": "real-floot-editorial",
+      "editorial": {
+        "id": "mvp-floot",
+        "category": "Apps & MVPs",
+        "tool": "Floot",
+        "bestFor": "Building a working full-stack MVP with storage and server endpoints",
+        "why": "AI’s Cart has working app code, authenticated subscription workflows, a database and passing code tests built in Floot.",
+        "caution": "Authentication, access control and first-user experience still require end-to-end verification; not proof of production readiness.",
+        "evidenceIds": [
+          "floot-app"
+        ],
+        "confidence": "Strong firsthand use",
+        "alternative": "Base44 for an independent prototype"
+      }
+    },
+    {
+      "id": "mvp-base44",
+      "sourceId": "mvp-base44",
+      "category": "apps",
+      "sourceCategory": "Apps & MVPs",
+      "toolName": "Base44",
+      "tool": "Base44",
+      "bestFor": "Rapidly exploring an app concept and alternative interface",
+      "why": "Used in SongWrite and other founder prototypes; independent outputs revealed useful interface ideas.",
+      "caution": "Feature demonstrations and generated UI do not guarantee production behavior or exportability.",
+      "evidenceIds": [
+        "base44-app"
+      ],
+      "confidence": "Firsthand use",
+      "alternative": "Floot when server-side persistence needs verification",
+      "useCases": [
+        "Rapidly exploring an app concept and alternative interface"
+      ],
+      "keywords": [
+        "app",
+        "mvp",
+        "prototype",
+        "full-stack",
+        "database",
+        "server",
+        "workflow"
+      ],
+      "strengths": [
+        "Used in SongWrite and other founder prototypes; independent outputs revealed useful interface ideas."
+      ],
+      "limitations": [
+        "Feature demonstrations and generated UI do not guarantee production behavior or exportability."
+      ],
+      "evidence": [
+        "base44-app"
+      ],
+      "alternativesFor": [
+        "Floot when server-side persistence needs verification"
+      ],
+      "pricing": {
+        "status": "unknown",
+        "model": "unknown",
+        "monthlyUsd": null,
+        "annualUsd": null,
+        "freeTier": null,
+        "notes": "Pricing was not provided in the Floot source; do not infer."
+      },
+      "dataStatus": "real-floot-editorial",
+      "editorial": {
+        "id": "mvp-base44",
+        "category": "Apps & MVPs",
+        "tool": "Base44",
+        "bestFor": "Rapidly exploring an app concept and alternative interface",
+        "why": "Used in SongWrite and other founder prototypes; independent outputs revealed useful interface ideas.",
+        "caution": "Feature demonstrations and generated UI do not guarantee production behavior or exportability.",
+        "evidenceIds": [
+          "base44-app"
+        ],
+        "confidence": "Firsthand use",
+        "alternative": "Floot when server-side persistence needs verification"
+      }
+    },
+    {
+      "id": "mvp-replit",
+      "sourceId": "mvp-replit",
+      "category": "apps",
+      "sourceCategory": "Apps & MVPs",
+      "toolName": "Replit",
+      "tool": "Replit",
+      "bestFor": "Hands-on prototype editing and testing audio-related UI",
+      "why": "SongWrite prototype demonstrated local playback, editing and rearrangement in the founder workflow.",
+      "caution": "A Zero response was simulated and real AI integration was not verified.",
+      "evidenceIds": [
+        "replit-songwrite"
+      ],
+      "confidence": "Firsthand use",
+      "alternative": "Floot for the documented database-backed MVP workflow",
+      "useCases": [
+        "Hands-on prototype editing and testing audio-related UI"
+      ],
+      "keywords": [
+        "app",
+        "mvp",
+        "prototype",
+        "full-stack",
+        "database",
+        "server",
+        "workflow"
+      ],
+      "strengths": [
+        "SongWrite prototype demonstrated local playback, editing and rearrangement in the founder workflow."
+      ],
+      "limitations": [
+        "A Zero response was simulated and real AI integration was not verified."
+      ],
+      "evidence": [
+        "replit-songwrite"
+      ],
+      "alternativesFor": [
+        "Floot for the documented database-backed MVP workflow"
+      ],
+      "pricing": {
+        "status": "unknown",
+        "model": "unknown",
+        "monthlyUsd": null,
+        "annualUsd": null,
+        "freeTier": null,
+        "notes": "Pricing was not provided in the Floot source; do not infer."
+      },
+      "dataStatus": "real-floot-editorial",
+      "editorial": {
+        "id": "mvp-replit",
+        "category": "Apps & MVPs",
+        "tool": "Replit",
+        "bestFor": "Hands-on prototype editing and testing audio-related UI",
+        "why": "SongWrite prototype demonstrated local playback, editing and rearrangement in the founder workflow.",
+        "caution": "A Zero response was simulated and real AI integration was not verified.",
+        "evidenceIds": [
+          "replit-songwrite"
+        ],
+        "confidence": "Firsthand use",
+        "alternative": "Floot for the documented database-backed MVP workflow"
+      }
+    },
+    {
+      "id": "website-squarespace",
+      "sourceId": "website-squarespace",
+      "category": "websites",
+      "sourceCategory": "Websites",
+      "toolName": "Squarespace",
+      "tool": "Squarespace",
+      "bestFor": "Launching and maintaining an organization or business website",
+      "why": "Used to build and configure CiteShare and Regional Ready Rockaway websites.",
+      "caution": "Not evidence of superior SEO, conversion, or low total cost. Publishing and email-plan details must be verified.",
+      "evidenceIds": [
+        "squarespace-site"
+      ],
+      "confidence": "Strong firsthand use",
+      "alternative": "Floot when the website also needs custom app workflows",
+      "useCases": [
+        "Launching and maintaining an organization or business website"
+      ],
+      "keywords": [
+        "website",
+        "site",
+        "web",
+        "launch",
+        "business",
+        "organization"
+      ],
+      "strengths": [
+        "Used to build and configure CiteShare and Regional Ready Rockaway websites."
+      ],
+      "limitations": [
+        "Not evidence of superior SEO, conversion, or low total cost. Publishing and email-plan details must be verified."
+      ],
+      "evidence": [
+        "squarespace-site"
+      ],
+      "alternativesFor": [
+        "Floot when the website also needs custom app workflows"
+      ],
+      "pricing": {
+        "status": "unknown",
+        "model": "unknown",
+        "monthlyUsd": null,
+        "annualUsd": null,
+        "freeTier": null,
+        "notes": "Pricing was not provided in the Floot source; do not infer."
+      },
+      "dataStatus": "real-floot-editorial",
+      "editorial": {
+        "id": "website-squarespace",
+        "category": "Websites",
+        "tool": "Squarespace",
+        "bestFor": "Launching and maintaining an organization or business website",
+        "why": "Used to build and configure CiteShare and Regional Ready Rockaway websites.",
+        "caution": "Not evidence of superior SEO, conversion, or low total cost. Publishing and email-plan details must be verified.",
+        "evidenceIds": [
+          "squarespace-site"
+        ],
+        "confidence": "Strong firsthand use",
+        "alternative": "Floot when the website also needs custom app workflows"
+      }
+    },
+    {
+      "id": "website-floot",
+      "sourceId": "website-floot",
+      "category": "websites",
+      "sourceCategory": "Websites",
+      "toolName": "Floot",
+      "tool": "Floot",
+      "bestFor": "A website that also needs custom user accounts and application behavior",
+      "why": "AI’s Cart combines public pages, user accounts, server endpoints and persistent data in one project.",
+      "caution": "More custom engineering and security testing than a standard content website.",
+      "evidenceIds": [
+        "floot-app"
+      ],
+      "confidence": "Strong firsthand use",
+      "alternative": "Squarespace for a simpler informational website",
+      "useCases": [
+        "A website that also needs custom user accounts and application behavior"
+      ],
+      "keywords": [
+        "website",
+        "site",
+        "web",
+        "launch",
+        "business",
+        "organization"
+      ],
+      "strengths": [
+        "AI’s Cart combines public pages, user accounts, server endpoints and persistent data in one project."
+      ],
+      "limitations": [
+        "More custom engineering and security testing than a standard content website."
+      ],
+      "evidence": [
+        "floot-app"
+      ],
+      "alternativesFor": [
+        "Squarespace for a simpler informational website"
+      ],
+      "pricing": {
+        "status": "unknown",
+        "model": "unknown",
+        "monthlyUsd": null,
+        "annualUsd": null,
+        "freeTier": null,
+        "notes": "Pricing was not provided in the Floot source; do not infer."
+      },
+      "dataStatus": "real-floot-editorial",
+      "editorial": {
+        "id": "website-floot",
+        "category": "Websites",
+        "tool": "Floot",
+        "bestFor": "A website that also needs custom user accounts and application behavior",
+        "why": "AI’s Cart combines public pages, user accounts, server endpoints and persistent data in one project.",
+        "caution": "More custom engineering and security testing than a standard content website.",
+        "evidenceIds": [
+          "floot-app"
+        ],
+        "confidence": "Strong firsthand use",
+        "alternative": "Squarespace for a simpler informational website"
+      }
+    }
+  ]
+}

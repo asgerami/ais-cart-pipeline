@@ -1,0 +1,359 @@
+{
+  "mode": "live",
+  "question": "Should I complete this purchase?",
+  "verdict": {
+    "check_before_buying": [
+      "Ask Domainly for the renewal price that will apply when the 3 years term ends",
+      "Confirm how to turn off auto-renew in Settings and when you must do it",
+      "Confirm refund, cancellation and transfer policy for the prepaid 3-year term"
+    ],
+    "confidence": "high",
+    "decision": "WAIT",
+    "headline": "Wait - confirm renewal price before paying 3 years upfront",
+    "reasons": [
+      {
+        "fields": [
+          "line_items[0].name",
+          "line_items[0].term",
+          "line_items[0].line_total",
+          "line_items[1].name",
+          "line_items[1].line_total",
+          "subtotal",
+          "tax",
+          "total_due_now"
+        ],
+        "text": "Total due today is $100.00 for acme-robotics.com for 3 years plus WHOIS privacy protection at $0.00, with math checks passing: items 100.00 vs subtotal 100.00 and 100.00 + 0.00 tax = 100.00 total."
+      },
+      {
+        "fields": [
+          "renewal_terms",
+          "line_items[0].term"
+        ],
+        "text": "Renewal price check failed: renewal_terms only says renews automatically at the then-current rate with auto-renew can be turned off in Settings, with no renewal amount stated, so future cost after the 3 years term is unknown."
+      },
+      {
+        "fields": [
+          "cancellation_terms",
+          "other_conditions",
+          "total_due_now",
+          "line_items[0].term"
+        ],
+        "text": "Cancellation_terms and other_conditions are unknown, so refund or exit rules for the $100.00 multi-year upfront payment for 3 years are unclear."
+      }
+    ],
+    "model_decision": "WAIT",
+    "held_back": false
+  },
+  "verdict_checks": [
+    {
+      "check": "every cited field exists",
+      "ok": true,
+      "detail": "all cited fields found"
+    },
+    {
+      "check": "every reason cites at least one field",
+      "ok": true,
+      "detail": "3 reason(s)"
+    },
+    {
+      "check": "every dollar amount comes from the facts",
+      "ok": true,
+      "detail": "all amounts traced to the facts"
+    }
+  ],
+  "verdict_checks_passed": true,
+  "citations_normalized": [],
+  "facts": {
+    "cancellation_terms": {
+      "evidence": "No cancellation terms shown",
+      "status": "unknown",
+      "value": null
+    },
+    "currency": {
+      "evidence": "Prices shown with $ symbol, e.g. '$100.00'",
+      "status": "inferred",
+      "value": "USD"
+    },
+    "discounts": {
+      "evidence": "No discounts shown",
+      "status": "unknown",
+      "value": null
+    },
+    "line_items": [
+      {
+        "line_total": {
+          "evidence": "$100.00",
+          "status": "observed",
+          "value": "$100.00"
+        },
+        "name": {
+          "evidence": "acme-robotics.com",
+          "status": "observed",
+          "value": "acme-robotics.com"
+        },
+        "quantity": {
+          "evidence": "No quantity shown",
+          "status": "unknown",
+          "value": null
+        },
+        "term": {
+          "evidence": "3 years",
+          "status": "observed",
+          "value": "3 years"
+        }
+      },
+      {
+        "line_total": {
+          "evidence": "$0.00",
+          "status": "observed",
+          "value": "$0.00"
+        },
+        "name": {
+          "evidence": "WHOIS privacy protection",
+          "status": "observed",
+          "value": "WHOIS privacy protection"
+        },
+        "quantity": {
+          "evidence": "No quantity shown",
+          "status": "unknown",
+          "value": null
+        },
+        "term": {
+          "evidence": "No term shown",
+          "status": "unknown",
+          "value": null
+        }
+      }
+    ],
+    "merchant": {
+      "evidence": "Domainly",
+      "status": "observed",
+      "value": "Domainly"
+    },
+    "other_conditions": {
+      "evidence": "No other conditions shown",
+      "status": "unknown",
+      "value": null
+    },
+    "renewal_terms": {
+      "evidence": "Your domain renews automatically at the then-current rate. You can turn off auto-renew in Settings.",
+      "status": "observed",
+      "value": "Your domain renews automatically at the then-current rate. You can turn off auto-renew in Settings."
+    },
+    "subtotal": {
+      "evidence": "Subtotal $100.00",
+      "status": "observed",
+      "value": "$100.00"
+    },
+    "tax": {
+      "evidence": "Taxes $0.00",
+      "status": "observed",
+      "value": "$0.00"
+    },
+    "total_due_now": {
+      "evidence": "Total due today $100.00",
+      "status": "observed",
+      "value": "$100.00"
+    },
+    "trial_terms": {
+      "evidence": "No trial mentioned",
+      "status": "unknown",
+      "value": null
+    },
+    "uncertainty_flags": [
+      "renewal_price_not_shown",
+      "multi_year_upfront"
+    ]
+  },
+  "checks": {
+    "math": [
+      {
+        "check": "line items add up to subtotal",
+        "ok": true,
+        "detail": "items 100.00 vs subtotal 100.00"
+      },
+      {
+        "check": "subtotal - discount + tax = total",
+        "ok": true,
+        "detail": "subtotal 100.00 - discount 0.00 + tax 0.00 = 100.00 vs total 100.00 (treated as 0: discount)"
+      },
+      {
+        "check": "renewal price stated for a recurring or multi-year charge",
+        "ok": false,
+        "detail": "no renewal amount in renewal_terms"
+      }
+    ],
+    "math_before_review": [
+      {
+        "check": "line items add up to subtotal",
+        "ok": true,
+        "detail": "items 100.00 vs subtotal 100.00"
+      },
+      {
+        "check": "subtotal - discount + tax = total",
+        "ok": true,
+        "detail": "subtotal 100.00 - discount 0.00 + tax 0.00 = 100.00 vs total 100.00 (treated as 0: discount)"
+      },
+      {
+        "check": "renewal price stated for a recurring or multi-year charge",
+        "ok": false,
+        "detail": "no renewal amount in renewal_terms"
+      }
+    ],
+    "schema_problems": [],
+    "fields_flagged": {
+      "renewal_terms": [
+        "math check failed: renewal price stated for a recurring or multi-year charge (no renewal amount in renewal_terms)"
+      ]
+    }
+  },
+  "review": {
+    "ran": true,
+    "model": "muse-wonder-1.0",
+    "changes": [],
+    "skipped_because": null
+  },
+  "facts_before_review": {
+    "cancellation_terms": {
+      "evidence": "No cancellation terms shown",
+      "status": "unknown",
+      "value": null
+    },
+    "currency": {
+      "evidence": "Prices shown with $ symbol, e.g. '$100.00'",
+      "status": "inferred",
+      "value": "USD"
+    },
+    "discounts": {
+      "evidence": "No discounts shown",
+      "status": "unknown",
+      "value": null
+    },
+    "line_items": [
+      {
+        "line_total": {
+          "evidence": "$100.00",
+          "status": "observed",
+          "value": "$100.00"
+        },
+        "name": {
+          "evidence": "acme-robotics.com",
+          "status": "observed",
+          "value": "acme-robotics.com"
+        },
+        "quantity": {
+          "evidence": "No quantity shown",
+          "status": "unknown",
+          "value": null
+        },
+        "term": {
+          "evidence": "3 years",
+          "status": "observed",
+          "value": "3 years"
+        }
+      },
+      {
+        "line_total": {
+          "evidence": "$0.00",
+          "status": "observed",
+          "value": "$0.00"
+        },
+        "name": {
+          "evidence": "WHOIS privacy protection",
+          "status": "observed",
+          "value": "WHOIS privacy protection"
+        },
+        "quantity": {
+          "evidence": "No quantity shown",
+          "status": "unknown",
+          "value": null
+        },
+        "term": {
+          "evidence": "No term shown",
+          "status": "unknown",
+          "value": null
+        }
+      }
+    ],
+    "merchant": {
+      "evidence": "Domainly",
+      "status": "observed",
+      "value": "Domainly"
+    },
+    "other_conditions": {
+      "evidence": "No other conditions shown",
+      "status": "unknown",
+      "value": null
+    },
+    "renewal_terms": {
+      "evidence": "Your domain renews automatically at the then-current rate. You can turn off auto-renew in Settings.",
+      "status": "observed",
+      "value": "Your domain renews automatically at the then-current rate. You can turn off auto-renew in Settings."
+    },
+    "subtotal": {
+      "evidence": "Subtotal $100.00",
+      "status": "observed",
+      "value": "$100.00"
+    },
+    "tax": {
+      "evidence": "Taxes $0.00",
+      "status": "observed",
+      "value": "$0.00"
+    },
+    "total_due_now": {
+      "evidence": "Total due today $100.00",
+      "status": "observed",
+      "value": "$100.00"
+    },
+    "trial_terms": {
+      "evidence": "No trial mentioned",
+      "status": "unknown",
+      "value": null
+    },
+    "uncertainty_flags": [
+      "renewal_price_not_shown",
+      "multi_year_upfront"
+    ]
+  },
+  "calls": [
+    {
+      "step": "extract",
+      "model": "muse-spark-1.3",
+      "latency_s": 26.757,
+      "input_tokens": 2291,
+      "output_tokens": 2373,
+      "est_cost_usd": 0.012949
+    },
+    {
+      "step": "review",
+      "model": "muse-wonder-1.0",
+      "latency_s": 7.495,
+      "input_tokens": 1440,
+      "output_tokens": 713,
+      "est_cost_usd": 0.02002
+    },
+    {
+      "step": "verdict",
+      "model": "muse-spark-1.3",
+      "latency_s": 21.138,
+      "input_tokens": 1440,
+      "output_tokens": 1808,
+      "est_cost_usd": 0.009484
+    }
+  ],
+  "total_latency_s": 55.39,
+  "total_est_cost_usd": 0.042453,
+  "settings": {
+    "extract_model": "muse-spark-1.3",
+    "review_model": "muse-wonder-1.0",
+    "verdict_model": "muse-spark-1.3",
+    "temperature": 0.0,
+    "reasoning": "medium"
+  },
+  "versions": {
+    "extract_prompt": "d33cd6c8",
+    "review_prompt": "4c693e1f",
+    "verdict_prompt": "0a3a360f"
+  },
+  "image_sha256": "c10a876ce2559a0d2f49b6c29c8a0f3c88cd490143f741d39082411b57dace6c"
+}

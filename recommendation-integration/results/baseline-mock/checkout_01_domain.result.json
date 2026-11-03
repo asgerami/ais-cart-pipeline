@@ -1,0 +1,160 @@
+{
+  "adapter": {
+    "name": "ais-cart-recommendation-adapter",
+    "version": "0.3.1"
+  },
+  "dataSource": {
+    "recommendations": "provided recommendation library",
+    "source": "SIMULATED Floot export — placeholder for the real Floot AI's Cart recommendation library",
+    "sourceProjectId": null,
+    "status": "simulated-or-unspecified",
+    "dataStatus": "unknown",
+    "pricingStatus": "not specified",
+    "recordCount": 12
+  },
+  "inputMode": "bare-facts",
+  "checkout": {
+    "merchant": "Domainly",
+    "currency": "USD",
+    "items": [
+      {
+        "name": "acme-robotics.com domain registration",
+        "term": "3 years",
+        "lineTotal": 100
+      },
+      {
+        "name": "WHOIS privacy protection",
+        "term": "",
+        "lineTotal": 0
+      }
+    ],
+    "totalDueNow": 100,
+    "totalDueNowText": "$100.00",
+    "inferredCategories": [
+      "websites"
+    ],
+    "uncertaintyFlags": [
+      "renewal_price_not_shown",
+      "multi_year_upfront"
+    ]
+  },
+  "pipelineVerdict": null,
+  "founderGoal": "launch a website for my startup",
+  "status": "direct_match_with_risks",
+  "matchQuality": "direct_match",
+  "matchQualityLabel": "Direct match",
+  "recommendation": {
+    "id": "rec-websites-domain",
+    "toolName": "Domain — 1-year registration first (Cloudflare Registrar pattern)",
+    "tool": "Domain — 1-year registration first (Cloudflare Registrar pattern)",
+    "category": "websites",
+    "sourceCategory": "websites",
+    "bestFor": null,
+    "why": null,
+    "caution": null,
+    "confidence": "high",
+    "evidenceIds": [],
+    "alternative": null,
+    "pricing": {
+      "model": "one-time-then-renewal",
+      "monthlyUsd": null,
+      "annualUsd": null,
+      "freeTier": false,
+      "notes": "At-cost registrar pattern: buy 1 year, see the renewal price before paying, add privacy (usually free) — avoid multi-year upfront until the name is validated."
+    },
+    "strengths": [
+      "1-year term keeps commitment low while validating the idea",
+      "Renewal price shown before purchase at at-cost registrars",
+      "WHOIS privacy typically free"
+    ],
+    "limitations": [
+      "Requires manual renewal reminder",
+      "Premium domains still priced separately"
+    ],
+    "evidence": [
+      "Floot curated guidance (simulated): never lock 3 years before validating the name",
+      "Pipeline sample checkout_01 shows the risk this avoids: 3-year upfront, renewal price not shown"
+    ],
+    "editorial": null,
+    "match": {
+      "quality": "direct_match",
+      "label": "Direct match",
+      "explanation": "The checkout (or a specific founder goal) and this Floot record both directly concern domain registration.",
+      "checkoutJobs": [
+        "domain_registration"
+      ],
+      "sharedJobs": [
+        "domain_registration"
+      ],
+      "missingDirectJobs": []
+    },
+    "matchScore": 74,
+    "whyItFits": [
+      "Direct match: The checkout (or a specific founder goal) and this Floot record both directly concern domain registration.",
+      "Same category as this checkout (websites).",
+      "Matches checkout terms: domainly, domain, registration, whois.",
+      "Fits the stated goal (launch, website).",
+      "Strengths: 1-year term keeps commitment low while validating the idea; Renewal price shown before purchase at at-cost registrars; WHOIS privacy typically free.",
+      "Limitations to check: Requires manual renewal reminder; Premium domains still priced separately."
+    ],
+    "savings": {
+      "kind": "pricing_unknown",
+      "amountUsd": null,
+      "basis": "Pricing unknown: Floot did not provide pricing for this recommendation, so no price, saving, or placeholder amount is shown."
+    }
+  },
+  "otherCandidates": [
+    {
+      "id": "rec-websites-framer",
+      "toolName": "Framer (free / Mini)",
+      "category": "websites",
+      "matchScore": 50,
+      "matchQuality": "related_alternative",
+      "matchQualityLabel": "Related alternative — not a direct substitute"
+    },
+    {
+      "id": "rec-apps-vercel",
+      "toolName": "Vercel (Hobby)",
+      "category": "apps",
+      "matchScore": 15,
+      "matchQuality": "related_alternative",
+      "matchQualityLabel": "Related alternative — not a direct substitute"
+    }
+  ],
+  "risks": [
+    {
+      "source": "pipeline_flag",
+      "flag": "renewal_price_not_shown",
+      "severity": "high",
+      "title": "Renewal price not shown",
+      "detail": "The checkout commits you to a renewal but does not state the renewal price. Find it before paying.",
+      "check": "Find the exact renewal price (screenshot or account page) before paying."
+    },
+    {
+      "source": "pipeline_flag",
+      "flag": "multi_year_upfront",
+      "severity": "high",
+      "title": "Multi-year payment upfront",
+      "detail": "You pay several years now for something not yet validated. A shorter first term lowers the cost of changing your mind.",
+      "check": "Check whether a 1-year / monthly first term exists and what it costs."
+    }
+  ],
+  "checkBeforeBuying": [
+    "Find the exact renewal price (screenshot or account page) before paying.",
+    "Check whether a 1-year / monthly first term exists and what it costs."
+  ],
+  "honesty": {
+    "simulated": [
+      "Recommendation records use the preserved simulated baseline library."
+    ],
+    "unverified": [
+      "Recommendation prices are unverified snapshots.",
+      "Pricing is unknown for Floot records because the source did not provide it; no placeholder prices are used.",
+      "Founder-goal fit uses explainable keyword overlap, not user research or embeddings."
+    ],
+    "notClaimed": [
+      "No saving is claimed unless savings.basis shows the arithmetic.",
+      "A no_match result means no library record matched — not that no alternative exists anywhere."
+    ]
+  }
+}

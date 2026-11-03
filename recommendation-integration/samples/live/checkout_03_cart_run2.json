@@ -1,0 +1,236 @@
+{
+  "mode": "live",
+  "question": "Should I complete this purchase?",
+  "verdict": {
+    "check_before_buying": [
+      "Confirm return/cancellation window for the desk and arms"
+    ],
+    "confidence": "high",
+    "decision": "BUY",
+    "headline": "One-time desk setup totals verify \u2014 ready to buy",
+    "reasons": [
+      {
+        "fields": [
+          "line_items[0].name",
+          "line_items[0].line_total",
+          "line_items[0].quantity",
+          "line_items[1].name",
+          "line_items[1].line_total",
+          "line_items[1].quantity",
+          "subtotal"
+        ],
+        "text": "Line items are clear and add up: $349.00 + $99.00 = $448.00 vs Subtotal $448.00, math check passed."
+      },
+      {
+        "fields": [
+          "subtotal",
+          "discounts",
+          "tax",
+          "total_due_now"
+        ],
+        "text": "Total due now verifies: $448.00 - $44.80 + $32.26 = $435.46 vs Total $435.46, math check passed."
+      },
+      {
+        "fields": [
+          "merchant",
+          "currency",
+          "other_conditions"
+        ],
+        "text": "Merchant is Cartwheel Office in $ with Shipping Free, consistent with a one-time goods purchase."
+      }
+    ],
+    "model_decision": "BUY",
+    "held_back": false
+  },
+  "verdict_checks": [
+    {
+      "check": "every cited field exists",
+      "ok": true,
+      "detail": "all cited fields found"
+    },
+    {
+      "check": "every reason cites at least one field",
+      "ok": true,
+      "detail": "3 reason(s)"
+    },
+    {
+      "check": "every dollar amount comes from the facts",
+      "ok": true,
+      "detail": "all amounts traced to the facts"
+    },
+    {
+      "check": "no BUY or TRIAL while a code check fails",
+      "ok": true,
+      "detail": "all code checks passed"
+    }
+  ],
+  "verdict_checks_passed": true,
+  "citations_normalized": [],
+  "facts": {
+    "cancellation_terms": {
+      "evidence": "No cancellation terms shown",
+      "status": "unknown",
+      "value": null
+    },
+    "currency": {
+      "evidence": "$349.00, $99.00, $448.00",
+      "status": "observed",
+      "value": "$"
+    },
+    "discounts": {
+      "evidence": "Discount (WELCOME10) -$44.80",
+      "status": "observed",
+      "value": "-$44.80"
+    },
+    "line_items": [
+      {
+        "line_total": {
+          "evidence": "$349.00",
+          "status": "observed",
+          "value": "$349.00"
+        },
+        "name": {
+          "evidence": "Standing Desk Pro",
+          "status": "observed",
+          "value": "Standing Desk Pro"
+        },
+        "quantity": {
+          "evidence": "Qty 1",
+          "status": "observed",
+          "value": "1"
+        },
+        "term": {
+          "evidence": "No term shown",
+          "status": "unknown",
+          "value": null
+        }
+      },
+      {
+        "line_total": {
+          "evidence": "$99.00",
+          "status": "observed",
+          "value": "$99.00"
+        },
+        "name": {
+          "evidence": "Monitor Arm",
+          "status": "observed",
+          "value": "Monitor Arm"
+        },
+        "quantity": {
+          "evidence": "Qty 2 \u00b7 $49.50 each",
+          "status": "observed",
+          "value": "2"
+        },
+        "term": {
+          "evidence": "No term shown",
+          "status": "unknown",
+          "value": null
+        }
+      }
+    ],
+    "merchant": {
+      "evidence": "Cartwheel Office",
+      "status": "observed",
+      "value": "Cartwheel Office"
+    },
+    "other_conditions": {
+      "evidence": "Shipping Free",
+      "status": "observed",
+      "value": "Shipping Free"
+    },
+    "renewal_terms": {
+      "evidence": "No renewal terms shown",
+      "status": "unknown",
+      "value": null
+    },
+    "subtotal": {
+      "evidence": "Subtotal $448.00",
+      "status": "observed",
+      "value": "$448.00"
+    },
+    "tax": {
+      "evidence": "Tax (8%) $32.26",
+      "status": "observed",
+      "value": "$32.26"
+    },
+    "total_due_now": {
+      "evidence": "Total $435.46",
+      "status": "observed",
+      "value": "$435.46"
+    },
+    "trial_terms": {
+      "evidence": "No trial terms shown",
+      "status": "unknown",
+      "value": null
+    },
+    "uncertainty_flags": []
+  },
+  "checks": {
+    "math": [
+      {
+        "check": "line items add up to subtotal",
+        "ok": true,
+        "detail": "items 448.00 vs subtotal 448.00"
+      },
+      {
+        "check": "subtotal - discount + tax = total",
+        "ok": true,
+        "detail": "subtotal 448.00 - discount 44.80 + tax 32.26 = 435.46 vs total 435.46"
+      }
+    ],
+    "math_before_review": [
+      {
+        "check": "line items add up to subtotal",
+        "ok": true,
+        "detail": "items 448.00 vs subtotal 448.00"
+      },
+      {
+        "check": "subtotal - discount + tax = total",
+        "ok": true,
+        "detail": "subtotal 448.00 - discount 44.80 + tax 32.26 = 435.46 vs total 435.46"
+      }
+    ],
+    "schema_problems": [],
+    "fields_flagged": {}
+  },
+  "review": {
+    "ran": false,
+    "model": null,
+    "changes": [],
+    "skipped_because": "nothing flagged"
+  },
+  "facts_before_review": null,
+  "calls": [
+    {
+      "step": "extract",
+      "model": "muse-spark-1.3",
+      "latency_s": 24.087,
+      "input_tokens": 2291,
+      "output_tokens": 1852,
+      "est_cost_usd": 0.010735
+    },
+    {
+      "step": "verdict",
+      "model": "muse-spark-1.3",
+      "latency_s": 28.068,
+      "input_tokens": 1354,
+      "output_tokens": 2169,
+      "est_cost_usd": 0.010911
+    }
+  ],
+  "total_latency_s": 52.155,
+  "total_est_cost_usd": 0.021646,
+  "settings": {
+    "extract_model": "muse-spark-1.3",
+    "review_model": "muse-wonder-1.0",
+    "verdict_model": "muse-spark-1.3",
+    "temperature": 0.0,
+    "reasoning": "medium"
+  },
+  "versions": {
+    "extract_prompt": "d33cd6c8",
+    "review_prompt": "4c693e1f",
+    "verdict_prompt": "0a3a360f"
+  },
+  "image_sha256": "9eb788f87e8f4bbdadac69237eefe7e93e0d53a8c10750700844af8806070a1b"
+}
