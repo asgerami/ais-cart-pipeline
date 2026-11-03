@@ -1,6 +1,6 @@
 # Baseline vs real Floot — 3 sample rerun
 
-Updated: 2026-11-03 for adapter v0.3.1 conservative match-quality labels. Same adapter scoring and 3 pipeline sample inputs. The library change and the later match-quality changes are reported separately below.
+Updated: 2026-11-03 for adapter v0.3.2 (conservative labels + whole-word matching). Same adapter scoring and 3 pipeline sample inputs; live generic-question behavior is called out separately because it changed in v0.3.2.
 
 - Baseline (simulated): `data/baseline/recommendations.simulated.json`, outputs in `results/baseline-mock/`
 - Real Floot: Lance's untouched export preserved at `data/floot/aiscart_floot_recommendations.original.json`, normalized active library at `data/recommendations.json`, outputs in `results/real-floot/`
@@ -40,6 +40,10 @@ A control test confirms direct status is still used when justified: a checkout e
 ### Conservative-default follow-up (Lance, 2026-11-03 14:23)
 
 Lance's replay found that Sparkforge became `direct_match` when the pipeline supplied only the generic question "Should I complete this purchase?" Adapter v0.3.1 makes the default conservative: generic questions are ignored for directness, and a vendor plan label such as "Builder Pro" is no longer strong evidence of the founder's job. Direct classification now needs an explicit strong purchase term (for example app/MVP/prototype) or a specific founder goal confirming that same job. Sparkforge is now `related_alternative` with the generic question and with the automation goal; the explicit MVP control remains `direct_match`.
+
+### Whole-word follow-up (Amir, 2026-11-03 17:26) — generic-question Domainly behavior change
+
+Adapter v0.3.2 matches whole words instead of substrings. Under the **original generic question**, live Domainly is now **`no_suitable_match` in both runs** (v0.3.1: `related_alternative` → Floot). The old `websites` category came only from the substring "domain" inside the merchant name "Domainly"; the live items ("acme-robotics.com", "WHOIS privacy protection") contain no whole-word category keyword. Because the Floot library has no domain registrar, no suitable match is the more honest result. With the goal "launch a website for my startup", Domainly still returns Floot as a related alternative. This generic-case change is pinned by tests in `tests/matching-regressions.test.js`. (The sample table above uses that website goal, so its Floot-related result is unchanged.)
 
 ## Interpretation for the team
 

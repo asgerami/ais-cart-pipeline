@@ -36,4 +36,20 @@ test('substring bait does not create categories or overlaps by itself', () => {
   assert.ok(!result.otherCandidates.some((candidate) => candidate.toolName === 'Canva'));
 });
 
+for (const run of [1, 2]) {
+  test(`live Domainly run ${run}, generic question/no goal: no_suitable_match (pinned)`, () => {
+    const result = recommend(live(`checkout_01_domain_run${run}.json`), active);
+    assert.strictEqual(result.matchQuality, 'no_suitable_match');
+    assert.strictEqual(result.status, 'no_match');
+    assert.strictEqual(result.recommendation, null);
+    assert.deepStrictEqual(result.checkout.inferredCategories, []);
+  });
+
+  test(`live Domainly run ${run}, website goal: Floot remains a related alternative`, () => {
+    const result = recommend(live(`checkout_01_domain_run${run}.json`), active, { founderGoal: 'launch a website for my startup' });
+    assert.strictEqual(result.matchQuality, 'related_alternative');
+    assert.strictEqual(result.recommendation.toolName, 'Floot');
+  });
+}
+
 console.log(`\n${passed} tests passed`);
