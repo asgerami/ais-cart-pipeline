@@ -155,5 +155,11 @@ python3 tests/test_service.py
 cd eval && python3 tests/selftest.py && python3 tests/pipeline_selftest.py
 ```
 
-All tests run offline against fakes of Meta's API. The live path has not yet been run against Meta's real API from
-this repo.
+All tests run offline against fakes of Meta's API. The live path was first run against Meta's real API on
+Nov 3, 2026, with `eval/live_run.py`.
+
+## Known limitations
+
+- On a trial checkout, a plan row like "$25.00/mo" with $0.00 due today can be read either way, so the extracted
+  line total varies between runs ($0.00 or $25.00/mo). Our answer key marks it ambiguous and doesn't score it. The
+  verdict relies on `total_due_now` and `trial_terms`, which were read correctly in every live run.
