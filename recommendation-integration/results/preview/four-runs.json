@@ -1,0 +1,62 @@
+{
+  "checkedAt": "2026-11-12T11:49:25.967Z",
+  "api": "api/recommend.js (local serverless invocation)",
+  "rows": [
+    {
+      "label": "Domainly / generic question",
+      "question": "Should I complete this purchase?",
+      "shopperGoal": null,
+      "goalFallback": "existing_question",
+      "pipelineVerdict": "WAIT",
+      "adapterVerdictEcho": "WAIT",
+      "verdictUnchanged": true,
+      "status": "no_match",
+      "matchQuality": "no_suitable_match",
+      "matchQualityLabel": "No suitable match",
+      "tool": null,
+      "explanation": null
+    },
+    {
+      "label": "Domainly / website goal",
+      "question": "Should I complete this purchase?",
+      "shopperGoal": "launch a website for my startup",
+      "goalFallback": "shopper_goal",
+      "pipelineVerdict": "WAIT",
+      "adapterVerdictEcho": "WAIT",
+      "verdictUnchanged": true,
+      "status": "related_alternative_with_risks",
+      "matchQuality": "related_alternative",
+      "matchQualityLabel": "Related alternative — not a direct substitute",
+      "tool": "Floot",
+      "explanation": "Related through the stated goal (building/launching a website), but the checkout item itself does not directly identify that kind of purchase."
+    },
+    {
+      "label": "Sparkforge / generic question",
+      "question": "Should I complete this purchase?",
+      "shopperGoal": null,
+      "goalFallback": "existing_question",
+      "pipelineVerdict": "TRIAL",
+      "adapterVerdictEcho": "TRIAL",
+      "verdictUnchanged": true,
+      "status": "related_alternative_with_risks",
+      "matchQuality": "related_alternative",
+      "matchQualityLabel": "Related alternative — not a direct substitute",
+      "tool": "Base44",
+      "explanation": "Related guidance only: the checkout only names a generic plan (for example \"Builder Pro\"), so the purchase does not explicitly identify a direct substitute category."
+    },
+    {
+      "label": "Cartwheel / generic question",
+      "question": "Should I complete this purchase?",
+      "shopperGoal": null,
+      "goalFallback": "existing_question",
+      "pipelineVerdict": "BUY",
+      "adapterVerdictEcho": "BUY",
+      "verdictUnchanged": true,
+      "status": "no_match",
+      "matchQuality": "no_suitable_match",
+      "matchQualityLabel": "No suitable match",
+      "tool": null,
+      "explanation": null
+    }
+  ]
+}
