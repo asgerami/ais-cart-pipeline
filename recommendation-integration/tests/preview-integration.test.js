@@ -69,4 +69,15 @@ test('Shopper page mounts recommendation between check list and View evidence wi
   assert.match(page, /Verdict unchanged by this module/);
 });
 
+test('Amir review fixes: goal reset, punctuation, require-loaded library, goal-stale note', () => {
+  assert.match(page, /\$\("shopperGoal"\)\.value = "";/);
+  assert.match(page, /Goal used: \$\{esc\(data\.shopperGoal\)\}\./);
+  assert.match(page, /id="goalStale"/);
+  assert.match(page, /Goal changed\. Press Check before I buy to update the recommendation\./);
+  assert.match(page, /checkedGoal/);
+  assert.match(apiFile, /require\('\.\.\/recommendation-integration\/data\/recommendations\.json'\)/);
+  assert.ok(!apiFile.includes('process.cwd()'), 'Vercel must trace the library through require()');
+  assert.ok(!apiFile.includes('readFileSync'), 'library must not be loaded from a cwd-built path');
+});
+
 console.log(`\n${passed} tests passed`);

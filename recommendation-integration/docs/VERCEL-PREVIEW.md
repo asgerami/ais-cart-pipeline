@@ -29,7 +29,14 @@ Full machine-readable result: `results/preview/four-runs.json`.
 - `tests/legacy-baseline.test.js` — 4/4
 - `tests/live-responses.test.js` — 5/5
 - `tests/matching-regressions.test.js` — 9/9
-- `tests/preview-integration.test.js` — 6/6 (four verdict-independence runs, price/savings omission, page placement)
+- `tests/preview-integration.test.js` — 7/7 (four verdict-independence runs, price/savings omission, page placement, Amir review fixes)
+
+## Amir review follow-up (2026-11-12)
+
+- `resetAll()` now clears `#shopperGoal` too; only the token is preserved.
+- Goal note ends with a full stop: “Goal used: … . Verdict unchanged by this module.”
+- `api/recommend.js` loads the Floot library with `require('../recommendation-integration/data/recommendations.json')`, so Vercel traces it deterministically.
+- Optional stale-goal note: changing the shopper goal after an answer shows “Goal changed. Press Check before I buy to update the recommendation.”
 
 ## Vercel preview link
 

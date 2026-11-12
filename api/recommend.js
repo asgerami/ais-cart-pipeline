@@ -1,10 +1,6 @@
 'use strict';
-const fs = require('fs');
-const path = require('path');
 const { recommend } = require('../recommendation-integration/src/adapter');
-
-const libraryPath = path.join(process.cwd(), 'recommendation-integration', 'data', 'recommendations.json');
-const library = JSON.parse(fs.readFileSync(libraryPath, 'utf8'));
+const library = require('../recommendation-integration/data/recommendations.json');
 
 function publicRecommendation(result) {
   const recommendation = result.recommendation
