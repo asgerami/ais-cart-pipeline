@@ -13,8 +13,9 @@ node tests\floot-adapter.test.js                # real Floot integration tests
 node tests\legacy-baseline.test.js              # preserved simulated-baseline tests
 node tests\live-responses.test.js               # Amir's tests on the six saved live responses
 node tests\matching-regressions.test.js         # whole-word/substring regressions
-node tests\live-responses.test.js              # the six saved live /api/analyze responses (Nov 3)
-node server.js                                  # demo at http://localhost:4173
+node tests\preview-integration.test.js          # Vercel preview: verdict independence + placement
+node scripts\verify-preview-api.js results\preview\four-runs.json
+node server.js                                  # standalone adapter demo at http://localhost:4173
 node src\cli.js samples\checkout_01_domain.json --goal "launch a website for my startup"
 node src\run-samples.js data\recommendations.json results\real-floot
 ```

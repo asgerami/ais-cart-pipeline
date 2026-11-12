@@ -126,6 +126,18 @@ details summary { cursor: pointer; color: var(--ink-2); font-size: 14px; }
 .glance dd { margin: 0; }
 .glance .v { font-size: 22px; }
 .next { margin: 0; padding-left: 20px; display: grid; gap: 4px; font-size: 15px; }
+.recommendation { border: 1px solid var(--line); border-radius: 10px; padding: 14px; display: grid; gap: 10px; background: var(--paper); }
+.recommendation h3 { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.recommendation p { margin: 0; }
+.match-label { display: inline-block; font-size: 12px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; padding: 4px 8px; border-radius: 999px; }
+.match-direct_match { color: var(--buy); background: var(--buy-bg); }
+.match-related_alternative { color: var(--wait); background: var(--wait-bg); }
+.match-no_suitable_match { color: var(--ink-2); background: var(--soft); }
+.goal-form { border-top: 1px solid var(--line); padding-top: 14px; display: grid; gap: 8px; }
+.goal-form label { color: var(--ink); font-weight: 700; }
+.goal-form .hint { color: var(--ink-2); font-size: 13.5px; font-weight: 400; }
+.goal-form .row { display: flex; gap: 8px; }
+.goal-form input { flex: 1; min-width: 0; font: inherit; font-size: 15px; color: var(--ink); background: var(--paper); border: 1px solid var(--line); border-radius: 8px; padding: 10px; }
 .evidence { border-top: 1px solid var(--line); padding-top: 14px; }
 .evidence > summary { font-weight: 700; color: var(--ink); font-size: 15px; padding: 4px 0; }
 .evidence[open] > summary { margin-bottom: 14px; }
@@ -190,6 +202,10 @@ footer a { color: inherit; }
         <li>
           <label class="step-title" for="q">Ask your question</label>
           <textarea id="q">Should I complete this purchase?</textarea>
+          <div class="goal-form">
+            <label for="shopperGoal">Shopper goal <span class="hint">Optional: what are you shopping for? If blank, your question above is used. It changes only the related-editorial note below, never the verdict.</span></label>
+            <div class="row"><input id="shopperGoal" type="text" autocomplete="off" placeholder="e.g. launch a website for my startup"></div>
+          </div>
         </li>
         <li>
           <span class="step-title">Get the answer</span>
@@ -228,7 +244,7 @@ footer a { color: inherit; }
 </main>
 
 <script>
-const PAGE_VERSION = "2026-11-12.2-branding";
+const PAGE_VERSION = "2026-11-13.1";
 const DEFAULT_Q = "Should I complete this purchase?";
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -241,7 +257,7 @@ const LABEL = {BUY: "BUY", TRIAL: "TEST", WAIT: "WAIT", REJECT: "DON'T BUY"};
 
 // The answer on screen must always belong to the screenshot on screen. Every change of screenshot,
 // and every new check, gets a new run number; a reply for an older run is thrown away.
-const state = {image: null, name: "", run: 0, pick: 0, controller: null, result: null, checkedQuestion: ""};
+const state = {image: null, name: "", run: 0, pick: 0, controller: null, result: null, checkedQuestion: "", checkedGoal: ""};
 let serverMode = "";
 $("version").textContent = `Page version ${PAGE_VERSION}.`;
 try { $("token").value = sessionStorage.getItem("aiscart-token") || ""; } catch (e) {}
@@ -313,6 +329,8 @@ function resetAll() {
   $("dropText").textContent = "Drop a screenshot here, or click to choose one";
   $("file").value = "";
   $("q").value = DEFAULT_Q;
+  $("shopperGoal").value = "";
+  state.checkedGoal = "";
   markSample(null);
   $("go").disabled = true;
   showEmpty();
@@ -356,10 +374,14 @@ document.querySelectorAll("[data-sample]").forEach(b => b.onclick = async () => 
   useFile(new File([blob], b.dataset.sample + ".png", {type: "image/png"}), b.dataset.name, b.dataset.sample, pick);
 });
 $("reset").onclick = resetAll;
-$("q").oninput = () => {
-  const note = $("stale");
-  if (note) note.hidden = $("q").value.trim() === state.checkedQuestion.trim();
-};
+function updateStaleNotes() {
+  const questionNote = $("stale");
+  if (questionNote) questionNote.hidden = $("q").value.trim() === state.checkedQuestion.trim();
+  const goalNote = $("goalStale");
+  if (goalNote) goalNote.hidden = $("shopperGoal").value.trim() === state.checkedGoal.trim();
+}
+$("q").oninput = updateStaleNotes;
+$("shopperGoal").oninput = updateStaleNotes;
 
 $("go").onclick = async () => {
   if (!state.image) return;
@@ -389,8 +411,9 @@ $("go").onclick = async () => {
     const data = await resp.json();
     if (run !== state.run) return;                      // a newer screenshot or check replaced this one
     if (!resp.ok) throw data.error || {message: `The server answered with HTTP ${resp.status}.`};
-    state.result = data; state.checkedQuestion = question;
+    state.result = data; state.checkedQuestion = question; state.checkedGoal = $("shopperGoal").value.trim();
     render(data, question, (Date.now() - t0) / 1000);
+    loadRecommendation(data, run);
     showAnswerPanel();
   } catch (err) {
     if (run !== state.run || err.name === "AbortError") return;
@@ -405,6 +428,33 @@ $("go").onclick = async () => {
 };
 
 function chip(f) { return `<span class="chip">${esc(f)}</span>`; }
+async function loadRecommendation(result, run) {
+  const box = $("recommendation");
+  if (!box) return;
+  const shopperGoal = $("shopperGoal").value.trim();
+  try {
+    const resp = await fetch("/api/recommend", {method: "POST", headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({pipeline: result, shopperGoal})});
+    const data = await resp.json();
+    if (run !== state.run || !resp.ok || data.error) throw new Error(data.error?.message || `HTTP ${resp.status}`);
+    const rec = data.recommendation;
+    const goalNote = data.goalFallback === "shopper_goal" ? `Goal used: ${esc(data.shopperGoal)}.` : "No shopper goal supplied; the purchase question was used.";
+    box.innerHTML = `<h3>Related editorial recommendation <span class="match-label match-${esc(data.matchQuality)}">${esc(data.matchQualityLabel)}</span></h3>
+      <p class="muted">${goalNote} Verdict unchanged by this module.</p>
+      ${rec ? `<p><strong>${esc(rec.toolName)}</strong> — ${esc(rec.bestFor || rec.category)}</p>
+      <p>${esc(rec.match.explanation)}</p>
+      <p>${esc(rec.why)}</p>
+      ${rec.caution ? `<p><strong>Caution:</strong> ${esc(rec.caution)}</p>` : ""}
+      <p class="muted">Confidence: ${esc(rec.confidence)}. Evidence: ${esc((rec.evidenceIds || []).join(", ") || "none supplied")}.</p>
+      ${data.otherCandidates.length ? `<p class="muted">Other related records: ${data.otherCandidates.map(x => `${esc(x.toolName)} (${esc(x.matchQualityLabel)})`).join(", ")}.</p>` : ""}`
+      : `<p>No suitable editorial match is available for this checkout in the current library.</p>
+      <p class="muted">${data.checkBeforeBuying.length ? "Please complete the checks above before paying." : "The purchase verdict above stands on its own."}</p>`}`;
+  } catch (err) {
+    if (run !== state.run) return;
+    box.innerHTML = `<h3>Related editorial recommendation <span class="match-label match-no_suitable_match">Unavailable for this check</span></h3>
+      <p class="muted">The purchase verdict above is complete without this module. ${esc(err.message || err)}</p>`;
+  }
+}
 function status(s) { return `<span class="st st-${esc(s)}">${esc(s)}</span>`; }
 function money(n) { return n == null ? "n/a" : "$" + n.toFixed(4); }
 const known = f => f && f.status !== "unknown" && f.value ? f.value : null;
@@ -455,6 +505,8 @@ function render(r, question, secs) {
     ${v.held_back ? `<div class="held">Held back: the model said <strong>${esc(LABEL[v.model_decision] || v.model_decision)}</strong>, but its answer failed our checks, so it is shown as WAIT.</div>` : ""}
     <div class="stale" id="stale" hidden>You changed the question. Press Check before I buy to update this answer.</div>
     ${v.check_before_buying.length ? `<div><h3>Check before you pay</h3><ul class="next">${v.check_before_buying.map(x => `<li>${esc(x)}</li>`).join("")}</ul></div>` : ""}
+    <div class="stale" id="goalStale" hidden>Goal changed. Press Check before I buy to update the recommendation.</div>
+    <section class="recommendation" id="recommendation" aria-live="polite"><h3>Related editorial recommendation</h3><p class="muted">Finding the closest Floot editorial record…</p></section>
     <details class="evidence"><summary>View evidence</summary>
     <div class="how">
       <h3>Why</h3>
