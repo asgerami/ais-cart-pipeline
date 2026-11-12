@@ -9,6 +9,8 @@ unknown, with the evidence for it.
 Built for the Meta Global AI Developer Hackathon (Oct 26 to Nov 4, 2026). All code in this repo was written during
 the hackathon.
 
+**Demo video:** [watch on YouTube](https://www.youtube.com/watch?v=HszM2Ax5gmg)
+
 **Try it:** [ais-cart-pipeline.vercel.app](https://ais-cart-pipeline.vercel.app) runs in sample mode: it answers the three
 sample checkouts with prepared results and never calls Meta's models. The live pipeline runs on a private deployment.
 
