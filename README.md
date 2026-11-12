@@ -6,8 +6,9 @@ AI's Cart checks a checkout screenshot before you pay. You send the screenshot a
 BUY, TRIAL, WAIT or REJECT verdict. Every fact behind the verdict is marked as observed on screen, inferred, or
 unknown, with the evidence for it.
 
-Built for the Meta Global AI Developer Hackathon (Oct 26 to Nov 4, 2026). All code in this repo was written during
-the hackathon.
+Built for the Meta Global AI Developer Hackathon (Oct 26 to Nov 4, 2026). The version we submitted is kept on the
+[`hackathon-submission`](https://github.com/asgerami/ais-cart-pipeline/tree/hackathon-submission) branch; `main` has
+changes made since.
 
 **Demo video:** [watch on YouTube](https://www.youtube.com/watch?v=HszM2Ax5gmg)
 
