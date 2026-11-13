@@ -244,7 +244,7 @@ footer a { color: inherit; }
 </main>
 
 <script>
-const PAGE_VERSION = "2026-11-13.3";
+const PAGE_VERSION = "2026-11-13.4";
 const DEFAULT_Q = "Should I complete this purchase?";
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -280,8 +280,8 @@ function cancelRun() {
 function showAnswerPanel() {
   // On a phone the answer sits below the form: bring it into view so the decision is the first thing seen.
   if (!matchMedia("(max-width: 880px)").matches) return;
-  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
-  $("result").scrollIntoView({behavior: reduce ? "auto" : "smooth", block: "start"});
+  // An instant jump: a smooth scroll can be cut short when the page changes under it, leaving the answer off screen.
+  $("result").scrollIntoView({behavior: "auto", block: "start"});
 }
 
 function forStrip(note) {
