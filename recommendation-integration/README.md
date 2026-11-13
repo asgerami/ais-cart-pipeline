@@ -14,6 +14,7 @@ node tests\legacy-baseline.test.js              # preserved simulated-baseline t
 node tests\live-responses.test.js               # Amir's tests on the six saved live responses
 node tests\matching-regressions.test.js         # whole-word/substring regressions
 node tests\preview-integration.test.js          # Vercel preview: verdict independence + placement
+node tests\sample-mode.test.js                  # sample-mode answers (what the public demo and previews send)
 node scripts\verify-preview-api.js results\preview\four-runs.json
 node server.js                                  # standalone adapter demo at http://localhost:4173
 node src\cli.js samples\checkout_01_domain.json --goal "launch a website for my startup"
@@ -32,6 +33,8 @@ API: `GET /api/health` · `GET /api/samples` · `GET /api/recommendations` ·
 5. **Computes a saving only when the arithmetic is honest** — otherwise `savings.amountUsd` is `null` with the reason in `savings.basis`.
 
 Real-Floot results on Amir's 3 samples: `checkout_01` (Domainly) → Floot website record (`floot-app`) explicitly labelled **related alternative, not a direct substitute**, because the real library has no domain-registrar record · `checkout_02` (Sparkforge, automation goal) → Base44 (`base44-app`) also labelled **related alternative**, because it is an app builder rather than an automation tool · `checkout_03` (physical office cart) → **no suitable match**. Adapter v0.3.2 therefore distinguishes `direct_match`, `related_alternative`, and `no_suitable_match`; its default is conservative — a generic pipeline question or a plan name such as "Builder Pro" cannot by itself create a direct match, while a control checkout explicitly seeking an MVP builder still returns one. Full baseline-vs-real differences: [results/COMPARISON.md](results/COMPARISON.md).
+
+> **v0.3.3:** a checkout that only shows a domain purchase gets `no_suitable_match` unless the shopper gives a specific goal, since a website builder is not a substitute for a domain. With a website goal, Floot is a related alternative. The result includes `noMatchReason` explaining this. Covered for the sample-mode answer and both live runs in `tests/sample-mode.test.js`.
 
 ## What works / simulated / unverified
 

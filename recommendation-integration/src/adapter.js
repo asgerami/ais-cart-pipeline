@@ -338,9 +338,20 @@ function recommend(input, recommendationLibrary, options = {}) {
   const library = normalizeRecommendations(recommendationLibrary);
   const recs = library.records;
 
+  // Buying only a domain says nothing about needing a website builder. Without a specific
+  // shopper goal, a domain-only checkout can only be matched by a registrar.
+  const goalText = String(founderGoal || '').trim().toLowerCase().replace(/\s+/g, ' ');
+  const hasSpecificGoal = Boolean(goalText) && !GENERIC_QUESTIONS.has(goalText);
+  const strongJobs = detectStrongCheckoutJob(checkout.searchableText).map((entry) => entry.job);
+  const domainOnly = strongJobs.length > 0 && strongJobs.every((job) => job === 'domain_registration');
+  const isRegistrar = (rec) => rec.category === 'domains'
+    || /\bregistrar\b/i.test([rec.toolName, rec.bestFor, ...(rec.keywords || [])].join(' '));
+  const domainOnlyWithoutGoal = domainOnly && !hasSpecificGoal;
+
   const ranked = recs
     .map((rec) => ({ rec, ...scoreRecord(rec, checkout, founderGoal) }))
     .filter((r) => r.matched && r.score > 0)
+    .filter((r) => !domainOnlyWithoutGoal || isRegistrar(r.rec))
     .map((entry) => ({ ...entry, match: classifyMatch(entry.rec, checkout, founderGoal) }))
     .sort((a, b) => {
       const rank = { direct_match: 0, related_alternative: 1 };
@@ -363,10 +374,13 @@ function recommend(input, recommendationLibrary, options = {}) {
     ...(top.rec.caution ? [`Floot caution: ${top.rec.caution}`] : []),
     ...((top.rec.limitations || []).length && !top.rec.caution ? [`Limitations to check: ${(top.rec.limitations || []).join('; ')}.`] : []),
   ] : ['No record in the recommendation library matched this checkout. That is a library-coverage result, not a claim that no alternative exists.'];
+  const noMatchReason = top ? null : domainOnlyWithoutGoal
+    ? 'This checkout only shows a domain purchase, and a website builder is not a substitute for a domain. Add a shopper goal, such as launching a website, to see related tools.'
+    : null;
 
   const isRealFloot = library.dataStatus !== 'unknown' || recs.some((rec) => rec.dataStatus === 'real-floot-editorial');
   return {
-    adapter: { name: 'ais-cart-recommendation-adapter', version: '0.3.2' },
+    adapter: { name: 'ais-cart-recommendation-adapter', version: '0.3.3' },
     dataSource: {
       recommendations: options.recommendationsPath || 'provided recommendation library',
       source: library.source,
@@ -387,6 +401,7 @@ function recommend(input, recommendationLibrary, options = {}) {
     status,
     matchQuality,
     matchQualityLabel: top ? top.match.label : 'No suitable match',
+    noMatchReason,
     recommendation: top ? {
       id: top.rec.id, toolName: top.rec.toolName, tool: top.rec.toolName, category: top.rec.category,
       sourceCategory: top.rec.editorial ? top.rec.editorial.category : (top.rec.sourceCategory || top.rec.category),
