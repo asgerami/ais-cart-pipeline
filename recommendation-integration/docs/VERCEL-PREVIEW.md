@@ -1,0 +1,47 @@
+# Vercel checkout preview — recommendation module
+
+Branch: `sanvi/vercel-recommendation-preview` from `main@2c9bd7b` (shopper page `2026-11-12.1`; preview page marker `2026-11-12.2-rec-preview`).
+
+## Integration point
+
+- `api/recommend.js` is a new Vercel Node function. It loads adapter v0.3.2 and the 12 real Floot records from `recommendation-integration/data/recommendations.json`.
+- The shopper page (`index.html`) keeps `/api/analyze` untouched and keeps its verdict independent. After the verdict renders, the page calls `POST /api/recommend { pipeline: <full analysis response>, shopperGoal }`.
+- Optional shopper goal is in the left form. If blank, the API uses the existing purchase question as `existing_question` fallback.
+- The recommendation is rendered **between “Check before you pay” and “View evidence”**, always with a match label and short explanation.
+- Public preview response deliberately leaves out prices, savings and commercial pricing fields. Floot editorial records did not provide verified pricing.
+
+## Verified behavior (local API invocation)
+
+Reproduce: `node recommendation-integration/scripts/verify-preview-api.js recommendation-integration/results/preview/four-runs.json`
+
+| Case | Goal input | Verdict before/echo | Match label | Tool |
+|---|---|---|---|---|
+| Domainly run 1 | blank / generic question | WAIT / WAIT unchanged | **No suitable match** | — |
+| Domainly run 1 | “launch a website for my startup” | WAIT / WAIT unchanged | **Related alternative — not a direct substitute** | Floot |
+| Sparkforge run 1 | blank / generic question | TRIAL / TRIAL unchanged | **Related alternative — not a direct substitute** | Base44 |
+| Cartwheel run 1 | blank / generic question | BUY / BUY unchanged | **No suitable match** | — |
+
+Full machine-readable result: `results/preview/four-runs.json`.
+
+## Tests
+
+- `tests/floot-adapter.test.js` — 10/10
+- `tests/legacy-baseline.test.js` — 4/4
+- `tests/live-responses.test.js` — 5/5
+- `tests/matching-regressions.test.js` — 9/9
+- `tests/preview-integration.test.js` — 7/7 (four verdict-independence runs, price/savings omission, page placement, Amir review fixes)
+
+## Domainly blank-goal correction (2026-11-13)
+
+The original preview proof used saved live responses. The combined release preview uses the saved Domainly mock/sample shape, whose searchable text explicitly says “domain registration”; it therefore inferred the `websites` category and surfaced Floot even without intent. Adapter v0.3.3 now suppresses Floot website candidates for a checkout explicitly identified as domain registration unless the shopper supplies a specific website goal. Default question/blank goal now yields `WAIT + no_suitable_match`; the website goal still yields `WAIT + Floot (related_alternative)`. Regression: `tests/domain-blank-goal.test.js` (4/4).
+
+## Amir review follow-up (2026-11-12)
+
+- `resetAll()` now clears `#shopperGoal` too; only the token is preserved.
+- Goal note ends with a full stop: “Goal used: … . Verdict unchanged by this module.”
+- `api/recommend.js` loads the Floot library with `require('../recommendation-integration/data/recommendations.json')`, so Vercel traces it deterministically.
+- Optional stale-goal note: changing the shopper goal after an answer shows “Goal changed. Press Check before I buy to update the recommendation.”
+
+## Vercel preview link
+
+The branch/PR gives the Vercel Git preview URL once Vercel builds it. If Vercel asks for CLI authentication, run `vercel login` with the team account or use the preview URL created by the GitHub integration; this workspace's stored Vercel token was invalid at integration time, so no CLI-only deploy was claimed.

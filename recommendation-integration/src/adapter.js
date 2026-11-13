@@ -241,9 +241,13 @@ function classifyMatch(rec, checkout, founderGoal = '') {
   };
 }
 
-function scoreRecord(rec, checkout, founderGoal) {
+function scoreRecord(rec, checkout, founderGoal, checkoutContext) {
   const reasons = [];
   let score = 0;
+  const suppressGoalFreeCandidate = rec.category === 'websites' && checkoutContext.isDomainRegistration && !checkoutContext.hasSpecificGoal;
+  if (suppressGoalFreeCandidate) {
+    return { score: 0, reasons: ['Suppressed: this checkout is domain registration and the Floot library has no domain-registrar record; without a specific website goal it is not surfaced as a generic editorial recommendation.'], matched: false };
+  }
   const recFields = [rec.toolName, rec.category, rec.bestFor, rec.why, rec.caution, rec.alternative, ...(rec.useCases || []), ...(rec.keywords || []), ...(rec.alternativesFor || [])];
   const recWords = wordSet(recFields.join(' '));
   const recText = norm(recFields.join(' '));
@@ -337,9 +341,14 @@ function recommend(input, recommendationLibrary, options = {}) {
   checkout.categories = inferCategories(checkout);
   const library = normalizeRecommendations(recommendationLibrary);
   const recs = library.records;
+  const normalizedGoal = String(founderGoal || '').trim().toLowerCase().replace(/\s+/g, ' ');
+  const checkoutContext = {
+    hasSpecificGoal: !!normalizedGoal && !GENERIC_QUESTIONS.has(normalizedGoal),
+    isDomainRegistration: detectStrongCheckoutJob(checkout.searchableText).some((job) => job.job === 'domain_registration'),
+  };
 
   const ranked = recs
-    .map((rec) => ({ rec, ...scoreRecord(rec, checkout, founderGoal) }))
+    .map((rec) => ({ rec, ...scoreRecord(rec, checkout, founderGoal, checkoutContext) }))
     .filter((r) => r.matched && r.score > 0)
     .map((entry) => ({ ...entry, match: classifyMatch(entry.rec, checkout, founderGoal) }))
     .sort((a, b) => {
@@ -366,7 +375,7 @@ function recommend(input, recommendationLibrary, options = {}) {
 
   const isRealFloot = library.dataStatus !== 'unknown' || recs.some((rec) => rec.dataStatus === 'real-floot-editorial');
   return {
-    adapter: { name: 'ais-cart-recommendation-adapter', version: '0.3.2' },
+    adapter: { name: 'ais-cart-recommendation-adapter', version: '0.3.3' },
     dataSource: {
       recommendations: options.recommendationsPath || 'provided recommendation library',
       source: library.source,
