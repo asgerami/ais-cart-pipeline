@@ -31,6 +31,10 @@ Full machine-readable result: `results/preview/four-runs.json`.
 - `tests/matching-regressions.test.js` — 9/9
 - `tests/preview-integration.test.js` — 7/7 (four verdict-independence runs, price/savings omission, page placement, Amir review fixes)
 
+## Domainly blank-goal correction (2026-11-13)
+
+The original preview proof used saved live responses. The combined release preview uses the saved Domainly mock/sample shape, whose searchable text explicitly says “domain registration”; it therefore inferred the `websites` category and surfaced Floot even without intent. Adapter v0.3.3 now suppresses Floot website candidates for a checkout explicitly identified as domain registration unless the shopper supplies a specific website goal. Default question/blank goal now yields `WAIT + no_suitable_match`; the website goal still yields `WAIT + Floot (related_alternative)`. Regression: `tests/domain-blank-goal.test.js` (4/4).
+
 ## Amir review follow-up (2026-11-12)
 
 - `resetAll()` now clears `#shopperGoal` too; only the token is preserved.

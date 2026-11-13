@@ -7,10 +7,12 @@ const recommendationRoot = path.join(__dirname, '..');
 const repoRoot = path.join(recommendationRoot, '..');
 const handlerFile = path.join(repoRoot, 'api', 'recommend.js');
 const fourCases = [
-  ['checkout_01_domain_run1.json', '', 'Domainly / generic question'],
-  ['checkout_01_domain_run1.json', 'launch a website for my startup', 'Domainly / website goal'],
+  ['checkout_01_domain_run1.json', '', 'Domainly live / generic question'],
+  ['checkout_01_domain_run1.json', 'launch a website for my startup', 'Domainly live / website goal'],
   ['checkout_02_trial_run1.json', '', 'Sparkforge / generic question'],
   ['checkout_03_cart_run1.json', '', 'Cartwheel / generic question'],
+  ['../checkout_01_domain.json', '', 'Domainly sample / generic question'],
+  ['../checkout_01_domain.json', 'launch a website for my startup', 'Domainly sample / website goal'],
 ];
 
 async function invoke(handler, body) {
@@ -34,8 +36,11 @@ async function invoke(handler, body) {
   const handler = require(handlerFile);
   const rows = [];
   for (const [sample, shopperGoal, label] of fourCases) {
-    const live = JSON.parse(fs.readFileSync(path.join(recommendationRoot, 'samples', 'live', sample), 'utf8'));
-    const verdictBefore = live.verdict.decision;
+    const samplePath = sample.startsWith('../')
+      ? path.join(recommendationRoot, 'samples', sample.slice(3))
+      : path.join(recommendationRoot, 'samples', 'live', sample);
+    const live = JSON.parse(fs.readFileSync(samplePath, 'utf8'));
+    const verdictBefore = live.verdict ? live.verdict.decision : null;
     const response = await invoke(handler, { pipeline: live, shopperGoal });
     if (response.statusCode !== 200) throw new Error(`${label}: HTTP ${response.statusCode} ${JSON.stringify(response.output)}`);
     const output = response.output;
@@ -50,7 +55,7 @@ async function invoke(handler, body) {
       goalFallback: output.goalFallback,
       pipelineVerdict: verdictBefore,
       adapterVerdictEcho: output.pipelineVerdict && output.pipelineVerdict.decision,
-      verdictUnchanged: verdictBefore === (output.pipelineVerdict && output.pipelineVerdict.decision),
+      verdictUnchanged: verdictBefore == null ? null : verdictBefore === (output.pipelineVerdict && output.pipelineVerdict.decision),
       status: output.status,
       matchQuality: output.matchQuality,
       matchQualityLabel: output.matchQualityLabel,
