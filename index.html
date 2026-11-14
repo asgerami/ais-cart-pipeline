@@ -321,7 +321,7 @@ footer a { color: inherit; }
 </main>
 
 <script>
-const PAGE_VERSION = "2026-11-14.3";
+const PAGE_VERSION = "2026-11-14.5";
 const DEFAULT_Q = "Should I complete this purchase?";
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -591,6 +591,7 @@ function toolBlock(rec, kicker, cls = "") {
 function whyBlock(rec, heading) {
   return `<div class="opt-block"><p><strong>${esc(heading)}: ${esc(rec.toolName)}</strong>, ${esc(QUALITY[rec.match.quality] || rec.match.label)}</p>
     <p>${esc(rec.match.explanation)}</p>
+    ${rec.firstStep ? `<p><strong>First step:</strong> ${esc(rec.firstStep)}</p>` : ""}
     ${rec.why ? `<p>${esc(rec.why)}</p>` : ""}
     ${rec.caution ? `<p><strong>Caution:</strong> ${esc(rec.caution)}</p>` : ""}
     <p class="muted">Confidence: ${esc(rec.confidence)}. Evidence: ${esc((rec.evidenceIds || []).join(", ") || "none supplied")}.</p></div>`;

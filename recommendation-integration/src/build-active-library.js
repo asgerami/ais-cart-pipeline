@@ -9,6 +9,16 @@ const sourcePath = path.join(root, 'data', 'floot', 'aiscart_floot_recommendatio
 const outputPath = path.join(root, 'data', 'recommendations.json');
 const source = JSON.parse(fs.readFileSync(sourcePath, 'utf8'));
 const normalized = normalizeRecommendations(source);
+// Lance's first-step lines live in their own file, so the export above stays untouched.
+const firstStepsPath = path.join(root, 'data', 'floot', 'first-steps.json');
+const { firstSteps } = JSON.parse(fs.readFileSync(firstStepsPath, 'utf8'));
+for (const id of Object.keys(firstSteps)) {
+  if (!normalized.records.some((rec) => rec.id === id)) throw new Error(`first step for unknown record ${id}`);
+}
+for (const rec of normalized.records) {
+  if (!firstSteps[rec.id]) throw new Error(`no first step for ${rec.id}`);
+  rec.firstStep = firstSteps[rec.id];
+}
 
 const active = {
   source: source.source,
@@ -17,7 +27,7 @@ const active = {
   status: 'real-floot-editorial',
   dataStatus: source.data_status,
   pricingStatus: source.pricing_status,
-  note: 'Active library generated from data/floot/aiscart_floot_recommendations.original.json. Editorial text, evidence IDs, confidence and cautions are preserved; pricing remains unknown because Floot did not provide it.',
+  note: 'Active library generated from data/floot/aiscart_floot_recommendations.original.json. Editorial text, evidence IDs, confidence and cautions are preserved, and each record gets its first step from data/floot/first-steps.json; pricing remains unknown because Floot did not provide it.',
   recommendations: normalized.records,
 };
 
