@@ -47,6 +47,20 @@ test('a goal the library does not cover says so plainly, without a tool', () => 
   assert.match(r.noMatchReason, /library has no tool for this goal/);
 });
 
+test('a goal that only shares a word with a tool gets no suggestion, not a loose one', () => {
+  const r = goal('People visit CiteShare but very few create an account');
+  assert.strictEqual(r.recommendation, null);
+  assert.strictEqual(r.matchQuality, 'no_suitable_match');
+  assert.ok(r.otherCandidates.every((c) => c.matchQuality === 'goal_match'));
+});
+
+test("every suggestion carries Lance's first step", () => {
+  const r = goal(LANCE, ['Squarespace']);
+  assert.match(r.ownedRecommendation.firstStep, /sign-up form/);
+  assert.match(r.recommendation.firstStep, /after someone signs up/);
+  for (const rec of lib.recommendations) assert.ok(rec.firstStep, rec.id);
+});
+
 test('goal-first needs a goal', () => {
   assert.throws(() => goal('   '), /needs a goal/);
 });

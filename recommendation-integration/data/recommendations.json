@@ -5,7 +5,7 @@
   "status": "real-floot-editorial",
   "dataStatus": "Founder editorial assessments, not controlled rankings or verified live prices",
   "pricingStatus": "not provided in source; do not infer",
-  "note": "Active library generated from data/floot/aiscart_floot_recommendations.original.json. Editorial text, evidence IDs, confidence and cautions are preserved; pricing remains unknown because Floot did not provide it.",
+  "note": "Active library generated from data/floot/aiscart_floot_recommendations.original.json. Editorial text, evidence IDs, confidence and cautions are preserved, and each record gets its first step from data/floot/first-steps.json; pricing remains unknown because Floot did not provide it.",
   "recommendations": [
     {
       "id": "video-canva",
@@ -69,7 +69,8 @@
         ],
         "confidence": "Firsthand use",
         "alternative": "Runway for experimental AI-generated visuals"
-      }
+      },
+      "firstStep": "Drop your existing clips into a video project and trim them into a 15-second rough cut."
     },
     {
       "id": "video-runway",
@@ -130,7 +131,8 @@
         ],
         "confidence": "Limited firsthand use",
         "alternative": "Canva for assembling a finished piece"
-      }
+      },
+      "firstStep": "Pick one reference image and test a short clip with one specific camera move."
     },
     {
       "id": "video-elevenlabs",
@@ -191,7 +193,8 @@
         ],
         "confidence": "Firsthand use",
         "alternative": "Canva for visual assembly"
-      }
+      },
+      "firstStep": "Paste two lines of your script and preview them in a voice that fits your audience."
     },
     {
       "id": "photos-canva",
@@ -252,7 +255,8 @@
         ],
         "confidence": "Firsthand use",
         "alternative": "Runway for exploratory AI visual refinements"
-      }
+      },
+      "firstStep": "Open a design at the size you need and place your existing logo or photo before arranging the text."
     },
     {
       "id": "photos-runway",
@@ -313,7 +317,8 @@
         ],
         "confidence": "Limited firsthand use",
         "alternative": "Canva for controlled layout and editing"
-      }
+      },
+      "firstStep": "Start with one reference image and describe a single visual change to try."
     },
     {
       "id": "writing-chatgpt",
@@ -374,7 +379,8 @@
         ],
         "confidence": "Strong firsthand use",
         "alternative": "Claude as an independent second perspective"
-      }
+      },
+      "firstStep": "Paste your rough notes and say who the piece is for and what you want them to do after reading it."
     },
     {
       "id": "writing-claude",
@@ -435,7 +441,8 @@
         ],
         "confidence": "Limited firsthand use",
         "alternative": "ChatGPT for the documented primary workflow"
-      }
+      },
+      "firstStep": "Share your draft and ask where a first-time reader would get lost."
     },
     {
       "id": "mvp-floot",
@@ -497,7 +504,8 @@
         ],
         "confidence": "Strong firsthand use",
         "alternative": "Base44 for an independent prototype"
-      }
+      },
+      "firstStep": "Describe one user task and the information the app needs to remember after the user finishes it."
     },
     {
       "id": "mvp-base44",
@@ -559,7 +567,8 @@
         ],
         "confidence": "Firsthand use",
         "alternative": "Floot when server-side persistence needs verification"
-      }
+      },
+      "firstStep": "Describe the first screen and the one action a user should be able to complete there."
     },
     {
       "id": "mvp-replit",
@@ -621,7 +630,8 @@
         ],
         "confidence": "Firsthand use",
         "alternative": "Floot for the documented database-backed MVP workflow"
-      }
+      },
+      "firstStep": "Start with one small runnable version of the core interaction, then try it with sample data."
     },
     {
       "id": "website-squarespace",
@@ -682,7 +692,8 @@
         ],
         "confidence": "Strong firsthand use",
         "alternative": "Floot when the website also needs custom app workflows"
-      }
+      },
+      "firstStep": "Pick the page getting the most visits and check on your phone how easy it is to find and use the sign-up form."
     },
     {
       "id": "website-floot",
@@ -743,7 +754,8 @@
         ],
         "confidence": "Strong firsthand use",
         "alternative": "Squarespace for a simpler informational website"
-      }
+      },
+      "firstStep": "Describe the public page and what should happen after someone signs up, such as creating an account or saving their preferences."
     }
   ]
 }

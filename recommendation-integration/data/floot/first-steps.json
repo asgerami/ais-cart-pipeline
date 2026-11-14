@@ -1,0 +1,17 @@
+{
+  "source": "Lance's first-step copy, Nov 14 2026, one line per library record",
+  "firstSteps": {
+    "video-canva": "Drop your existing clips into a video project and trim them into a 15-second rough cut.",
+    "video-runway": "Pick one reference image and test a short clip with one specific camera move.",
+    "video-elevenlabs": "Paste two lines of your script and preview them in a voice that fits your audience.",
+    "photos-canva": "Open a design at the size you need and place your existing logo or photo before arranging the text.",
+    "photos-runway": "Start with one reference image and describe a single visual change to try.",
+    "writing-chatgpt": "Paste your rough notes and say who the piece is for and what you want them to do after reading it.",
+    "writing-claude": "Share your draft and ask where a first-time reader would get lost.",
+    "mvp-floot": "Describe one user task and the information the app needs to remember after the user finishes it.",
+    "mvp-base44": "Describe the first screen and the one action a user should be able to complete there.",
+    "mvp-replit": "Start with one small runnable version of the core interaction, then try it with sample data.",
+    "website-squarespace": "Pick the page getting the most visits and check on your phone how easy it is to find and use the sign-up form.",
+    "website-floot": "Describe the public page and what should happen after someone signs up, such as creating an account or saving their preferences."
+  }
+}

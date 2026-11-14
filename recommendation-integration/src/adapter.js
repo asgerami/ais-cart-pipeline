@@ -430,6 +430,8 @@ function recommend(input, recommendationLibrary, options = {}) {
       owned: isOwned(entry.rec),
       match: goalOnly ? classifyGoalFit(entry.rec, scoringGoal, checkout.categories) : classifyMatch(entry.rec, checkout, founderGoal),
     }))
+    // With no cart, a tool that only shares a word with the goal is noise: suggest only tools that fit it.
+    .filter((entry) => !goalOnly || entry.match.quality === 'goal_match')
     .sort((a, b) => {
       const rank = { direct_match: 0, goal_match: 0, related_alternative: 1 };
       return rank[a.match.quality] - rank[b.match.quality] || b.score - a.score || String(a.rec.toolName).localeCompare(String(b.rec.toolName));
