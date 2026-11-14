@@ -30,6 +30,7 @@ function publicRecommendation(result) {
     status: result.status,
     matchQuality: result.matchQuality,
     matchQualityLabel: result.matchQualityLabel,
+    noMatchReason: result.noMatchReason || null,
     recommendation,
     otherCandidates: result.otherCandidates.map((candidate) => ({
       id: candidate.id,

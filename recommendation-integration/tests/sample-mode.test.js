@@ -39,6 +39,12 @@ for (const [label, response] of domainly) {
   });
 }
 
+test('sample-mode Domainly blank goal explains that a goal is needed', () => {
+  const result = recommend(domainly[0][1], active);
+  assert.ok(String(result.noMatchReason).includes('only shows a domain purchase'), result.noMatchReason);
+  assert.strictEqual(recommend(domainly[0][1], active, { founderGoal: WEBSITE_GOAL }).noMatchReason, null);
+});
+
 test('sample-mode Sparkforge: Base44 related, verdict unchanged', () => {
   const response = load('sample-mode', 'checkout_02_trial.json');
   const result = recommend(response, active);

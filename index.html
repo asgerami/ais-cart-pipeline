@@ -244,7 +244,7 @@ footer a { color: inherit; }
 </main>
 
 <script>
-const PAGE_VERSION = "2026-11-13.4";
+const PAGE_VERSION = "2026-11-14.1";
 const DEFAULT_Q = "Should I complete this purchase?";
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -447,7 +447,7 @@ async function loadRecommendation(result, run) {
       ${rec.caution ? `<p><strong>Caution:</strong> ${esc(rec.caution)}</p>` : ""}
       <p class="muted">Confidence: ${esc(rec.confidence)}. Evidence: ${esc((rec.evidenceIds || []).join(", ") || "none supplied")}.</p>
       ${data.otherCandidates.length ? `<p class="muted">Other related records: ${data.otherCandidates.map(x => `${esc(x.toolName)} (${esc(x.matchQualityLabel)})`).join(", ")}.</p>` : ""}`
-      : `<p>No suitable editorial match is available for this checkout in the current library.</p>
+      : `<p>${esc(data.noMatchReason || "No suitable editorial match is available for this checkout in the current library.")}</p>
       <p class="muted">${data.checkBeforeBuying.length ? "Please complete the checks above before paying." : "The purchase verdict above stands on its own."}</p>`}`;
   } catch (err) {
     if (run !== state.run) return;
