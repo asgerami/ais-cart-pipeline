@@ -10,7 +10,8 @@ import threading
 import time
 
 from .analyze import StepError, VERSIONS, analyze, settings_from_env
-from .meta import client_from_env
+from .goal import GOAL_VERSION, MAX_GOAL, interpret_goal
+from .meta import MetaError, client_from_env
 
 MAX_BODY = int(os.environ.get("MAX_BODY_BYTES", "4400000"))  # Vercel caps request bodies at 4.5 MB
 MIMES = {b"\x89PNG": "image/png", b"\xff\xd8\xff": "image/jpeg", b"GIF8": "image/gif", b"RIFF": "image/webp"}
@@ -83,7 +84,7 @@ def health():
     return _json(200, {"ok": True, "mode": client.mode if client else "not configured",
                        "model_key_set": bool(os.environ.get("MODEL_API_KEY", "").strip()),
                        "token_required": bool(os.environ.get("SERVICE_TOKEN", "").strip()),
-                       "settings": settings_from_env(), "versions": VERSIONS})
+                       "settings": settings_from_env(), "versions": {**VERSIONS, "goal_prompt": GOAL_VERSION}})
 
 
 def handle(method, path, headers, body):
@@ -92,16 +93,18 @@ def handle(method, path, headers, body):
         return 204, _cors(), b""
     if path == "/api/health" and method == "GET":
         return health()
-    if path != "/api/analyze":
-        return _error(404, "not_found", f"No route for {method} {path}. Use POST /api/analyze or GET /api/health.")
+    if path not in ("/api/analyze", "/api/goal"):
+        return _error(404, "not_found", f"No route for {method} {path}. Use POST /api/analyze, POST /api/goal or GET /api/health.")
     if method != "POST":
-        return _error(405, "method_not_allowed", "Use POST /api/analyze.")
+        return _error(405, "method_not_allowed", f"Use POST {path}.")
     if not _authorized(headers):
         return _error(401, "unauthorized", "Missing or wrong service token. Send it as \"Authorization: Bearer <token>\".")
     if len(body) > MAX_BODY:
         return _error(413, "too_large", f"Request is {len(body)} bytes; the limit is {MAX_BODY}. Send a smaller or JPEG screenshot.")
     if _rate_limited(headers):
         return _error(429, "rate_limited", "Too many requests from this address in the last hour.")
+    if path == "/api/goal":
+        return _goal(body)
     try:
         req = json.loads(body or b"{}")
         image, mime = _decode_image(req.get("image"))
@@ -119,3 +122,23 @@ def handle(method, path, headers, body):
         return _error(502, "model_call_failed", str(e.err), step=e.step, http_status=e.err.status,
                       detail=e.err.body, calls_before_failure=e.calls)
     return _json(200, result)
+
+
+def _goal(body):
+    """POST /api/goal: Muse Spark reads a shopper's goal and picks from the editorial library."""
+    try:
+        req = json.loads(body or b"{}")
+    except ValueError:
+        return _error(400, "bad_request", "Body must be JSON.")
+    goal = req.get("goal") if isinstance(req, dict) else None
+    if not isinstance(goal, str) or not goal.strip():
+        return _error(400, "bad_request", "Say what you are trying to do first: send it as \"goal\".")
+    if len(goal) > MAX_GOAL:
+        return _error(400, "bad_request", f"Keep the goal under {MAX_GOAL} characters.")
+    client = client_from_env()
+    if client is None:
+        return _error(503, "not_configured", "MODEL_API_KEY is not set on the server. Set it, or set MOCK=1 for sample answers.")
+    try:
+        return _json(200, interpret_goal(goal, client, settings_from_env()))
+    except MetaError as e:
+        return _error(502, "model_call_failed", str(e), step="goal", http_status=e.status, detail=e.body)

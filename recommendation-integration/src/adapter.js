@@ -389,6 +389,23 @@ function sameTool(ownedName, toolName) {
   return norm(ownedName).trim() === norm(toolName).trim() || containsName(ownedName, toolName);
 }
 
+/** Spark's picks as sent by the page or a script: only library ids, at most 3, and one question at most. */
+function cleanGoalPicks(picks, recs) {
+  if (!picks || typeof picks !== 'object') return null;
+  const decision = ['match', 'ask', 'none'].includes(picks.decision) ? picks.decision : 'none';
+  const ids = [];
+  for (const id of Array.isArray(picks.recordIds) ? picks.recordIds : []) {
+    if (recs.some((r) => r.id === id) && !ids.includes(id)) ids.push(id);
+  }
+  const question = typeof picks.question === 'string' ? picks.question.trim().slice(0, 200) : '';
+  const text = (v) => (typeof v === 'string' ? v.trim().slice(0, 300) : '');
+  const out = { decision, recordIds: decision === 'match' ? ids.slice(0, 3) : [], question: decision === 'ask' ? question : '',
+    goalSummary: text(picks.goalSummary), reason: text(picks.reason) };
+  if (out.decision === 'match' && !out.recordIds.length) out.decision = 'none';
+  if (out.decision === 'ask' && !out.question) out.decision = 'none';
+  return out;
+}
+
 function recommend(input, recommendationLibrary, options = {}) {
   const goalOnly = Boolean(options.goalOnly);
   const founderGoal = options.founderGoal || (input && input.question) || '';
@@ -421,7 +438,23 @@ function recommend(input, recommendationLibrary, options = {}) {
     || /\bregistrar\b/i.test([rec.toolName, rec.bestFor, ...(rec.keywords || [])].join(' '));
   const domainOnlyWithoutGoal = domainOnly && !hasSpecificGoal;
 
-  const ranked = recs
+  // Muse Spark's reading of a goal (from /api/goal), already held to the library by code. When present it
+  // replaces keyword matching; the owned-tool step below is the same either way.
+  const spark = goalOnly ? cleanGoalPicks(options.goalPicks, recs) : null;
+  const sparkRanked = spark ? spark.recordIds.map((id, i) => {
+    const rec = recs.find((r) => r.id === id);
+    return {
+      rec, matched: true, score: 100 - i, owned: isOwned(rec),
+      reasons: spark.reason ? [`Muse Spark: ${spark.reason}`] : [],
+      match: {
+        quality: 'goal_match', label: 'Fits your goal',
+        explanation: spark.goalSummary ? `Muse Spark read your goal as: ${spark.goalSummary}` : 'Muse Spark picked this for your goal.',
+        checkoutJobs: [], sharedJobs: [], missingDirectJobs: [],
+      },
+    };
+  }) : null;
+
+  const ranked = sparkRanked || recs
     .map((rec) => ({ rec, ...scoreRecord(rec, checkout, scoringGoal) }))
     .filter((r) => r.matched && r.score > 0)
     .filter((r) => !domainOnlyWithoutGoal || isRegistrar(r.rec))
@@ -501,9 +534,11 @@ function recommend(input, recommendationLibrary, options = {}) {
     ? "This checkout only shows a domain purchase, and a website builder is not a substitute for a domain. To see related tools, say what you're trying to do, such as launching a website."
     : goalOnly && ownedEntry
       ? 'The tool you already have is the best fit we know of. No other tool in our library fits this goal.'
-      : goalOnly
-        ? 'Our library has no tool for this goal yet. That says what our library covers, not that no tool exists.'
-        : null;
+      : spark && spark.decision === 'ask'
+        ? null
+        : goalOnly
+          ? 'Our library has no tool for this goal yet. That says what our library covers, not that no tool exists.'
+          : null;
 
   const isRealFloot = library.dataStatus !== 'unknown' || recs.some((rec) => rec.dataStatus === 'real-floot-editorial');
   return {
@@ -534,7 +569,10 @@ function recommend(input, recommendationLibrary, options = {}) {
     ownedRecommendation: ownedEntry ? shape(ownedEntry) : null,
     ownedNotInLibrary,
     duplicates,
-    goalCategories: goalOnly ? checkout.categories : null,
+    goalCategories: goalOnly && !spark ? checkout.categories : null,
+    matcher: spark ? 'spark' : 'keyword',
+    clarifyingQuestion: spark && spark.decision === 'ask' ? spark.question : null,
+    goalReading: spark ? { decision: spark.decision, summary: spark.goalSummary, reason: spark.reason } : null,
     otherCandidates: others.slice(0, 3).map((r) => ({ id: r.rec.id, toolName: r.rec.toolName, category: r.rec.category, matchScore: r.score, matchQuality: r.match.quality, matchQualityLabel: r.match.label, owned: r.owned })),
     risks,
     checkBeforeBuying: [...new Set(risks.map((r) => r.check))],

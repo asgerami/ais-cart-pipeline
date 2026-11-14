@@ -1,0 +1,40 @@
+{
+  "note": "Sample mode only. Prepared answers for the goal comparison, so previews show the Spark flow without calling Meta. Live answers come from Muse Spark.",
+  "answers": {
+    "I need to get more people to sign up on my website. Where do I start?": {
+      "goal_summary": "Get more website visitors to sign up.",
+      "decision": "match",
+      "record_ids": ["website-squarespace", "website-floot"],
+      "question": null,
+      "reason": "Sign-ups happen on the website, so the website tools fit."
+    },
+    "People visit my site, but hardly anyone ever joins my mailing list.": {
+      "goal_summary": "Turn site visitors into mailing-list subscribers.",
+      "decision": "match",
+      "record_ids": ["website-squarespace", "website-floot"],
+      "question": null,
+      "reason": "Joining a mailing list happens through a form on the website, so the website tools fit."
+    },
+    "My homepage gets visitors, but hardly anyone signs up for my newsletter.": {
+      "goal_summary": "Turn homepage visitors into newsletter subscribers.",
+      "decision": "match",
+      "record_ids": ["website-squarespace", "website-floot"],
+      "question": null,
+      "reason": "The newsletter sign-up lives on the homepage, so the website tools fit."
+    },
+    "I need to file my small business taxes before the deadline.": {
+      "goal_summary": "File small business taxes on time.",
+      "decision": "none",
+      "record_ids": [],
+      "question": null,
+      "reason": "Filing taxes needs tax software or an accountant, and no tool in the library does that."
+    },
+    "I want to grow my business.": {
+      "goal_summary": "Grow the business.",
+      "decision": "ask",
+      "record_ids": [],
+      "question": "What do you want more of first: website sign-ups, content people see, or a new product?",
+      "reason": "Growing a business could mean several different jobs, so one question decides which tool helps."
+    }
+  }
+}

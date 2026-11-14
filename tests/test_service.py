@@ -48,7 +48,7 @@ class FakeMeta(BaseHTTPRequestHandler):
         if UP["fail"] == name:
             out, code = {"error": {"type": "authentication_error", "code": "invalid_api_key"}}, 401
         else:
-            key = {"cart_extraction": "extract", "cart_review": "review", "cart_verdict": "verdict"}[name]
+            key = {"cart_extraction": "extract", "cart_review": "review", "cart_verdict": "verdict", "goal_match": "goal"}[name]
             out = {"choices": [{"message": {"content": json.dumps(UP[key])}}],
                    "usage": {"prompt_tokens": 1000, "completion_tokens": 200}}
             code = 200
@@ -74,7 +74,7 @@ def free_port():
 
 
 def start(kind, env):
-    """kind: 'local' runs server.py; 'vercel' serves api/analyze.py's handler class."""
+    """kind: 'local' runs server.py; 'vercel' serves api/analyze.py's handler class; 'vercel-goal' serves api/goal.py's."""
     port = free_port()
     full = {**os.environ, "QUIET": "1", "PORT": str(port), **env}
     for k in ("MODEL_API_KEY", "MOCK", "SERVICE_TOKEN"):
@@ -83,8 +83,9 @@ def start(kind, env):
     if kind == "local":
         cmd = [sys.executable, "server.py"]
     else:
+        mod = "goal" if kind == "vercel-goal" else "analyze"
         cmd = [sys.executable, "-c", "import sys, os; sys.path.insert(0, 'api'); from http.server import HTTPServer; "
-               "import analyze; HTTPServer(('127.0.0.1', int(os.environ['PORT'])), analyze.handler).serve_forever()"]
+               f"import {mod}; HTTPServer(('127.0.0.1', int(os.environ['PORT'])), {mod}.handler).serve_forever()"]
     p = subprocess.Popen(cmd, cwd=ROOT, env=full, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)
     for _ in range(50):
         try:
@@ -257,6 +258,57 @@ try:
     check("vercel: right token gives 200", s == 200 and r["verdict"]["decision"] == "BUY", r)
     s, r = req(f"{url}/api/analyze", "POST", {"image": CART + "A" * 300000}, {"Authorization": "Bearer s3cret"})
     check("vercel: an oversized body gives 413", s == 413, r)
+
+    # Goal-first with Muse Spark: POST /api/goal
+    MAILING = "People visit my site, but hardly anyone ever joins my mailing list."
+    p, url = start("vercel-goal", {"MODEL_API_KEY": "LLM_1_test", "MODEL_API_BASE": FAKE_BASE, "SERVICE_TOKEN": "s3cret"})
+    procs.append(p)
+    auth = {"Authorization": "Bearer s3cret"}
+    UP.update(calls=[], fail=None, goal={"goal_summary": "Turn visitors into subscribers.", "decision": "match",
+              "record_ids": ["website-squarespace", "website-floot"], "question": None, "reason": "The form is on the site."})
+    s, r = req(f"{url}/api/goal", "POST", {"goal": MAILING})
+    check("goal: no token gives 401, and Meta isn't called", s == 401 and not UP["calls"], r)
+    s, r = req(f"{url}/api/goal", "POST", {"goal": MAILING}, auth)
+    c = UP["calls"][-1] if UP["calls"] else {}
+    check("goal: right token gives Spark's picks", s == 200 and r["interpretation"]["decision"] == "match"
+          and r["interpretation"]["record_ids"] == ["website-squarespace", "website-floot"], r)
+    check("goal: one Muse Spark call, no image, temperature 0, cost recorded",
+          len(UP["calls"]) == 1 and c.get("model") == "muse-spark-1.3" and not c.get("image") and c.get("temperature") == 0
+          and r["calls"][0]["est_cost_usd"] > 0, c)
+    lib_ids = json.loads(c.get("text", "{}")).get("library", [])
+    check("goal: Spark sees the goal and all 12 library records, but not the shopper's owned tools",
+          len(lib_ids) == 12 and MAILING in c.get("text", "") and "owned" not in c.get("text", "").lower(), c.get("text", "")[:200])
+    check("goal: the schema only allows library record ids",
+          len(c["schema"]["properties"]["record_ids"]["items"]["enum"]) == 12, c.get("schema"))
+    UP.update(goal={"goal_summary": "x", "decision": "match", "record_ids": ["made-up-tool"], "question": None, "reason": "x"})
+    s, r = req(f"{url}/api/goal", "POST", {"goal": MAILING}, auth)
+    check("goal: a pick outside the library is dropped, leaving 'none' and held_back",
+          s == 200 and r["interpretation"]["decision"] == "none" and r["interpretation"]["held_back"]
+          and r["interpretation"]["model_decision"] == "match", r)
+    UP.update(goal={"goal_summary": "x", "decision": "ask", "record_ids": [], "question": "Which part? And which tool?", "reason": "x"})
+    s, r = req(f"{url}/api/goal", "POST", {"goal": "I want to grow my business."}, auth)
+    check("goal: two questions in one 'ask' is held back to 'none'", r["interpretation"]["decision"] == "none", r)
+    UP.update(goal={"goal_summary": "x", "decision": "ask", "record_ids": [], "question": "What do you want more of first?", "reason": "x"})
+    s, r = req(f"{url}/api/goal", "POST", {"goal": "I want to grow my business."}, auth)
+    check("goal: one focused question comes through", r["interpretation"]["decision"] == "ask"
+          and r["interpretation"]["question"] == "What do you want more of first?", r)
+    s, r = req(f"{url}/api/goal", "POST", {"goal": "   "}, auth)
+    check("goal: a blank goal gives 400", s == 400, r)
+    s, r = req(f"{url}/api/goal", "POST", {"goal": "x" * 501}, auth)
+    check("goal: a goal over 500 characters gives 400", s == 400, r)
+    UP.update(fail="goal_match")
+    s, r = req(f"{url}/api/goal", "POST", {"goal": MAILING}, auth)
+    check("goal: a failed Meta call gives 502 with step goal", s == 502 and r["error"]["step"] == "goal", r)
+    UP.update(fail=None)
+
+    p, url = start("local", {"MOCK": "1"})
+    procs.append(p)
+    s, r = req(f"{url}/api/goal", "POST", {"goal": MAILING})
+    check("goal, sample mode: the prepared answer for a comparison goal", s == 200 and r["mode"] == "mock"
+          and r["interpretation"]["record_ids"][0] == "website-squarespace", r)
+    s, r = req(f"{url}/api/goal", "POST", {"goal": "Teach my dog to sit"})
+    check("goal, sample mode: any other goal gets an honest 'none'", r["interpretation"]["decision"] == "none"
+          and "Sample mode" in r["interpretation"]["reason"], r)
 
     # No key and no mock
     p, url = start("local", {})

@@ -157,6 +157,40 @@ Errors come back as `{"error": {"code", "message", ...}}`: 400 bad input, 401 wr
 
 Cost figures assume Meta's published list prices; the dashboard's Usage page has the real charges.
 
+### `POST /api/recommend`
+
+Suggests another option from our editorial library of 12 records. It never changes the verdict.
+
+- **After a screenshot check:** send `{"pipeline": <the /api/analyze answer>, "shopperGoal": "...", "ownedTools": ["Canva"]}`.
+- **With no cart yet:** send `{"mode": "goal", "goal": "...", "ownedTools": [...]}`. Keyword matching is used unless you add
+  `"picks"` from `/api/goal`.
+- A tool in `ownedTools` that fits comes back as `ownedRecommendation`. `recommendation` is always a tool the shopper
+  doesn't have yet, and `duplicates` flags a cart that repeats an owned tool.
+- Check `inputMode` (`goal_only` or a checkout mode) and `matcher` (`keyword` or `spark`) before reading `status`:
+  with no cart, `status` and `matchQuality` describe the goal, not a checkout. `clarifyingQuestion` is set when Spark
+  asks one question instead of suggesting a tool.
+- `GET /api/recommend` lists the library's tool names.
+
+### `POST /api/goal`
+
+Muse Spark reads a goal written in the shopper's own words and picks up to 3 records from the library, asks one
+focused question, or says nothing in the library fits. Send `{"goal": "..."}` with the service token. Code drops any
+pick outside the library, and turns an answer that breaks the rules into "none" (`held_back: true`). Spark never sees
+the shopper's owned tools; `/api/recommend` applies those to Spark's `picks`. In sample mode it returns prepared
+answers for the goals in `eval/goals/comparison.json`, and "none" for anything else.
+
+On the demo page, open `/?matcher=spark` and choose "I don't have a cart yet" to use it.
+
+To compare keyword matching with Spark, whoever holds the service token runs:
+
+```
+export AISCART_TOKEN=...
+python3 eval/goal_compare.py --url https://<your-app>.vercel.app --runs 2
+```
+
+It scores each goal against the expected result set in `eval/goals/comparison.json` and writes
+`eval/runs/goals_<time>/REPORT.md`.
+
 ### `GET /api/health`
 
 Shows the mode (live, mock or not configured), model settings and prompt versions.
@@ -171,7 +205,7 @@ side if you can, so the service token isn't visible in the browser.
 | Path | What it is |
 | --- | --- |
 | `aiscart/` | The pipeline: schema and prompt, code checks, review logic, verdict and guardrails, Meta client, HTTP layer |
-| `api/` | Vercel functions (`/api/analyze`, `/api/health`) |
+| `api/` | Vercel functions (`/api/analyze`, `/api/goal`, `/api/health`, `/api/recommend`) |
 | `server.py`, `index.html` | Local server and the demo page |
 | `tests/test_service.py` | End-to-end tests against a fake Meta API: live path, mock mode, guardrails and hold-back, auth, errors, Vercel function |
 | `eval/` | The evaluation kit: sample checkouts with answer keys, scoring, the live test runner (`live_run.py`), the pipeline experiment and our Oct 30 playground results |

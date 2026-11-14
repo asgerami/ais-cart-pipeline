@@ -331,7 +331,7 @@ footer a { color: inherit; }
 </main>
 
 <script>
-const PAGE_VERSION = "2026-11-14.7";
+const PAGE_VERSION = "2026-11-15.1";
 const DEFAULT_Q = "Should I complete this purchase?";
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -567,6 +567,8 @@ fetch("/api/recommend").then(r => r.json()).then(d => {
 }).catch(() => {});
 
 $("goalText").oninput = () => { $("goGoal").disabled = !$("goalText").value.trim(); };
+// Muse Spark reads the goal when the page is opened with ?matcher=spark (a live deployment, with its access token).
+const MATCHER = new URLSearchParams(location.search).get("matcher") === "spark" ? "spark" : "keyword";
 $("goGoal").onclick = async () => {
   const goal = $("goalText").value.trim();
   if (!goal) return;
@@ -577,8 +579,20 @@ $("goGoal").onclick = async () => {
     <div class="working" role="status"><p><strong>Finding where to start.</strong></p><div class="bar" aria-hidden="true"><i></i></div></div>`;
   showAnswerPanel();
   try {
+    let picks = null;
+    if (MATCHER === "spark") {
+      const token = $("token").value.trim();
+      const headers = {"Content-Type": "application/json"};
+      if (token) headers.Authorization = `Bearer ${token}`;
+      const g = await fetch("/api/goal", {method: "POST", headers, body: JSON.stringify({goal})});
+      const read = await g.json();
+      if (run !== state.run) return;
+      if (!g.ok || read.error) throw new Error(read.error?.message || `HTTP ${g.status}`);
+      const it = read.interpretation;
+      picks = {decision: it.decision, recordIds: it.record_ids, question: it.question, goalSummary: it.goal_summary, reason: it.reason};
+    }
     const resp = await fetch("/api/recommend", {method: "POST", headers: {"Content-Type": "application/json"},
-      body: JSON.stringify({mode: "goal", goal, ownedTools: owned})});
+      body: JSON.stringify({mode: "goal", goal, ownedTools: owned, ...(picks ? {picks} : {})})});
     const data = await resp.json();
     if (run !== state.run) return;
     if (!resp.ok || data.error) throw new Error(data.error?.message || `HTTP ${resp.status}`);
@@ -617,7 +631,9 @@ function renderGoal(data, goal) {
   const blocks = [];
   if (own) blocks.push(toolBlock(own, "You already have this", "have"));
   if (rec) blocks.push(toolBlock(rec, own ? "What a new tool would add" : (rec.match.quality === "goal_match" ? "Fits your goal" : "Loosely related")));
-  if (!own && !rec) blocks.push(`<div class="start"><span class="kicker">No match yet</span><p>${esc(data.noMatchReason || "Our library has no tool for this goal yet.")}</p></div>`);
+  if (data.clarifyingQuestion) blocks.push(`<div class="start"><span class="kicker">One question first</span><h3>${esc(data.clarifyingQuestion)}</h3>
+    <p class="muted">Add your answer to what you typed, then press Find where to start again.</p></div>`);
+  else if (!own && !rec) blocks.push(`<div class="start"><span class="kicker">No match yet</span><p>${esc(data.noMatchReason || "Our library has no tool for this goal yet.")}</p></div>`);
   else if (!rec && data.noMatchReason) blocks.push(`<p class="muted">${esc(data.noMatchReason)}</p>`);
   const why = [own && whyBlock(own, "You have"), rec && whyBlock(rec, own ? "New tool" : "Suggested")].filter(Boolean).join("");
   $("result").innerHTML = `<h2 id="right-title">Where to start</h2>
@@ -625,7 +641,8 @@ function renderGoal(data, goal) {
     ${blocks.join("")}
     ${extrasHtml(data)}
     ${why ? `<details class="why-opt"><summary>Why these tools</summary>${why}
-      <p class="muted">From our editorial notes on the tools we've used, matched on the words in your goal.</p></details>` : ""}`;
+      <p class="muted">${data.matcher === "spark" ? "Muse Spark read your goal, then picked only from our editorial notes on the tools we've used."
+        : "From our editorial notes on the tools we've used, matched on the words in your goal."}</p></details>` : ""}`;
 }
 
 function chip(f) { return `<span class="chip">${esc(f)}</span>`; }

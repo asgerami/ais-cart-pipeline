@@ -1,0 +1,16 @@
+{
+  "note": "Keyword vs Muse Spark on the goal-first flow. Expected results were set before any run, from Lance's Nov 14 phone tests.",
+  "owned_tools": ["Squarespace"],
+  "goals": [
+    {"id": "signup", "goal": "I need to get more people to sign up on my website. Where do I start?",
+     "expect": "owned_first", "tool": "Squarespace", "why": "Lance's original example; the website job"},
+    {"id": "mailing-list", "goal": "People visit my site, but hardly anyone ever joins my mailing list.",
+     "expect": "owned_first", "tool": "Squarespace", "why": "Lance's phrasing 1; keyword matching got this right on his phone"},
+    {"id": "newsletter", "goal": "My homepage gets visitors, but hardly anyone signs up for my newsletter.",
+     "expect": "owned_first", "tool": "Squarespace", "why": "Lance's phrasing 2; keyword matching said No match yet on his phone"},
+    {"id": "taxes", "goal": "I need to file my small business taxes before the deadline.",
+     "expect": "no_match", "why": "Clear goal the library can't cover: no tool and no question"},
+    {"id": "vague", "goal": "I want to grow my business.",
+     "expect": "ask", "why": "Too vague to pick a kind of tool: one focused question"}
+  ]
+}

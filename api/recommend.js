@@ -46,6 +46,9 @@ function publicRecommendation(result) {
     ownedNotInLibrary: result.ownedNotInLibrary,
     duplicates: result.duplicates,
     goalCategories: result.goalCategories,
+    matcher: result.matcher,
+    clarifyingQuestion: result.clarifyingQuestion,
+    goalReading: result.goalReading,
     otherCandidates: result.otherCandidates.map((candidate) => ({
       id: candidate.id,
       toolName: candidate.toolName,
@@ -81,7 +84,8 @@ module.exports = async function handler(req, res) {
       if (!goal) {
         return res.status(400).json({ error: { code: 'bad_request', message: 'Say what you are trying to do first.' } });
       }
-      const result = recommend(null, library, { goalOnly: true, founderGoal: goal.slice(0, 500), ownedTools });
+      const goalPicks = body.picks && typeof body.picks === 'object' ? body.picks : null;
+      const result = recommend(null, library, { goalOnly: true, founderGoal: goal.slice(0, 500), ownedTools, goalPicks });
       return res.status(200).json({ ...publicRecommendation(result), shopperGoal: goal.slice(0, 500), goalFallback: 'shopper_goal' });
     }
     const pipeline = body.pipeline || body.analysis || body;
