@@ -54,26 +54,27 @@ test('Recommendation API omits prices, savings and commercial pricing fields', (
     assert.ok(!apiFile.includes(forbidden), `API must not expose ${forbidden}`);
   }
   assert.match(apiFile, /goalFallback/);
-  assert.match(apiFile, /recommend\(pipeline, library, \{ founderGoal \}\)/);
+  assert.match(apiFile, /recommend\(pipeline, library, \{ founderGoal, ownedTools \}\)/);
 });
 
-test('Shopper page mounts recommendation between check list and View evidence without changing verdict', () => {
-  const checkIndex = page.indexOf('Check before you pay');
-  const recommendationIndex = page.indexOf('id="recommendation"');
-  const evidenceIndex = page.indexOf('View evidence');
-  assert.ok(checkIndex > 0 && recommendationIndex > checkIndex && evidenceIndex > recommendationIndex);
+test('Shopper page: "Another option" is the fourth row of the first view, details sit behind taps, verdict unchanged', () => {
+  const renewalRow = page.indexOf('<dt>Renewal</dt>');
+  const optionRow = page.indexOf('<dt>Another option</dt>');
+  const beforePay = page.indexOf('<h3>Before you pay</h3>');
+  const whyOption = page.indexOf('<summary>Why this option</summary>');
+  const evidence = page.indexOf('<summary>View evidence</summary>');
+  assert.ok(renewalRow > 0 && optionRow > renewalRow && beforePay > optionRow && whyOption > beforePay && evidence > whyOption);
   assert.match(page, /id="shopperGoal"/);
-  assert.match(page, /Optional: what are you shopping for\?/);
-  assert.match(page, /match-label/);
+  assert.match(page, /What are you trying to do\?/);
   assert.match(page, /fetch\("\/api\/recommend"/);
-  assert.match(page, /Verdict unchanged by this module/);
+  assert.match(page, /The verdict doesn't depend on this\./);
 });
 
 test('Amir review fixes: goal reset, punctuation, require-loaded library, goal-stale note', () => {
   assert.match(page, /\$\("shopperGoal"\)\.value = "";/);
   assert.match(page, /Goal used: \$\{esc\(data\.shopperGoal\)\}\./);
   assert.match(page, /id="goalStale"/);
-  assert.match(page, /Goal changed\. Press Check before I buy to update the recommendation\./);
+  assert.match(page, /Goal or tools changed\. Press Check before I buy to update the other option\./);
   assert.match(page, /checkedGoal/);
   assert.match(apiFile, /require\('\.\.\/recommendation-integration\/data\/recommendations\.json'\)/);
   assert.ok(!apiFile.includes('process.cwd()'), 'Vercel must trace the library through require()');

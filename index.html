@@ -67,7 +67,7 @@ button.primary:disabled { opacity: .45; cursor: not-allowed; }
 button.ghost { background: transparent; }
 :focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
 label { font-size: 14px; color: var(--ink-2); display: grid; gap: 6px; }
-textarea, select, input[type=password] { font: inherit; font-size: 15px; color: var(--ink); background: var(--paper); border: 1px solid var(--line); border-radius: 8px; padding: 10px; width: 100%; }
+textarea, select, input[type=password], input[type=text] { font: inherit; font-size: 15px; color: var(--ink); background: var(--paper); border: 1px solid var(--line); border-radius: 8px; padding: 10px; width: 100%; }
 textarea { min-height: 64px; resize: vertical; }
 details summary { cursor: pointer; color: var(--ink-2); font-size: 14px; }
 
@@ -120,25 +120,50 @@ details summary { cursor: pointer; color: var(--ink-2); font-size: 14px; }
 .line .stamp { font-size: clamp(26px, 5vw, 36px); padding: 7px 12px 5px; border-width: 3px; }
 .action { font-size: 20px; line-height: 1.3; font-weight: 700; flex: 1 1 16ch; }
 .glance dl { margin: 0; display: grid; gap: 10px; }
-.glance dl div { display: grid; grid-template-columns: 92px minmax(0, 1fr); gap: 10px; align-items: baseline; }
+.glance dl div { display: grid; grid-template-columns: 124px minmax(0, 1fr); gap: 10px; align-items: baseline; }
 @media (max-width: 560px) { .glance dl div { grid-template-columns: minmax(0, 1fr); gap: 0; } }
 .glance dt { font-size: 14px; color: var(--ink-2); font-weight: 600; }
 .glance dd { margin: 0; }
 .glance .v { font-size: 22px; }
 .next { margin: 0; padding-left: 20px; display: grid; gap: 4px; font-size: 15px; }
-.recommendation { border: 1px solid var(--line); border-radius: 10px; padding: 14px; display: grid; gap: 10px; background: var(--paper); }
-.recommendation h3 { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
-.recommendation p { margin: 0; }
-.match-label { display: inline-block; font-size: 12px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; padding: 4px 8px; border-radius: 999px; }
-.match-direct_match { color: var(--buy); background: var(--buy-bg); }
-.match-related_alternative { color: var(--wait); background: var(--wait-bg); }
-.match-no_suitable_match { color: var(--ink-2); background: var(--soft); }
 .goal-form { border-top: 1px solid var(--line); padding-top: 14px; display: grid; gap: 8px; }
 .goal-form label { color: var(--ink); font-weight: 700; }
 .goal-form .hint { color: var(--ink-2); font-size: 13.5px; font-weight: 400; }
 .goal-form .row { display: flex; gap: 8px; }
 .goal-form input { flex: 1; min-width: 0; font: inherit; font-size: 15px; color: var(--ink); background: var(--paper); border: 1px solid var(--line); border-radius: 8px; padding: 10px; }
-.evidence { border-top: 1px solid var(--line); padding-top: 14px; }
+.evidence, .why-opt { border-top: 1px solid var(--line); padding-top: 14px; }
+.why-opt > summary { font-weight: 700; color: var(--ink); font-size: 15px; padding: 4px 0; }
+.why-opt[open] > summary { margin-bottom: 12px; }
+.why-opt .opt-block { display: grid; gap: 6px; padding: 12px 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--paper); margin-bottom: 10px; }
+.why-opt p, .start p { margin: 0; }
+/* Another option, in the first view */
+.opt { display: grid; gap: 4px; font-size: 16px; }
+.opt-sub { color: var(--ink-2); font-size: 14px; }
+.opt-warn { color: var(--wait); font-weight: 700; font-size: 14.5px; }
+.pay-more { margin-top: 6px; padding: 6px 10px; font-size: 13.5px; }
+/* Two ways in */
+.modes { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding: 4px; background: var(--paper); border: 1px solid var(--line); border-radius: 10px; }
+.modes button { border: 0; background: transparent; padding: 10px 8px; line-height: 1.25; }
+.modes button[aria-selected="true"] { background: var(--card); box-shadow: 0 0 0 1px var(--line); }
+.goal-steps { display: grid; gap: 10px; }
+.goal-steps textarea { min-height: 96px; }
+/* Tools you already have */
+.owned > summary { font-weight: 700; color: var(--ink); font-size: 15px; }
+.owned-body { display: grid; gap: 10px; margin-top: 10px; }
+.owned-body .hint { margin: 0; color: var(--ink-2); font-size: 13.5px; }
+.owned-list { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.owned-list li { display: inline-flex; align-items: center; gap: 4px; background: var(--soft); border-radius: 999px; padding: 4px 4px 4px 12px; font-size: 14px; font-weight: 600; }
+.owned-list button { border: 0; background: transparent; padding: 4px 8px; border-radius: 999px; font-size: 15px; line-height: 1; color: var(--ink-2); }
+.owned-list button:hover { background: var(--line); }
+.owned-form { display: flex; gap: 8px; }
+.owned-form input { flex: 1; min-width: 0; font: inherit; font-size: 15px; color: var(--ink); background: var(--paper); border: 1px solid var(--line); border-radius: 8px; padding: 10px; }
+/* Goal-first answer */
+.start { border: 1px solid var(--line); border-radius: 12px; padding: 16px; display: grid; gap: 8px; }
+.start.have { border-color: var(--buy); background: var(--buy-bg); }
+.start .kicker { font-size: 12.5px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--ink-2); }
+.start.have .kicker { color: var(--buy); }
+.start h3 { font-size: 22px; }
+.goal-quote { margin: 0; padding: 10px 12px; border-left: 3px solid var(--line); color: var(--ink-2); font-style: italic; overflow-wrap: anywhere; }
 .evidence > summary { font-weight: 700; color: var(--ink); font-size: 15px; padding: 4px 0; }
 .evidence[open] > summary { margin-bottom: 14px; }
 .evidence .how:first-of-type { border-top: 0; padding-top: 0; }
@@ -183,7 +208,11 @@ footer a { color: inherit; }
         <h2 id="left-title">Your purchase</h2>
         <button type="button" class="ghost" id="reset">New purchase</button>
       </div>
-      <ol class="steps">
+      <div class="modes" role="tablist" aria-label="How do you want to start?">
+        <button type="button" role="tab" id="modeShot" aria-selected="true" aria-controls="shotSteps">I have a screenshot</button>
+        <button type="button" role="tab" id="modeGoal" aria-selected="false" aria-controls="goalSteps">I don't have a cart yet</button>
+      </div>
+      <ol class="steps" id="shotSteps" role="tabpanel" aria-labelledby="modeShot">
         <li>
           <span class="step-title">Add the checkout screenshot</span>
           <div class="drop" id="drop" tabindex="0" role="button" aria-label="Choose a checkout screenshot">
@@ -203,7 +232,7 @@ footer a { color: inherit; }
           <label class="step-title" for="q">Ask your question</label>
           <textarea id="q">Should I complete this purchase?</textarea>
           <div class="goal-form">
-            <label for="shopperGoal">Shopper goal <span class="hint">Optional: what are you shopping for? If blank, your question above is used. It changes only the related-editorial note below, never the verdict.</span></label>
+            <label for="shopperGoal">What are you trying to do? <span class="hint">Optional. It helps us suggest another option, and never changes the verdict.</span></label>
             <div class="row"><input id="shopperGoal" type="text" autocomplete="off" placeholder="e.g. launch a website for my startup"></div>
           </div>
         </li>
@@ -212,6 +241,24 @@ footer a { color: inherit; }
           <button class="primary" id="go" disabled>Check before I buy</button>
         </li>
       </ol>
+      <div class="goal-steps" id="goalSteps" role="tabpanel" aria-labelledby="modeGoal" hidden>
+        <label class="step-title" for="goalText">Tell us what you're trying to do</label>
+        <textarea id="goalText" maxlength="500" placeholder="In your own words. For example: I need to get more people to sign up on my website. Where do I start?"></textarea>
+        <button class="primary" id="goGoal" disabled>Find where to start</button>
+      </div>
+      <details class="owned" id="ownedBox">
+        <summary>Tools you already have <span class="muted" id="ownedCount"></span></summary>
+        <div class="owned-body">
+          <p class="hint">We check these first, and flag a purchase that repeats one. Saved in this browser only.</p>
+          <ul class="owned-list" id="ownedList" aria-label="Tools you already have"></ul>
+          <form class="owned-form" id="ownedForm">
+            <label for="ownedInput" hidden>Add a tool you have</label>
+            <input id="ownedInput" type="text" list="toolNames" maxlength="60" autocomplete="off" placeholder="Add a tool, e.g. Canva">
+            <button type="submit">Add</button>
+          </form>
+          <datalist id="toolNames"></datalist>
+        </div>
+      </details>
       <details>
         <summary>Settings</summary>
         <div style="display:grid;gap:10px;margin-top:10px">
@@ -244,7 +291,7 @@ footer a { color: inherit; }
 </main>
 
 <script>
-const PAGE_VERSION = "2026-11-14.1";
+const PAGE_VERSION = "2026-11-14.2";
 const DEFAULT_Q = "Should I complete this purchase?";
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -257,7 +304,9 @@ const LABEL = {BUY: "BUY", TRIAL: "TEST", WAIT: "WAIT", REJECT: "DON'T BUY"};
 
 // The answer on screen must always belong to the screenshot on screen. Every change of screenshot,
 // and every new check, gets a new run number; a reply for an older run is thrown away.
-const state = {image: null, name: "", run: 0, pick: 0, controller: null, result: null, checkedQuestion: "", checkedGoal: ""};
+const state = {mode: "shot", image: null, name: "", run: 0, pick: 0, controller: null, result: null, checkedQuestion: "", checkedGoal: "", checkedOwned: "[]"};
+// How the shopper sees a match. The API's codes stay the same.
+const QUALITY = {direct_match: "direct match", related_alternative: "related (not a direct swap)", goal_match: "fits your goal"};
 let serverMode = "";
 $("version").textContent = `Page version ${PAGE_VERSION}.`;
 try { $("token").value = sessionStorage.getItem("aiscart-token") || ""; } catch (e) {}
@@ -289,8 +338,11 @@ function forStrip(note) {
 }
 
 function showEmpty() {
-  $("result").innerHTML = `<h2 id="right-title" hidden>Answer</h2><div class="empty"><strong>Your answer will appear here</strong>
-    Add a checkout screenshot, or pick a sample, then press Check before I buy.</div>`;
+  $("result").innerHTML = state.mode === "goal"
+    ? `<h2 id="right-title" hidden>Answer</h2><div class="empty"><strong>Where to start will appear here</strong>
+      Say what you're trying to do, in your own words, then press Find where to start.</div>`
+    : `<h2 id="right-title" hidden>Answer</h2><div class="empty"><strong>Your answer will appear here</strong>
+      Add a checkout screenshot, or pick a sample, then press Check before I buy.</div>`;
 }
 
 function showReady() {
@@ -330,6 +382,7 @@ function resetAll() {
   $("file").value = "";
   $("q").value = DEFAULT_Q;
   $("shopperGoal").value = "";
+  $("goalText").value = ""; $("goGoal").disabled = true;
   state.checkedGoal = "";
   markSample(null);
   $("go").disabled = true;
@@ -378,7 +431,7 @@ function updateStaleNotes() {
   const questionNote = $("stale");
   if (questionNote) questionNote.hidden = $("q").value.trim() === state.checkedQuestion.trim();
   const goalNote = $("goalStale");
-  if (goalNote) goalNote.hidden = $("shopperGoal").value.trim() === state.checkedGoal.trim();
+  if (goalNote) goalNote.hidden = $("shopperGoal").value.trim() === state.checkedGoal.trim() && JSON.stringify(owned) === state.checkedOwned;
 }
 $("q").oninput = updateStaleNotes;
 $("shopperGoal").oninput = updateStaleNotes;
@@ -411,7 +464,7 @@ $("go").onclick = async () => {
     const data = await resp.json();
     if (run !== state.run) return;                      // a newer screenshot or check replaced this one
     if (!resp.ok) throw data.error || {message: `The server answered with HTTP ${resp.status}.`};
-    state.result = data; state.checkedQuestion = question; state.checkedGoal = $("shopperGoal").value.trim();
+    state.result = data; state.checkedQuestion = question; state.checkedGoal = $("shopperGoal").value.trim(); state.checkedOwned = JSON.stringify(owned);
     render(data, question, (Date.now() - t0) / 1000);
     loadRecommendation(data, run);
     showAnswerPanel();
@@ -427,32 +480,138 @@ $("go").onclick = async () => {
   }
 };
 
+// ---------- Two ways in: a screenshot, or a goal in the shopper's own words ----------
+function setMode(mode) {
+  if (mode === state.mode) return;
+  cancelRun();
+  state.pick += 1;
+  state.mode = mode;
+  $("modeShot").setAttribute("aria-selected", String(mode === "shot"));
+  $("modeGoal").setAttribute("aria-selected", String(mode === "goal"));
+  $("shotSteps").hidden = mode !== "shot";
+  $("goalSteps").hidden = mode !== "goal";
+  if (mode === "goal") { $("ownedBox").open = true; showEmpty(); $("goalText").focus(); }
+  else if (state.image) showReady(); else showEmpty();
+}
+$("modeShot").onclick = () => setMode("shot");
+$("modeGoal").onclick = () => setMode("goal");
+document.querySelector(".modes").onkeydown = e => {
+  if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
+  const next = state.mode === "shot" ? "goal" : "shot";
+  setMode(next); $(next === "goal" ? "modeGoal" : "modeShot").focus();
+};
+
+// ---------- Tools the shopper already has. Kept in this browser; the page works without storage. ----------
+const OWNED_KEY = "aiscart-owned-tools";
+let owned = [];
+try { owned = JSON.parse(localStorage.getItem(OWNED_KEY) || "[]").filter(x => typeof x === "string").slice(0, 30); } catch (e) { owned = []; }
+function saveOwned() { try { localStorage.setItem(OWNED_KEY, JSON.stringify(owned)); } catch (e) {} }
+function renderOwned() {
+  $("ownedList").innerHTML = owned.map((name, i) =>
+    `<li>${esc(name)}<button type="button" data-remove="${i}" aria-label="Remove ${esc(name)}">×</button></li>`).join("");
+  $("ownedCount").textContent = owned.length ? `(${owned.length})` : "";
+  $("ownedList").querySelectorAll("[data-remove]").forEach(b => b.onclick = () => {
+    owned.splice(Number(b.dataset.remove), 1); saveOwned(); renderOwned(); updateStaleNotes(); $("ownedInput").focus();
+  });
+}
+$("ownedForm").onsubmit = e => {
+  e.preventDefault();
+  const name = $("ownedInput").value.replace(/\s+/g, " ").trim().slice(0, 60);
+  if (name && !owned.some(x => x.toLowerCase() === name.toLowerCase()) && owned.length < 30) { owned.push(name); saveOwned(); }
+  $("ownedInput").value = "";
+  renderOwned(); updateStaleNotes();
+};
+renderOwned();
+fetch("/api/recommend").then(r => r.json()).then(d => {
+  $("toolNames").innerHTML = (d.tools || []).map(t => `<option value="${esc(t)}">`).join("");
+}).catch(() => {});
+
+$("goalText").oninput = () => { $("goGoal").disabled = !$("goalText").value.trim(); };
+$("goGoal").onclick = async () => {
+  const goal = $("goalText").value.trim();
+  if (!goal) return;
+  cancelRun();
+  const run = state.run;
+  $("goGoal").disabled = true;
+  $("result").innerHTML = `<h2 id="right-title">Where to start</h2><p class="goal-quote">${esc(goal)}</p>
+    <div class="working" role="status"><p><strong>Finding where to start.</strong></p><div class="bar" aria-hidden="true"><i></i></div></div>`;
+  showAnswerPanel();
+  try {
+    const resp = await fetch("/api/recommend", {method: "POST", headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({mode: "goal", goal, ownedTools: owned})});
+    const data = await resp.json();
+    if (run !== state.run) return;
+    if (!resp.ok || data.error) throw new Error(data.error?.message || `HTTP ${resp.status}`);
+    renderGoal(data, goal);
+    showAnswerPanel();
+  } catch (err) {
+    if (run !== state.run) return;
+    $("result").innerHTML = `<h2 id="right-title">Where to start</h2><p class="goal-quote">${esc(goal)}</p><div class="err">${esc(err.message || err)}</div>`;
+  } finally {
+    if (run === state.run) $("goGoal").disabled = !$("goalText").value.trim();
+  }
+};
+
+function toolBlock(rec, kicker, cls = "") {
+  return `<div class="start ${cls}"><span class="kicker">${esc(kicker)}</span><h3>${esc(rec.toolName)}</h3>
+    ${rec.bestFor ? `<p><strong>Best for:</strong> ${esc(rec.bestFor)}</p>` : ""}
+    ${rec.firstStep ? `<p><strong>First step:</strong> ${esc(rec.firstStep)}</p>` : ""}
+    ${rec.caution ? `<p class="muted"><strong>Caution:</strong> ${esc(rec.caution)}</p>` : ""}</div>`;
+}
+function whyBlock(rec, heading) {
+  return `<div class="opt-block"><p><strong>${esc(heading)}: ${esc(rec.toolName)}</strong>, ${esc(QUALITY[rec.match.quality] || rec.match.label)}</p>
+    <p>${esc(rec.match.explanation)}</p>
+    ${rec.why ? `<p>${esc(rec.why)}</p>` : ""}
+    ${rec.caution ? `<p><strong>Caution:</strong> ${esc(rec.caution)}</p>` : ""}
+    <p class="muted">Confidence: ${esc(rec.confidence)}. Evidence: ${esc((rec.evidenceIds || []).join(", ") || "none supplied")}.</p></div>`;
+}
+function extrasHtml(data) {
+  const others = (data.otherCandidates || []).filter(x => !x.owned);
+  return `${others.length ? `<p class="muted">Also related: ${others.map(x => esc(x.toolName)).join(", ")}.</p>` : ""}
+    ${(data.ownedNotInLibrary || []).length ? `<p class="muted">Not in our library yet, so we couldn't check: ${data.ownedNotInLibrary.map(esc).join(", ")}.</p>` : ""}`;
+}
+
+function renderGoal(data, goal) {
+  const own = data.ownedRecommendation, rec = data.recommendation;
+  const blocks = [];
+  if (own) blocks.push(toolBlock(own, "You already have this", "have"));
+  if (rec) blocks.push(toolBlock(rec, own ? "What a new tool would add" : (rec.match.quality === "goal_match" ? "Fits your goal" : "Loosely related")));
+  if (!own && !rec) blocks.push(`<div class="start"><span class="kicker">No match yet</span><p>${esc(data.noMatchReason || "Our library has no tool for this goal yet.")}</p></div>`);
+  else if (!rec && data.noMatchReason) blocks.push(`<p class="muted">${esc(data.noMatchReason)}</p>`);
+  const why = [own && whyBlock(own, "You have"), rec && whyBlock(rec, own ? "New tool" : "Suggested")].filter(Boolean).join("");
+  $("result").innerHTML = `<h2 id="right-title">Where to start</h2>
+    <p class="goal-quote">${esc(goal)}</p>
+    ${blocks.join("")}
+    ${extrasHtml(data)}
+    ${why ? `<details class="why-opt"><summary>Why these tools</summary>${why}
+      <p class="muted">From our editorial notes on the tools we've used, matched on the words in your goal.</p></details>` : ""}`;
+}
+
 function chip(f) { return `<span class="chip">${esc(f)}</span>`; }
 async function loadRecommendation(result, run) {
-  const box = $("recommendation");
-  if (!box) return;
+  const row = $("optRow"), whyBox = $("whyOpt");
+  if (!row) return;
   const shopperGoal = $("shopperGoal").value.trim();
   try {
     const resp = await fetch("/api/recommend", {method: "POST", headers: {"Content-Type": "application/json"},
-      body: JSON.stringify({pipeline: result, shopperGoal})});
+      body: JSON.stringify({pipeline: result, shopperGoal, ownedTools: owned})});
     const data = await resp.json();
     if (run !== state.run || !resp.ok || data.error) throw new Error(data.error?.message || `HTTP ${resp.status}`);
-    const rec = data.recommendation;
-    const goalNote = data.goalFallback === "shopper_goal" ? `Goal used: ${esc(data.shopperGoal)}.` : "No shopper goal supplied; the purchase question was used.";
-    box.innerHTML = `<h3>Related editorial recommendation <span class="match-label match-${esc(data.matchQuality)}">${esc(data.matchQualityLabel)}</span></h3>
-      <p class="muted">${goalNote} Verdict unchanged by this module.</p>
-      ${rec ? `<p><strong>${esc(rec.toolName)}</strong> — ${esc(rec.bestFor || rec.category)}</p>
-      <p>${esc(rec.match.explanation)}</p>
-      <p>${esc(rec.why)}</p>
-      ${rec.caution ? `<p><strong>Caution:</strong> ${esc(rec.caution)}</p>` : ""}
-      <p class="muted">Confidence: ${esc(rec.confidence)}. Evidence: ${esc((rec.evidenceIds || []).join(", ") || "none supplied")}.</p>
-      ${data.otherCandidates.length ? `<p class="muted">Other related records: ${data.otherCandidates.map(x => `${esc(x.toolName)} (${esc(x.matchQualityLabel)})`).join(", ")}.</p>` : ""}`
-      : `<p>${esc(data.noMatchReason || "No suitable editorial match is available for this checkout in the current library.")}</p>
-      <p class="muted">${data.checkBeforeBuying.length ? "Please complete the checks above before paying." : "The purchase verdict above stands on its own."}</p>`}`;
+    const own = data.ownedRecommendation, rec = data.recommendation;
+    const dup = (data.duplicates || []).map(d => `<span class="opt-warn">${esc(d.text)}</span>`).join("");
+    const main = own
+      ? `<span><strong>${esc(own.toolName)}</strong>, which you already have</span>${rec ? `<span class="opt-sub">New tool: ${esc(rec.toolName)}, ${esc(QUALITY[rec.match.quality] || "")}</span>` : ""}`
+      : rec ? `<span><strong>${esc(rec.toolName)}</strong>, ${esc(QUALITY[rec.match.quality] || rec.match.label)}</span>`
+      : `<span>No better option found</span>${data.noMatchReason ? `<span class="opt-sub">${esc(data.noMatchReason)}</span>` : ""}`;
+    row.innerHTML = dup + main;
+    const goalNote = data.goalFallback === "shopper_goal" ? `Goal used: ${esc(data.shopperGoal)}.` : "No goal given, so we used your question.";
+    $("whyBody").innerHTML = `${own ? whyBlock(own, "You have") : ""}${rec ? whyBlock(rec, own ? "New tool" : "Another option") : ""}
+      ${!own && !rec ? `<p>${esc(data.noMatchReason || "No tool in our library matches this checkout.")}</p>` : ""}
+      ${extrasHtml(data)}<p class="muted">${goalNote} The verdict doesn't depend on this.</p>`;
+    whyBox.hidden = false;
   } catch (err) {
     if (run !== state.run) return;
-    box.innerHTML = `<h3>Related editorial recommendation <span class="match-label match-no_suitable_match">Unavailable for this check</span></h3>
-      <p class="muted">The purchase verdict above is complete without this module. ${esc(err.message || err)}</p>`;
+    row.innerHTML = `<span class="opt-sub">Not available for this check. The verdict above is complete without it.</span>`;
   }
 }
 function status(s) { return `<span class="st st-${esc(s)}">${esc(s)}</span>`; }
@@ -489,6 +648,7 @@ function render(r, question, secs) {
   const calls = r.calls.map(c => `<tr><td>${esc(c.step)}</td><td>${esc(c.model)}</td><td class="num">${c.latency_s ?? ""} s</td>
     <td class="num">${c.input_tokens ?? ""} / ${c.output_tokens ?? ""}</td><td class="num">${money(c.est_cost_usd)}</td></tr>`).join("");
   const ren = renewal(r);
+  const checks = v.check_before_buying || [];
   const when = new Date().toLocaleTimeString([], {hour: "2-digit", minute: "2-digit"});
   $("result").innerHTML = `
     <h2 id="right-title">Answer</h2>
@@ -499,14 +659,16 @@ function render(r, question, secs) {
         <dl>
           <div><dt>Due today</dt><dd class="v">${esc(known(r.facts.total_due_now) || "Not shown")}</dd></div>
           <div><dt>Renewal</dt><dd class="rk rk-${ren.cls}">${esc(ren.text)}</dd></div>
+          <div><dt>Another option</dt><dd class="opt" id="optRow"><span class="opt-sub">Looking…</span></dd></div>
         </dl>
       </div>
     </div>
     ${v.held_back ? `<div class="held">Held back: the model said <strong>${esc(LABEL[v.model_decision] || v.model_decision)}</strong>, but its answer failed our checks, so it is shown as WAIT.</div>` : ""}
     <div class="stale" id="stale" hidden>You changed the question. Press Check before I buy to update this answer.</div>
-    ${v.check_before_buying.length ? `<div><h3>Check before you pay</h3><ul class="next">${v.check_before_buying.map(x => `<li>${esc(x)}</li>`).join("")}</ul></div>` : ""}
-    <div class="stale" id="goalStale" hidden>Goal changed. Press Check before I buy to update the recommendation.</div>
-    <section class="recommendation" id="recommendation" aria-live="polite"><h3>Related editorial recommendation</h3><p class="muted">Finding the closest Floot editorial record…</p></section>
+    ${checks.length ? `<div><h3>Before you pay</h3><ul class="next">${checks.map((x, i) => `<li${i > 1 ? " data-more hidden" : ""}>${esc(x)}</li>`).join("")}</ul>
+      ${checks.length > 2 ? `<button type="button" class="pay-more" id="payMore" aria-expanded="false">Show all ${checks.length}</button>` : ""}</div>` : ""}
+    <div class="stale" id="goalStale" hidden>Goal or tools changed. Press Check before I buy to update the other option.</div>
+    <details class="why-opt" id="whyOpt" hidden><summary>Why this option</summary><div id="whyBody"></div></details>
     <details class="evidence"><summary>View evidence</summary>
     <div class="how">
       <h3>Why</h3>
@@ -526,6 +688,13 @@ function render(r, question, secs) {
       <div class="muted">Total ${r.total_latency_s ?? "?"} s, est. ${money(r.total_est_cost_usd)}. Mode: ${esc(r.mode)}. Prompt versions: ${Object.entries(r.versions).map(([k, x]) => esc(k + " " + x)).join(", ")}.</div>
     </div>
     </details>`;
+  const more = $("payMore");
+  if (more) more.onclick = () => {
+    const open = more.getAttribute("aria-expanded") !== "true";
+    document.querySelectorAll("[data-more]").forEach(li => { li.hidden = !open; });
+    more.setAttribute("aria-expanded", String(open));
+    more.textContent = open ? "Show fewer" : `Show all ${checks.length}`;
+  };
 }
 
 showEmpty();

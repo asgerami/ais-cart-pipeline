@@ -249,7 +249,9 @@ function scoreRecord(rec, checkout, founderGoal) {
   const recText = norm(recFields.join(' '));
   if (checkout.categories.includes(rec.category)) {
     score += 40;
-    reasons.push(`Same category as this checkout (${rec.category}).`);
+    reasons.push(checkout.goalOnly
+      ? `The kind of tool your goal describes (${rec.category}).`
+      : `Same category as this checkout (${rec.category}).`);
   }
   const overlap = [...checkout.searchableTokens].filter((t) => recWords.has(t));
   if (overlap.length) {
@@ -330,13 +332,84 @@ function savingsFor(rec, checkout) {
   return { kind: 'none_computed', amountUsd: null, basis: 'No honest saving computed: the recommendation record has no comparable price, or this checkout has no comparable amount due. No numbers were invented.' };
 }
 
+function recordText(rec) {
+  return [rec.toolName, rec.bestFor, rec.why, ...(rec.useCases || []), ...(rec.keywords || [])].join(' ');
+}
+
+// With no checkout, the shopper's goal is the only evidence, so a record fits when it covers the job or
+// the kind of tool the goal describes.
+function classifyGoalFit(rec, founderGoal, goalCategories) {
+  const recJobs = detectJob(recordText(rec));
+  const shared = detectJob(founderGoal).filter((goal) => recJobs.some((entry) => entry.job === goal.job));
+  if (shared.length || goalCategories.includes(rec.category)) {
+    return {
+      quality: 'goal_match',
+      label: 'Fits your goal',
+      explanation: shared.length
+        ? `Your goal and this record both concern ${shared.map((entry) => entry.label).join(', ')}.`
+        : `This is a ${rec.category} tool, the kind of tool your goal describes.`,
+      checkoutJobs: [],
+      sharedJobs: shared.map((entry) => entry.job),
+      missingDirectJobs: [],
+    };
+  }
+  return {
+    quality: 'related_alternative',
+    label: 'Loosely related',
+    explanation: 'It shares words with your goal, but it is not clearly the same kind of job.',
+    checkoutJobs: [],
+    sharedJobs: [],
+    missingDirectJobs: [],
+  };
+}
+
+/** Owned-tool names as the shopper typed them: trimmed, deduplicated, at most 30 of up to 60 characters. */
+function cleanOwnedTools(list) {
+  if (!Array.isArray(list)) return [];
+  const seen = new Set();
+  const out = [];
+  for (const raw of list) {
+    const name = String(raw == null ? '' : raw).replace(/\s+/g, ' ').trim().slice(0, 60);
+    const key = name.toLowerCase();
+    if (!name || seen.has(key)) continue;
+    seen.add(key);
+    out.push(name);
+    if (out.length >= 30) break;
+  }
+  return out;
+}
+
+const escapeRe = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+function containsName(text, name) {
+  const n = norm(name).trim();
+  return Boolean(n) && new RegExp(`(^|[^a-z0-9])${escapeRe(n)}([^a-z0-9]|$)`).test(norm(text));
+}
+// "Canva Pro" or "canva" both mean the library's Canva.
+function sameTool(ownedName, toolName) {
+  return norm(ownedName).trim() === norm(toolName).trim() || containsName(ownedName, toolName);
+}
+
 function recommend(input, recommendationLibrary, options = {}) {
-  const founderGoal = options.founderGoal || input.question || '';
-  const { facts, verdict, pipelineChecks, sourceMode } = normalizeFacts(input);
+  const goalOnly = Boolean(options.goalOnly);
+  const founderGoal = options.founderGoal || (input && input.question) || '';
+  if (goalOnly && !String(founderGoal).trim()) {
+    throw new Error('goal-only mode needs a goal: say what you are trying to do');
+  }
+  const { facts, verdict, pipelineChecks, sourceMode } = goalOnly
+    ? { facts: { line_items: [] }, verdict: null, pipelineChecks: null, sourceMode: 'goal_only' }
+    : normalizeFacts(input);
+  // A typed goal ends sentences with punctuation ("my website."), which would stop "website" matching.
+  // Only goal-only mode strips it, so checks on a screenshot score exactly as before.
+  const scoringGoal = goalOnly ? String(founderGoal).replace(/[.,!?;:]+(?=\s|$)/g, ' ') : founderGoal;
   const checkout = describeCheckout(facts);
-  checkout.categories = inferCategories(checkout);
+  checkout.goalOnly = goalOnly;
+  checkout.categories = goalOnly
+    ? inferCategories({ searchableTokens: new Set(tokens(scoringGoal)) })
+    : inferCategories(checkout);
   const library = normalizeRecommendations(recommendationLibrary);
   const recs = library.records;
+  const owned = cleanOwnedTools(options.ownedTools);
+  const isOwned = (rec) => owned.some((name) => sameTool(name, rec.toolName));
 
   // Buying only a domain says nothing about needing a website builder. Without a specific
   // shopper goal, a domain-only checkout can only be matched by a registrar.
@@ -349,38 +422,90 @@ function recommend(input, recommendationLibrary, options = {}) {
   const domainOnlyWithoutGoal = domainOnly && !hasSpecificGoal;
 
   const ranked = recs
-    .map((rec) => ({ rec, ...scoreRecord(rec, checkout, founderGoal) }))
+    .map((rec) => ({ rec, ...scoreRecord(rec, checkout, scoringGoal) }))
     .filter((r) => r.matched && r.score > 0)
     .filter((r) => !domainOnlyWithoutGoal || isRegistrar(r.rec))
-    .map((entry) => ({ ...entry, match: classifyMatch(entry.rec, checkout, founderGoal) }))
+    .map((entry) => ({
+      ...entry,
+      owned: isOwned(entry.rec),
+      match: goalOnly ? classifyGoalFit(entry.rec, scoringGoal, checkout.categories) : classifyMatch(entry.rec, checkout, founderGoal),
+    }))
     .sort((a, b) => {
-      const rank = { direct_match: 0, related_alternative: 1 };
+      const rank = { direct_match: 0, goal_match: 0, related_alternative: 1 };
       return rank[a.match.quality] - rank[b.match.quality] || b.score - a.score || String(a.rec.toolName).localeCompare(String(b.rec.toolName));
     });
 
   const risks = buildRisks(facts, checkout, pipelineChecks);
-  const top = ranked[0] || null;
+  // A tool the shopper already has comes first when it fits. The recommendation itself is always a tool they
+  // don't have yet, so it says what a new purchase would add. With no owned tools, nothing here changes.
+  const ownedEntry = ranked.find((r) => r.owned && (!goalOnly || r.match.quality === 'goal_match')) || null;
+  const top = ranked.find((r) => !r.owned) || null;
+  const others = ranked.filter((r) => r !== top && r !== ownedEntry);
+
+  // Something in the cart the shopper already has, by name or by the job it does. Checked only against
+  // records in the library, and only for jobs the checkout names clearly, so a domain never reads as a
+  // duplicate of a website builder.
+  const duplicates = [];
+  if (!goalOnly) {
+    for (const name of owned) {
+      const libRecs = recs.filter((rec) => sameTool(name, rec.toolName));
+      const toolNames = [name, ...libRecs.map((rec) => rec.toolName)];
+      if (toolNames.some((tool) => containsName(checkout.searchableText, tool))) {
+        duplicates.push({ tool: name, kind: 'same_tool', jobs: [], text: `You already have ${name}. Make sure this isn't a second subscription.` });
+        continue;
+      }
+      const ownedJobs = new Set(libRecs.flatMap((rec) => detectJob(recordText(rec)).map((entry) => entry.job)));
+      const shared = JOB_PATTERNS.filter((p) => strongJobs.includes(p.job) && ownedJobs.has(p.job));
+      if (shared.length) {
+        duplicates.push({
+          tool: name, kind: 'same_job', jobs: shared.map((p) => p.job),
+          text: `You already have ${name}, which also covers ${shared.map((p) => p.label).join(', ')}.`,
+        });
+      }
+    }
+  }
+  const ownedNotInLibrary = owned.filter((name) => !recs.some((rec) => sameTool(name, rec.toolName)));
   const matchQuality = top ? top.match.quality : 'no_suitable_match';
   const status = !top ? 'no_match'
     : matchQuality === 'direct_match'
       ? (risks.some((r) => r.severity === 'high') ? 'direct_match_with_risks' : 'direct_match')
       : (risks.some((r) => r.severity === 'high') ? 'related_alternative_with_risks' : 'related_alternative');
 
-  const why = top ? [
-    `${top.match.label}: ${top.match.explanation}`,
-    ...top.reasons,
-    ...(top.rec.why ? [`Floot editorial why: ${top.rec.why}`] : []),
-    ...((top.rec.strengths || []).length && !top.rec.why ? [`Strengths: ${(top.rec.strengths || []).join('; ')}.`] : []),
-    ...(top.rec.caution ? [`Floot caution: ${top.rec.caution}`] : []),
-    ...((top.rec.limitations || []).length && !top.rec.caution ? [`Limitations to check: ${(top.rec.limitations || []).join('; ')}.`] : []),
-  ] : ['No record in the recommendation library matched this checkout. That is a library-coverage result, not a claim that no alternative exists.'];
+  const whyFor = (entry) => [
+    `${entry.match.label}: ${entry.match.explanation}`,
+    ...entry.reasons,
+    ...(entry.rec.why ? [`Floot editorial why: ${entry.rec.why}`] : []),
+    ...((entry.rec.strengths || []).length && !entry.rec.why ? [`Strengths: ${(entry.rec.strengths || []).join('; ')}.`] : []),
+    ...(entry.rec.caution ? [`Floot caution: ${entry.rec.caution}`] : []),
+    ...((entry.rec.limitations || []).length && !entry.rec.caution ? [`Limitations to check: ${(entry.rec.limitations || []).join('; ')}.`] : []),
+  ];
+  const shape = (entry) => ({
+    id: entry.rec.id, toolName: entry.rec.toolName, tool: entry.rec.toolName, category: entry.rec.category,
+    sourceCategory: entry.rec.editorial ? entry.rec.editorial.category : (entry.rec.sourceCategory || entry.rec.category),
+    bestFor: entry.rec.bestFor || null, why: entry.rec.why || null, caution: entry.rec.caution || null,
+    firstStep: entry.rec.firstStep || null,
+    confidence: entry.rec.confidence, evidenceIds: entry.rec.evidenceIds || [],
+    alternative: entry.rec.alternative || null, pricing: entry.rec.pricing,
+    strengths: entry.rec.strengths, limitations: entry.rec.limitations, evidence: entry.rec.evidence,
+    editorial: entry.rec.editorial || null,
+    match: entry.match,
+    owned: entry.owned,
+    matchScore: entry.score, whyItFits: whyFor(entry),
+    savings: savingsFor(entry.rec, checkout),
+  });
+  const why = top ? whyFor(top)
+    : [`No record in the recommendation library matched this ${goalOnly ? 'goal' : 'checkout'}. That is a library-coverage result, not a claim that no alternative exists.`];
   const noMatchReason = top ? null : domainOnlyWithoutGoal
-    ? 'This checkout only shows a domain purchase, and a website builder is not a substitute for a domain. Add a shopper goal, such as launching a website, to see related tools.'
-    : null;
+    ? "This checkout only shows a domain purchase, and a website builder is not a substitute for a domain. To see related tools, say what you're trying to do, such as launching a website."
+    : goalOnly && ownedEntry
+      ? 'The tool you already have is the best fit we know of. No other tool in our library fits this goal.'
+      : goalOnly
+        ? 'Our library has no tool for this goal yet. That says what our library covers, not that no tool exists.'
+        : null;
 
   const isRealFloot = library.dataStatus !== 'unknown' || recs.some((rec) => rec.dataStatus === 'real-floot-editorial');
   return {
-    adapter: { name: 'ais-cart-recommendation-adapter', version: '0.3.4' },
+    adapter: { name: 'ais-cart-recommendation-adapter', version: '0.4.0' },
     dataSource: {
       recommendations: options.recommendationsPath || 'provided recommendation library',
       source: library.source,
@@ -402,19 +527,13 @@ function recommend(input, recommendationLibrary, options = {}) {
     matchQuality,
     matchQualityLabel: top ? top.match.label : 'No suitable match',
     noMatchReason,
-    recommendation: top ? {
-      id: top.rec.id, toolName: top.rec.toolName, tool: top.rec.toolName, category: top.rec.category,
-      sourceCategory: top.rec.editorial ? top.rec.editorial.category : (top.rec.sourceCategory || top.rec.category),
-      bestFor: top.rec.bestFor || null, why: top.rec.why || null, caution: top.rec.caution || null,
-      confidence: top.rec.confidence, evidenceIds: top.rec.evidenceIds || [],
-      alternative: top.rec.alternative || null, pricing: top.rec.pricing,
-      strengths: top.rec.strengths, limitations: top.rec.limitations, evidence: top.rec.evidence,
-      editorial: top.rec.editorial || null,
-      match: top.match,
-      matchScore: top.score, whyItFits: why,
-      savings: savingsFor(top.rec, checkout),
-    } : null,
-    otherCandidates: ranked.slice(1, 4).map((r) => ({ id: r.rec.id, toolName: r.rec.toolName, category: r.rec.category, matchScore: r.score, matchQuality: r.match.quality, matchQualityLabel: r.match.label })),
+    recommendation: top ? { ...shape(top), whyItFits: why } : null,
+    ownedTools: owned,
+    ownedRecommendation: ownedEntry ? shape(ownedEntry) : null,
+    ownedNotInLibrary,
+    duplicates,
+    goalCategories: goalOnly ? checkout.categories : null,
+    otherCandidates: others.slice(0, 3).map((r) => ({ id: r.rec.id, toolName: r.rec.toolName, category: r.rec.category, matchScore: r.score, matchQuality: r.match.quality, matchQualityLabel: r.match.label, owned: r.owned })),
     risks,
     checkBeforeBuying: [...new Set(risks.map((r) => r.check))],
     honesty: {
