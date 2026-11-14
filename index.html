@@ -146,6 +146,7 @@ details summary { cursor: pointer; color: var(--ink-2); font-size: 14px; }
 .modes button { border: 0; background: transparent; padding: 10px 8px; line-height: 1.25; }
 .modes button[aria-selected="true"] { background: var(--card); box-shadow: 0 0 0 1px var(--line); }
 .goal-steps { display: grid; gap: 10px; }
+.goal-steps .step-title::before { content: none; }
 .goal-steps textarea { min-height: 96px; }
 /* Tools you already have */
 .owned > summary { font-weight: 700; color: var(--ink); font-size: 15px; }
