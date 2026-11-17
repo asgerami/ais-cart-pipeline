@@ -1,0 +1,33 @@
+{
+  "tool": "Base44",
+  "library_id": "mvp-base44",
+  "owner": "Lance",
+  "billing": {
+    "amount": null,
+    "cadence": null,
+    "renews": null,
+    "sources": []
+  },
+  "evidence": [
+    {
+      "id": "base44-1",
+      "kind": "usage",
+      "what": "The builder relied on most day to day.",
+      "outcome": null,
+      "date": null,
+      "source": "shopper_account",
+      "link": null,
+      "verified": false
+    },
+    {
+      "id": "base44-2",
+      "kind": "surprise",
+      "what": "The Living Story idea came out of working in Base44.",
+      "outcome": "changed_plans",
+      "date": null,
+      "source": "shopper_account",
+      "link": null,
+      "verified": false
+    }
+  ]
+}

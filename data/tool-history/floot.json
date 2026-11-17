@@ -1,0 +1,43 @@
+{
+  "tool": "Floot",
+  "library_id": "mvp-floot",
+  "owner": "Lance",
+  "billing": {
+    "amount": null,
+    "cadence": null,
+    "renews": null,
+    "sources": []
+  },
+  "evidence": [
+    {
+      "id": "floot-1",
+      "kind": "dependency",
+      "what": "Hosts Zero Story Lab.",
+      "outcome": "live",
+      "date": null,
+      "source": "shopper_account",
+      "link": null,
+      "verified": false
+    },
+    {
+      "id": "floot-2",
+      "kind": "dependency",
+      "what": "Hosts our Frozen Seed work.",
+      "outcome": "live",
+      "date": null,
+      "source": "shopper_account",
+      "link": null,
+      "verified": false
+    },
+    {
+      "id": "floot-3",
+      "kind": "usage",
+      "what": "Used less often day to day than Base44.",
+      "outcome": null,
+      "date": null,
+      "source": "shopper_account",
+      "link": null,
+      "verified": false
+    }
+  ]
+}
