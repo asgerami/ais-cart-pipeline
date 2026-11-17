@@ -331,7 +331,7 @@ footer a { color: inherit; }
 </main>
 
 <script>
-const PAGE_VERSION = "2026-11-15.1";
+const PAGE_VERSION = "2026-11-17.1";
 const DEFAULT_Q = "Should I complete this purchase?";
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -568,7 +568,8 @@ fetch("/api/recommend").then(r => r.json()).then(d => {
 
 $("goalText").oninput = () => { $("goGoal").disabled = !$("goalText").value.trim(); };
 // Muse Spark reads the goal when the page is opened with ?matcher=spark (a live deployment, with its access token).
-const MATCHER = new URLSearchParams(location.search).get("matcher") === "spark" ? "spark" : "keyword";
+// ?matcher=spark2 uses the version that also knows the shopper's owned tools.
+const MATCHER = {spark: "spark", spark2: "spark2"}[new URLSearchParams(location.search).get("matcher")] || "keyword";
 $("goGoal").onclick = async () => {
   const goal = $("goalText").value.trim();
   if (!goal) return;
@@ -580,16 +581,21 @@ $("goGoal").onclick = async () => {
   showAnswerPanel();
   try {
     let picks = null;
-    if (MATCHER === "spark") {
+    if (MATCHER !== "keyword") {
       const token = $("token").value.trim();
       const headers = {"Content-Type": "application/json"};
       if (token) headers.Authorization = `Bearer ${token}`;
-      const g = await fetch("/api/goal", {method: "POST", headers, body: JSON.stringify({goal})});
+      const v2 = MATCHER === "spark2";
+      const g = await fetch("/api/goal", {method: "POST", headers,
+        body: JSON.stringify(v2 ? {goal, version: 2, ownedTools: owned} : {goal})});
       const read = await g.json();
       if (run !== state.run) return;
       if (!g.ok || read.error) throw new Error(read.error?.message || `HTTP ${g.status}`);
       const it = read.interpretation;
-      picks = {decision: it.decision, recordIds: it.record_ids, question: it.question, goalSummary: it.goal_summary, reason: it.reason};
+      picks = v2
+        ? {version: 2, decision: it.decision, ownedRecordId: it.owned_record_id, ownedFirstStep: it.owned_first_step,
+           newRecordId: it.new_record_id, newToolAdds: it.new_tool_adds, question: it.question, goalSummary: it.goal_summary, reason: it.reason}
+        : {decision: it.decision, recordIds: it.record_ids, question: it.question, goalSummary: it.goal_summary, reason: it.reason};
     }
     const resp = await fetch("/api/recommend", {method: "POST", headers: {"Content-Type": "application/json"},
       body: JSON.stringify({mode: "goal", goal, ownedTools: owned, ...(picks ? {picks} : {})})});
@@ -608,6 +614,8 @@ $("goGoal").onclick = async () => {
 
 function toolBlock(rec, kicker, cls = "") {
   return `<div class="start ${cls}"><span class="kicker">${esc(kicker)}</span><h3>${esc(rec.toolName)}</h3>
+    ${rec.sparkFirstStep ? `<p><strong>For your goal:</strong> ${esc(rec.sparkFirstStep)}</p>` : ""}
+    ${rec.sparkAdds ? `<p><strong>What it would add:</strong> ${esc(rec.sparkAdds)}</p>` : ""}
     ${rec.bestFor ? `<p><strong>Best for:</strong> ${esc(rec.bestFor)}</p>` : ""}
     ${rec.firstStep ? `<p><strong>First step:</strong> ${esc(rec.firstStep)}</p>` : ""}
     ${rec.caution ? `<p class="muted"><strong>Caution:</strong> ${esc(rec.caution)}</p>` : ""}</div>`;
@@ -634,6 +642,7 @@ function renderGoal(data, goal) {
   if (data.clarifyingQuestion) blocks.push(`<div class="start"><span class="kicker">One question first</span><h3>${esc(data.clarifyingQuestion)}</h3>
     <p class="muted">Add your answer to what you typed, then press Find where to start again.</p></div>`);
   else if (!own && !rec) blocks.push(`<div class="start"><span class="kicker">No match yet</span><p>${esc(data.noMatchReason || "Our library has no tool for this goal yet.")}</p></div>`);
+  else if (!rec && data.noNewPurchase) blocks.push(`<div class="start"><span class="kicker">Nothing new to buy</span><p>${esc(data.noMatchReason)}</p></div>`);
   else if (!rec && data.noMatchReason) blocks.push(`<p class="muted">${esc(data.noMatchReason)}</p>`);
   const why = [own && whyBlock(own, "You have"), rec && whyBlock(rec, own ? "New tool" : "Suggested")].filter(Boolean).join("");
   $("result").innerHTML = `<h2 id="right-title">Where to start</h2>
@@ -641,7 +650,8 @@ function renderGoal(data, goal) {
     ${blocks.join("")}
     ${extrasHtml(data)}
     ${why ? `<details class="why-opt"><summary>Why these tools</summary>${why}
-      <p class="muted">${data.matcher === "spark" ? "Muse Spark read your goal, then picked only from our editorial notes on the tools we've used."
+      <p class="muted">${data.matcher === "spark2" ? "Muse Spark read your goal and the tools you have, then picked only from our editorial notes on the tools we've used. \"For your goal\" and \"What it would add\" are Spark's words; the rest is ours."
+        : data.matcher === "spark" ? "Muse Spark read your goal, then picked only from our editorial notes on the tools we've used."
         : "From our editorial notes on the tools we've used, matched on the words in your goal."}</p></details>` : ""}`;
 }
 

@@ -21,7 +21,7 @@ CART = base64.b64encode((ROOT / "eval/samples/checkout_03_cart.png").read_bytes(
 DOMAIN = base64.b64encode((ROOT / "eval/samples/checkout_01_domain.png").read_bytes()).decode()
 CART_LABEL = json.loads((ROOT / "eval/samples/labels/checkout_03_cart.json").read_text())
 
-UP = {"calls": [], "extract": None, "review": None, "verdict": None, "fail": None}
+UP = {"calls": [], "extract": None, "review": None, "verdict": None, "fail": None, "goal": None, "goal2": None}
 
 
 def from_label(label):
@@ -48,7 +48,8 @@ class FakeMeta(BaseHTTPRequestHandler):
         if UP["fail"] == name:
             out, code = {"error": {"type": "authentication_error", "code": "invalid_api_key"}}, 401
         else:
-            key = {"cart_extraction": "extract", "cart_review": "review", "cart_verdict": "verdict", "goal_match": "goal"}[name]
+            key = {"cart_extraction": "extract", "cart_review": "review", "cart_verdict": "verdict", "goal_match": "goal",
+                   "goal_match_v2": "goal2"}[name]
             out = {"choices": [{"message": {"content": json.dumps(UP[key])}}],
                    "usage": {"prompt_tokens": 1000, "completion_tokens": 200}}
             code = 200
@@ -301,8 +302,41 @@ try:
     check("goal: a failed Meta call gives 502 with step goal", s == 502 and r["error"]["step"] == "goal", r)
     UP.update(fail=None)
 
+    # Version 2: Spark knows the shopper's owned tools and sees each record in full
+    UP.update(calls=[], goal2={"goal_summary": "Collect email sign-ups on the existing site.", "decision": "match",
+              "owned_record_id": "website-squarespace", "owned_first_step": "Add a newsletter sign-up form to your busiest page.",
+              "new_record_id": None, "new_tool_adds": None, "question": None, "reason": "Your site can already do this."})
+    s, r = req(f"{url}/api/goal", "POST", {"goal": MAILING, "version": 2, "ownedTools": ["Squarespace", "Notion"]}, auth)
+    c = UP["calls"][-1] if UP["calls"] else {}
+    sent = json.loads(c.get("text", "{}"))
+    sq = next((x for x in sent.get("library", []) if x["id"] == "website-squarespace"), {})
+    check("goal v2: uses its own schema and gets the owned pick with Spark's first step",
+          s == 200 and c.get("name") == "goal_match_v2" and r["interpretation"]["owned_record_id"] == "website-squarespace"
+          and r["interpretation"]["no_new_purchase"] and r["versions"]["goal_version"] == 2, r)
+    check("goal v2: Spark sees the owned tools and each record in full (first step, caution, owned flag)",
+          sent.get("shopper_owned_tools") == ["Squarespace", "Notion"] and sq.get("owned") is True
+          and "sign-up form" in (sq.get("first_step") or "") and sq.get("caution"), sent.get("shopper_owned_tools"))
+    UP.update(goal2={**UP["goal2"], "new_record_id": "website-floot", "new_tool_adds": "Floot costs $20 a month more."})
+    s, r = req(f"{url}/api/goal", "POST", {"goal": MAILING, "version": 2, "ownedTools": ["Squarespace"]}, auth)
+    check("goal v2: a price in Spark's own text is removed and flagged", r["interpretation"]["new_tool_adds"] is None
+          and r["interpretation"]["held_back"], r["interpretation"])
+    UP.update(goal2={**UP["goal2"], "owned_record_id": "website-floot", "new_record_id": "website-squarespace"})
+    s, r = req(f"{url}/api/goal", "POST", {"goal": MAILING, "version": 2, "ownedTools": ["Squarespace"]}, auth)
+    check("goal v2: picks on the wrong side of the owned list are dropped, leaving 'none'",
+          r["interpretation"]["decision"] == "none" and len(r["interpretation"]["problems"]) == 3, r["interpretation"])
+    s, r = req(f"{url}/api/goal", "POST", {"goal": MAILING, "version": 3}, auth)
+    check("goal: an unknown version gives 400", s == 400, r)
+    s, r = req(f"{url}/api/goal", "POST", {"goal": MAILING, "version": 2, "ownedTools": "Squarespace"}, auth)
+    check("goal v2: ownedTools that isn't a list gives 400", s == 400, r)
+    s, r = req(f"{url}/api/goal", "POST", {"goal": MAILING}, auth)
+    check("goal: without a version it's still version 1", r.get("versions", {}).get("goal_version") == 1
+          and UP["calls"][-1]["name"] == "goal_match", r.get("versions"))
+
     p, url = start("local", {"MOCK": "1"})
     procs.append(p)
+    s, r = req(f"{url}/api/goal", "POST", {"goal": MAILING, "version": 2, "ownedTools": ["Squarespace"]})
+    check("goal v2, sample mode: Squarespace with a first step and nothing new to buy", s == 200
+          and r["interpretation"]["owned_record_id"] == "website-squarespace" and r["interpretation"]["no_new_purchase"], r)
     s, r = req(f"{url}/api/goal", "POST", {"goal": MAILING})
     check("goal, sample mode: the prepared answer for a comparison goal", s == 200 and r["mode"] == "mock"
           and r["interpretation"]["record_ids"][0] == "website-squarespace", r)

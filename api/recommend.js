@@ -15,6 +15,8 @@ function publicRec(rec) {
         why: rec.why,
         caution: rec.caution,
         firstStep: rec.firstStep || null,
+        sparkFirstStep: rec.sparkFirstStep || null,
+        sparkAdds: rec.sparkAdds || null,
         confidence: rec.confidence,
         evidenceIds: rec.evidenceIds,
         alternative: rec.alternative,
@@ -47,6 +49,7 @@ function publicRecommendation(result) {
     duplicates: result.duplicates,
     goalCategories: result.goalCategories,
     matcher: result.matcher,
+    noNewPurchase: result.noNewPurchase,
     clarifyingQuestion: result.clarifyingQuestion,
     goalReading: result.goalReading,
     otherCandidates: result.otherCandidates.map((candidate) => ({

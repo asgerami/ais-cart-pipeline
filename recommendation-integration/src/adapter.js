@@ -390,8 +390,32 @@ function sameTool(ownedName, toolName) {
 }
 
 /** Spark's picks as sent by the page or a script: only library ids, at most 3, and one question at most. */
-function cleanGoalPicks(picks, recs) {
+function cleanGoalPicks(picks, recs, isOwned) {
   if (!picks || typeof picks !== 'object') return null;
+  if (picks.version === 2) {
+    // Version 2 knows the owned tools: one owned pick with Spark's first step, one new pick with what it adds.
+    const text = (v) => (typeof v === 'string' ? v.trim().slice(0, 300) : '');
+    const find = (id) => recs.find((r) => r.id === id);
+    const own = find(picks.ownedRecordId);
+    const neu = find(picks.newRecordId);
+    const ownOk = own && isOwned(own);
+    const newOk = neu && !isOwned(neu);
+    let decision = ['match', 'ask', 'none'].includes(picks.decision) ? picks.decision : 'none';
+    const question = decision === 'ask' && typeof picks.question === 'string' ? picks.question.trim().slice(0, 200) : '';
+    if (decision === 'match' && !ownOk && !newOk) decision = 'none';
+    if (decision === 'ask' && !question) decision = 'none';
+    const match = decision === 'match';
+    return {
+      version: 2, decision, question,
+      recordIds: match ? [ownOk && own.id, newOk && neu.id].filter(Boolean) : [],
+      sparkText: match ? {
+        ...(ownOk ? { [own.id]: { firstStep: text(picks.ownedFirstStep) } } : {}),
+        ...(newOk ? { [neu.id]: { adds: text(picks.newToolAdds) } } : {}),
+      } : {},
+      noNewPurchase: match && Boolean(ownOk) && !newOk,
+      goalSummary: text(picks.goalSummary), reason: text(picks.reason),
+    };
+  }
   const decision = ['match', 'ask', 'none'].includes(picks.decision) ? picks.decision : 'none';
   const ids = [];
   for (const id of Array.isArray(picks.recordIds) ? picks.recordIds : []) {
@@ -440,11 +464,13 @@ function recommend(input, recommendationLibrary, options = {}) {
 
   // Muse Spark's reading of a goal (from /api/goal), already held to the library by code. When present it
   // replaces keyword matching; the owned-tool step below is the same either way.
-  const spark = goalOnly ? cleanGoalPicks(options.goalPicks, recs) : null;
+  const spark = goalOnly ? cleanGoalPicks(options.goalPicks, recs, isOwned) : null;
   const sparkRanked = spark ? spark.recordIds.map((id, i) => {
     const rec = recs.find((r) => r.id === id);
     return {
       rec, matched: true, score: 100 - i, owned: isOwned(rec),
+      sparkFirstStep: (spark.sparkText && spark.sparkText[id] && spark.sparkText[id].firstStep) || null,
+      sparkAdds: (spark.sparkText && spark.sparkText[id] && spark.sparkText[id].adds) || null,
       reasons: spark.reason ? [`Muse Spark: ${spark.reason}`] : [],
       match: {
         quality: 'goal_match', label: 'Fits your goal',
@@ -526,14 +552,18 @@ function recommend(input, recommendationLibrary, options = {}) {
     match: entry.match,
     owned: entry.owned,
     matchScore: entry.score, whyItFits: whyFor(entry),
+    sparkFirstStep: entry.sparkFirstStep || null,
+    sparkAdds: entry.sparkAdds || null,
     savings: savingsFor(entry.rec, checkout),
   });
   const why = top ? whyFor(top)
     : [`No record in the recommendation library matched this ${goalOnly ? 'goal' : 'checkout'}. That is a library-coverage result, not a claim that no alternative exists.`];
   const noMatchReason = top ? null : domainOnlyWithoutGoal
     ? "This checkout only shows a domain purchase, and a website builder is not a substitute for a domain. To see related tools, say what you're trying to do, such as launching a website."
-    : goalOnly && ownedEntry
-      ? 'The tool you already have is the best fit we know of. No other tool in our library fits this goal.'
+    : spark && spark.noNewPurchase
+      ? "What you already have covers this, so there's nothing new to buy."
+      : goalOnly && ownedEntry
+        ? 'The tool you already have is the best fit we know of. No other tool in our library fits this goal.'
       : spark && spark.decision === 'ask'
         ? null
         : goalOnly
@@ -570,7 +600,8 @@ function recommend(input, recommendationLibrary, options = {}) {
     ownedNotInLibrary,
     duplicates,
     goalCategories: goalOnly && !spark ? checkout.categories : null,
-    matcher: spark ? 'spark' : 'keyword',
+    matcher: spark ? (spark.version === 2 ? 'spark2' : 'spark') : 'keyword',
+    noNewPurchase: Boolean(spark && spark.noNewPurchase),
     clarifyingQuestion: spark && spark.decision === 'ask' ? spark.question : null,
     goalReading: spark ? { decision: spark.decision, summary: spark.goalSummary, reason: spark.reason } : null,
     otherCandidates: others.slice(0, 3).map((r) => ({ id: r.rec.id, toolName: r.rec.toolName, category: r.rec.category, matchScore: r.score, matchQuality: r.match.quality, matchQualityLabel: r.match.label, owned: r.owned })),

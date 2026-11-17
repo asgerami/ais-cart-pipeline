@@ -179,7 +179,14 @@ pick outside the library, and turns an answer that breaks the rules into "none" 
 the shopper's owned tools; `/api/recommend` applies those to Spark's `picks`. In sample mode it returns prepared
 answers for the goals in `eval/goals/comparison.json`, and "none" for anything else.
 
-On the demo page, open `/?matcher=spark` and choose "I don't have a cart yet" to use it.
+**Version 2** (`"version": 2`, with `"ownedTools": [...]`): Spark also sees which library tools the shopper owns, and each
+record in full, including its first step and caution. It checks owned tools first: if one does the job, it returns that
+record with a first step for this goal (`owned_first_step`). It only adds a new tool (`new_tool_adds` says what it would
+add), and if nothing new is needed, `no_new_purchase` is true. Code checks that the owned pick really is owned, the new
+pick isn't, and Spark's own text states no prices. Version 1 is unchanged.
+
+On the demo page, open `/?matcher=spark` (version 1) or `/?matcher=spark2` (version 2) and choose "I don't have a cart
+yet". Without either, the page uses keyword matching.
 
 To compare keyword matching with Spark, whoever holds the service token runs:
 
@@ -188,7 +195,8 @@ export AISCART_TOKEN=...
 python3 eval/goal_compare.py --url https://<your-app>.vercel.app --runs 2
 ```
 
-It scores each goal against the expected result set in `eval/goals/comparison.json` and writes
+It runs keywords, Spark version 1 and version 2 side by side (`--versions 1` or `--versions 2` runs one), scores each goal
+against the expected result set in `eval/goals/comparison.json`, and writes
 `eval/runs/goals_<time>/REPORT.md`.
 
 ### `GET /api/health`

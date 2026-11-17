@@ -76,4 +76,45 @@ test('picks are ignored for screenshot checks', () => {
   assert.deepStrictEqual(b, a);
 });
 
+// ---------- version 2: Spark knows the owned tools ----------
+const v2 = (over) => ({ version: 2, decision: 'match', ownedRecordId: 'website-squarespace',
+  ownedFirstStep: 'Add a newsletter sign-up form to your most-visited page.', newRecordId: null, newToolAdds: null,
+  question: null, goalSummary: 'Collect email sign-ups on the existing site.', reason: 'Your site can already do this.', ...over });
+
+test('v2: the owned tool comes with Spark\'s first step for this goal, and nothing new to buy', () => {
+  const r = spark(MAILING, v2({}));
+  assert.strictEqual(r.matcher, 'spark2');
+  assert.strictEqual(r.ownedRecommendation.toolName, 'Squarespace');
+  assert.strictEqual(r.ownedRecommendation.sparkFirstStep, 'Add a newsletter sign-up form to your most-visited page.');
+  assert.match(r.ownedRecommendation.firstStep, /sign-up form/);
+  assert.strictEqual(r.recommendation, null);
+  assert.strictEqual(r.noNewPurchase, true);
+  assert.match(r.noMatchReason, /nothing new to buy/);
+});
+
+test('v2: a new tool comes with what it would add for this goal', () => {
+  const r = spark(MAILING, v2({ newRecordId: 'website-floot', newToolAdds: 'Accounts that remember each subscriber.' }));
+  assert.strictEqual(r.ownedRecommendation.toolName, 'Squarespace');
+  assert.strictEqual(r.recommendation.toolName, 'Floot');
+  assert.strictEqual(r.recommendation.sparkAdds, 'Accounts that remember each subscriber.');
+  assert.strictEqual(r.noNewPurchase, false);
+  assert.strictEqual(r.noMatchReason, null);
+});
+
+test('v2: an "owned" pick the shopper does not own, or a "new" pick they do own, is dropped', () => {
+  const r = spark(MAILING, v2({ ownedRecordId: 'website-floot', newRecordId: 'website-squarespace' }));
+  assert.strictEqual(r.matchQuality, 'no_suitable_match');
+  assert.strictEqual(r.ownedRecommendation, null);
+  assert.strictEqual(r.recommendation, null);
+});
+
+test('v2: ask and none behave as in version 1', () => {
+  const ask = spark('I want to grow my business.', v2({ decision: 'ask', ownedRecordId: null, question: 'What do you want more of first?' }));
+  assert.strictEqual(ask.clarifyingQuestion, 'What do you want more of first?');
+  assert.strictEqual(ask.ownedRecommendation, null);
+  const none = spark('I need to file my small business taxes before the deadline.', v2({ decision: 'none', ownedRecordId: null }));
+  assert.match(none.noMatchReason, /library has no tool/);
+  assert.strictEqual(none.noNewPurchase, false);
+});
+
 console.log(`${passed} tests passed`);
