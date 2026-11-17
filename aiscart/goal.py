@@ -45,7 +45,7 @@ You get a fixed library of tools we've reviewed. Each record has an id, the tool
 
 Work in this order:
 1. Can a tool the shopper already has do this job? If an owned record fits, set owned_record_id to it, and write owned_first_step: one concrete first step for this goal in that tool.
-2. Would a tool they don't have add something real for this specific goal? If so, set new_record_id and write new_tool_adds: what it would add, beyond what they already have, for this goal. If what they own already covers the goal, leave both null: not buying anything is a good answer.
+2. Would a tool they don't have add something real for this specific goal? If so, set new_record_id and write new_tool_adds: what it would add, beyond what they already have, for this goal. If an owned tool already covers the goal, keep owned_record_id and owned_first_step set, and leave only new_record_id and new_tool_adds null: not buying anything is a good answer, and decision is still "match".
 3. If no record fits, decision is "none". If the goal is too vague to tell what kind of tool would help, decision is "ask", with exactly one short question in "question".
 
 Rules:
@@ -171,8 +171,8 @@ def check_answer_v2(answer, owned):
         "no_new_purchase": decision_out == "match" and bool(own_id) and not new_id,
         "record_ids": [i for i in (own_id, new_id) if i],
         "question": question or None,
-        "goal_summary": str(answer.get("goal_summary") or "").strip()[:300],
-        "reason": str(answer.get("reason") or "").strip()[:300],
+        "goal_summary": text("goal_summary"),
+        "reason": text("reason"),
         "model_decision": decision,
         "held_back": bool(problems),
         "problems": problems,

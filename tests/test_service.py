@@ -44,7 +44,8 @@ class FakeMeta(BaseHTTPRequestHandler):
         has_image = any(p.get("type") == "image_url" for p in body["messages"][1]["content"])
         UP["calls"].append({"name": name, "model": body["model"], "image": has_image, "temperature": body.get("temperature"),
                             "reasoning": body.get("reasoning_effort"), "auth": self.headers.get("Authorization"),
-                            "schema": body["response_format"]["json_schema"]["schema"], "text": body["messages"][1]["content"][0]["text"]})
+                            "schema": body["response_format"]["json_schema"]["schema"], "text": body["messages"][1]["content"][0]["text"],
+                            "system": body["messages"][0]["content"]})
         if UP["fail"] == name:
             out, code = {"error": {"type": "authentication_error", "code": "invalid_api_key"}}, 401
         else:
@@ -320,7 +321,18 @@ try:
     s, r = req(f"{url}/api/goal", "POST", {"goal": MAILING, "version": 2, "ownedTools": ["Squarespace"]}, auth)
     check("goal v2: a price in Spark's own text is removed and flagged", r["interpretation"]["new_tool_adds"] is None
           and r["interpretation"]["held_back"], r["interpretation"])
-    UP.update(goal2={**UP["goal2"], "owned_record_id": "website-floot", "new_record_id": "website-squarespace"})
+    UP.update(goal2={**UP["goal2"], "new_record_id": None, "new_tool_adds": None,
+                     "reason": "Squarespace covers this, and you save $16 a month.", "goal_summary": "Spend under 20 dollars on sign-ups."})
+    s, r = req(f"{url}/api/goal", "POST", {"goal": MAILING, "version": 2, "ownedTools": ["Squarespace"]}, auth)
+    it = r["interpretation"]
+    check("goal v2: prices in reason and goal_summary are removed too, and the owned pick stays",
+          it["reason"] == "" and it["goal_summary"] == "" and it["held_back"] and it["owned_record_id"] == "website-squarespace"
+          and it["no_new_purchase"], it)
+    check("goal v2: the prompt keeps an owned tool that covers the goal selected, with only the new-tool fields empty",
+          "keep owned_record_id and owned_first_step set, and leave only new_record_id and new_tool_adds null" in UP["calls"][-1]["system"],
+          UP["calls"][-1].get("system", "")[:80])
+    UP.update(goal2={**UP["goal2"], "owned_record_id": "website-floot", "new_record_id": "website-squarespace",
+                     "reason": "Your site can already do this.", "goal_summary": "Collect email sign-ups on the existing site."})
     s, r = req(f"{url}/api/goal", "POST", {"goal": MAILING, "version": 2, "ownedTools": ["Squarespace"]}, auth)
     check("goal v2: picks on the wrong side of the owned list are dropped, leaving 'none'",
           r["interpretation"]["decision"] == "none" and len(r["interpretation"]["problems"]) == 3, r["interpretation"])
