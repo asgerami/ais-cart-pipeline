@@ -493,6 +493,10 @@ function recommend(input, recommendationLibrary, options = {}) {
   const isRegistrar = (rec) => rec.category === 'domains'
     || /\bregistrar\b/i.test([rec.toolName, rec.bestFor, ...(rec.keywords || [])].join(' '));
   const domainOnlyWithoutGoal = domainOnly && !hasSpecificGoal;
+  // Shared words such as "small", "display" or "portable" do not establish a software use case.
+  const goalCategoryEvidence = inferCategories({searchableTokens: new Set(tokens(scoringGoal))});
+  const hasCategoryEvidence = checkout.categories.length > 0 || goalCategoryEvidence.length > 0;
+
 
   // Muse Spark's reading of a goal (from /api/goal), already held to the library by code. When present it
   // replaces keyword matching; the owned-tool step below is the same either way.
@@ -515,6 +519,7 @@ function recommend(input, recommendationLibrary, options = {}) {
   const ranked = sparkRanked || recs
     .map((rec) => ({ rec, ...scoreRecord(rec, checkout, scoringGoal) }))
     .filter((r) => r.matched && r.score > 0)
+    .filter(() => goalOnly || hasCategoryEvidence)
     .filter((r) => !domainOnlyWithoutGoal || isRegistrar(r.rec))
     .map((entry) => ({
       ...entry,
