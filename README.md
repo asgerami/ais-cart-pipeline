@@ -277,3 +277,10 @@ The page-state test uses a DOM double, not a real browser; visual and mobile QA 
 Inventory here means AI tool names saved in this browser, not a cross-device account or grocery-stock database.
 Typed descriptions use keyword matching; they do not browse linked pages or verify HeyCatch's customer claims.
 Production remains on its current branch/version until this work is reviewed and promoted.
+
+### Preview latency experiment
+
+`EXTRACT_REASONING`, `REVIEW_REASONING` and `VERDICT_REASONING` optionally override `REASONING` per screenshot step.
+Without overrides the existing medium setting is preserved. The connected-shopping preview tests low extraction,
+medium flagged-field review and low verdict reasoning; models, schemas, math checks, citations and approval hold-back remain unchanged.
+Each call records `reasoning_effort` for latency comparisons. This is a preview experiment, not an accuracy guarantee.
