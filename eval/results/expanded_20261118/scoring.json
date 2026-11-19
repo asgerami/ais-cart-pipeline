@@ -1,0 +1,124 @@
+[
+  {
+    "case": "missing-renewal",
+    "passed": true,
+    "checks": [
+      {
+        "check": "Live mode",
+        "passed": true
+      },
+      {
+        "check": "Amount due retained",
+        "passed": true
+      },
+      {
+        "check": "Decision respects known or missing terms",
+        "passed": true
+      },
+      {
+        "check": "Verdict checks pass",
+        "passed": true
+      },
+      {
+        "check": "Recorded reading and verdict efforts are low",
+        "passed": true
+      },
+      {
+        "check": "No renewal price invented",
+        "passed": true
+      },
+      {
+        "check": "Missing renewal flagged",
+        "passed": true
+      },
+      {
+        "check": "Recommendation preserves verdict",
+        "passed": true
+      }
+    ]
+  },
+  {
+    "case": "paid-after-trial",
+    "passed": true,
+    "checks": [
+      {
+        "check": "Live mode",
+        "passed": true
+      },
+      {
+        "check": "Amount due retained",
+        "passed": true
+      },
+      {
+        "check": "Decision respects known or missing terms",
+        "passed": true
+      },
+      {
+        "check": "Verdict checks pass",
+        "passed": true
+      },
+      {
+        "check": "Recorded reading and verdict efforts are low",
+        "passed": true
+      },
+      {
+        "check": "Trial duration and paid amount retained",
+        "passed": true
+      },
+      {
+        "check": "Monthly renewal retained",
+        "passed": true
+      },
+      {
+        "check": "Cancellation deadline retained",
+        "passed": true
+      },
+      {
+        "check": "Recommendation preserves verdict",
+        "passed": true
+      }
+    ]
+  },
+  {
+    "case": "washer-protection",
+    "passed": true,
+    "checks": [
+      {
+        "check": "Live mode",
+        "passed": true
+      },
+      {
+        "check": "Amount due retained",
+        "passed": true
+      },
+      {
+        "check": "Decision respects known or missing terms",
+        "passed": true
+      },
+      {
+        "check": "Verdict checks pass",
+        "passed": true
+      },
+      {
+        "check": "Recorded reading and verdict efforts are low",
+        "passed": true
+      },
+      {
+        "check": "Protection-plan price retained",
+        "passed": true
+      },
+      {
+        "check": "No subscription invented",
+        "passed": true
+      },
+      {
+        "check": "Recommendation preserves verdict",
+        "passed": true
+      },
+      {
+        "check": "No unrelated AI tool offered",
+        "passed": true
+      }
+    ]
+  }
+]

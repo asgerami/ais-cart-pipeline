@@ -182,6 +182,37 @@ const GENERIC_QUESTIONS = new Set([
 ]);
 
 function classifyMatch(rec, checkout, founderGoal = '') {
+  const subject = checkout.sourceMode === 'description' ? 'purchase description' : 'checkout';
+  // Narration is an additional capability, not a substitute for assembling/editing video.
+  const isNarration = /\belevenlabs\b/i.test(rec.toolName) && rec.category === 'video';
+  const mentionsSpeech = text => /\b(narration|narrator|voiceover|voice-over|voice over|text.to.speech|speech|voice tracks?)\b/i.test(
+    String(text).replace(/\b(?:no|without|don't need|do not need)\s+(?:AI\s+)?(?:narration|voiceover|voice-over|voice over|speech|voice tracks?)\b/gi, ''));
+  if (isNarration && !mentionsSpeech(checkout.searchableText)) {
+    const requested = mentionsSpeech(founderGoal);
+    return {
+      quality: 'related_alternative', label: 'Optional narration addition — not a video editor',
+      explanation: requested
+        ? `Your goal asks for narration. This record covers speech alongside a video editor, rather than a direct substitute for the product in your ${subject}.`
+        : `Your ${subject} concerns video editing. This record adds narration only if you need it; your stated goal does not establish that need.`,
+      optionalCondition: requested ? null : 'Only if you need AI narration',
+      checkoutJobs: detectStrongCheckoutJob(checkout.searchableText).map(entry => entry.job),
+      sharedJobs: [], missingDirectJobs: ['video_editing'],
+    };
+  }
+  const isGeneratedVisual = /\brunway\b/i.test(rec.toolName);
+  const generatedVisuals = /\b(generat(?:e|ed|ive|ing)\s+(?:AI\s+)?(?:video|visuals?|footage|shots?|clips?|images?)|text.to.video|image.to.video)\b/i;
+  if (isGeneratedVisual && !generatedVisuals.test(checkout.searchableText)) {
+    const requested = generatedVisuals.test(founderGoal);
+    return {
+      quality: 'related_alternative', label: 'Optional generated visuals — not a video editor',
+      explanation: requested
+        ? `Your goal asks for generated visuals. This record adds generated footage alongside an editor, rather than replacing the product in your ${subject}.`
+        : `This record adds generated visuals only if you need them. Your ${subject} and stated goal do not establish that need.`,
+      optionalCondition: requested ? null : 'Only if you need AI-generated visuals',
+      checkoutJobs: detectStrongCheckoutJob(checkout.searchableText).map(entry => entry.job),
+      sharedJobs: [], missingDirectJobs: ['video_editing'],
+    };
+  }
   const goalText = String(founderGoal || '').trim().toLowerCase().replace(/\s+/g, ' ');
   const hasSpecificGoal = goalText && !GENERIC_QUESTIONS.has(goalText);
   const goalJobs = hasSpecificGoal ? detectJob(founderGoal) : [];
@@ -206,7 +237,7 @@ function classifyMatch(rec, checkout, founderGoal = '') {
     return {
       quality: 'direct_match',
       label: 'Direct match',
-      explanation: `The checkout (or a specific founder goal) and this Floot record both directly concern ${directJobs.map((entry) => entry.label).join(', ')}.`,
+      explanation: `The ${subject} (or a specific goal) and this editorial record both directly concern ${directJobs.map((entry) => entry.label).join(', ')}.`,
       checkoutJobs: checkoutJobs.map((entry) => entry.job),
       sharedJobs: directJobs.map((entry) => entry.job),
       missingDirectJobs: checkoutJobs.filter((entry) => !directJobs.some((direct) => direct.job === entry.job)).map((entry) => entry.job),
@@ -218,7 +249,7 @@ function classifyMatch(rec, checkout, founderGoal = '') {
     return {
       quality: 'related_alternative',
       label: 'Related alternative — not a direct substitute',
-      explanation: `Related through the stated goal (${goalOnlyJobs.map((entry) => entry.label).join(', ')}), but the checkout item itself does not directly identify that kind of purchase.`,
+      explanation: `Related through the stated goal (${goalOnlyJobs.map((entry) => entry.label).join(', ')}), but the ${subject} item itself does not directly identify that kind of purchase.`,
       checkoutJobs: checkoutJobs.map((entry) => entry.job),
       sharedJobs: recJobs.filter((entry) => goalOnlyJobs.some((goal) => goal.job === entry.job)).map((entry) => entry.job),
       missingDirectJobs: checkoutJobs.map((entry) => entry.job),
@@ -231,10 +262,10 @@ function classifyMatch(rec, checkout, founderGoal = '') {
     quality: 'related_alternative',
     label: 'Related alternative — not a direct substitute',
     explanation: genericPlanOnly
-      ? 'Related guidance only: the checkout only names a generic plan (for example "Builder Pro"), so the purchase does not explicitly identify a direct substitute category.'
+      ? `Related guidance only: the ${subject} only names a generic plan (for example "Builder Pro"), so the purchase does not explicitly identify a direct substitute category.`
       : (missingDirect.length
-        ? `Related guidance only: the checkout concerns ${missingDirect.map((entry) => entry.label).join(', ')}, while this record covers a neighbouring use case. Direct classification is withheld because the checkout/goal evidence is generic or adjacent, not an explicit direct-purchase match.`
-        : 'Related guidance only: this record shares a broad category with the checkout, but the evidence is too generic to call it a direct substitute.'),
+        ? `Related guidance only: the ${subject} concerns ${missingDirect.map((entry) => entry.label).join(', ')}, while this record covers a neighbouring use case. Direct classification is withheld because the ${subject}/goal evidence is generic or adjacent, not an explicit direct-purchase match.`
+        : `Related guidance only: this record shares a broad category with the ${subject}, but the evidence is too generic to call it a direct substitute.`),
     checkoutJobs: checkoutJobs.map((entry) => entry.job),
     sharedJobs: directJobs.map((entry) => entry.job),
     missingDirectJobs: missingDirect.map((entry) => entry.job),
@@ -444,6 +475,7 @@ function recommend(input, recommendationLibrary, options = {}) {
   const scoringGoal = goalOnly ? String(founderGoal).replace(/[.,!?;:]+(?=\s|$)/g, ' ') : founderGoal;
   const checkout = describeCheckout(facts);
   checkout.goalOnly = goalOnly;
+  checkout.sourceMode = sourceMode;
   checkout.categories = goalOnly
     ? inferCategories({ searchableTokens: new Set(tokens(scoringGoal)) })
     : inferCategories(checkout);
@@ -461,6 +493,10 @@ function recommend(input, recommendationLibrary, options = {}) {
   const isRegistrar = (rec) => rec.category === 'domains'
     || /\bregistrar\b/i.test([rec.toolName, rec.bestFor, ...(rec.keywords || [])].join(' '));
   const domainOnlyWithoutGoal = domainOnly && !hasSpecificGoal;
+  // Shared words such as "small", "display" or "portable" do not establish a software use case.
+  const goalCategoryEvidence = inferCategories({searchableTokens: new Set(tokens(scoringGoal))});
+  const hasCategoryEvidence = checkout.categories.length > 0 || goalCategoryEvidence.length > 0;
+
 
   // Muse Spark's reading of a goal (from /api/goal), already held to the library by code. When present it
   // replaces keyword matching; the owned-tool step below is the same either way.
@@ -483,6 +519,7 @@ function recommend(input, recommendationLibrary, options = {}) {
   const ranked = sparkRanked || recs
     .map((rec) => ({ rec, ...scoreRecord(rec, checkout, scoringGoal) }))
     .filter((r) => r.matched && r.score > 0)
+    .filter(() => goalOnly || hasCategoryEvidence)
     .filter((r) => !domainOnlyWithoutGoal || isRegistrar(r.rec))
     .map((entry) => ({
       ...entry,
@@ -500,8 +537,28 @@ function recommend(input, recommendationLibrary, options = {}) {
   // A tool the shopper already has comes first when it fits. The recommendation itself is always a tool they
   // don't have yet, so it says what a new purchase would add. With no owned tools, nothing here changes.
   const ownedEntry = ranked.find((r) => r.owned && (!goalOnly || r.match.quality === 'goal_match')) || null;
-  const top = ranked.find((r) => !r.owned) || null;
-  const others = ranked.filter((r) => r !== top && r !== ownedEntry);
+  // Known capabilities compose an owned workflow; category overlap alone is insufficient.
+  const needText = String(founderGoal || checkout.searchableText).replace(
+    /\b(?:no|without|don't need|do not need)\s+(?:AI\s+)?(?:narration|voiceover|voice-over|voice over|speech)\b/gi, '');
+  const capabilityRules = [
+    { key: 'editing', tool: 'Canva', role: 'Video editing and assembly', pattern: /\b(video|promo|editing|edit|clips?)\b/i },
+    { key: 'narration', tool: 'ElevenLabs', role: 'Narration and voice tracks', pattern: /\b(narration|narrator|voiceover|voice.over|speech|voice tracks?)\b/i },
+    { key: 'visuals', tool: 'Runway', role: 'AI-generated visuals', pattern: /\b(generat(?:e|ed|ive|ing)\s+(?:AI\s+)?(?:video|visuals?|footage|shots?|clips?|images?)|text.to.video|image.to.video)\b/i },
+  ];
+  const requestedCapabilities = capabilityRules.filter(rule => rule.pattern.test(needText));
+  const workflowEligible = !spark && (sourceMode === 'description' || goalOnly)
+    && requestedCapabilities.some(rule => rule.key === 'editing');
+  const workflowEntries = workflowEligible ? requestedCapabilities.map(rule => ({rule,
+    entry: ranked.find(r => r.owned && sameTool(r.rec.toolName, rule.tool))
+  })).filter(item => item.entry) : [];
+  const ownedCoversRequest = workflowEligible && workflowEntries.length >= 2 && workflowEntries.length === requestedCapabilities.length;
+  const top = ownedCoversRequest ? null : ranked.find((r) => !r.owned) || null;
+  const seenTools = [top, ownedEntry].filter(Boolean).map(r => r.rec.toolName);
+  const others = ranked.filter(r => {
+    if (seenTools.some(name => sameTool(name, r.rec.toolName))) return false;
+    seenTools.push(r.rec.toolName);
+    return true;
+  });
 
   // Something in the cart the shopper already has, by name or by the job it does. Checked only against
   // records in the library, and only for jobs the checkout names clearly, so a domain never reads as a
@@ -515,7 +572,11 @@ function recommend(input, recommendationLibrary, options = {}) {
         duplicates.push({ tool: name, kind: 'same_tool', jobs: [], text: `You already have ${name}. Make sure this isn't a second subscription.` });
         continue;
       }
-      const ownedJobs = new Set(libRecs.flatMap((rec) => detectJob(recordText(rec)).map((entry) => entry.job)));
+      const ownedJobs = new Set(libRecs.flatMap((rec) => /elevenlabs/i.test(rec.toolName) ? [] : detectJob(recordText(rec)).map((entry) => entry.job)));
+      if (libRecs.some(rec => /elevenlabs/i.test(rec.toolName)) && /\b(narration|voiceover|voice.over|speech)\b/i.test(checkout.searchableText)) {
+        duplicates.push({tool: name, kind: 'same_job', jobs: ['narration'], text: `You already have ${name}, which covers narration and voice tracks.`});
+        continue;
+      }
       const shared = JOB_PATTERNS.filter((p) => strongJobs.includes(p.job) && ownedJobs.has(p.job));
       if (shared.length) {
         duplicates.push({
@@ -558,8 +619,10 @@ function recommend(input, recommendationLibrary, options = {}) {
   });
   const why = top ? whyFor(top)
     : [`No record in the recommendation library matched this ${goalOnly ? 'goal' : 'checkout'}. That is a library-coverage result, not a claim that no alternative exists.`];
-  const noMatchReason = top ? null : domainOnlyWithoutGoal
-    ? "This checkout only shows a domain purchase, and a website builder is not a substitute for a domain. To see related tools, say what you're trying to do, such as launching a website."
+  const noMatchReason = ownedCoversRequest
+    ? 'The tools you already own cover the editing and any narration or generated visuals identified in this comparison. No additional purchase is established as necessary.'
+    : top ? null : domainOnlyWithoutGoal
+    ? `This ${sourceMode === 'description' ? 'purchase description' : 'checkout'} only shows a domain purchase, and a website builder is not a substitute for a domain. To see related tools, say what you're trying to do, such as launching a website.`
     : spark && spark.noNewPurchase
       ? "What you already have covers this, so there's nothing new to buy."
       : goalOnly && ownedEntry
@@ -597,14 +660,19 @@ function recommend(input, recommendationLibrary, options = {}) {
     recommendation: top ? { ...shape(top), whyItFits: why } : null,
     ownedTools: owned,
     ownedRecommendation: ownedEntry ? shape(ownedEntry) : null,
+    ownedWorkflow: workflowEntries.map(({rule, entry}) => ({
+      ...shape(entry), role: rule.role,
+      match: { quality: 'goal_match', label: 'Fits this workflow step',
+        explanation: `You already own ${entry.rec.toolName}. Our editorial notes support using it for ${rule.role.toLowerCase()} in this workflow.` },
+    })),
     ownedNotInLibrary,
     duplicates,
     goalCategories: goalOnly && !spark ? checkout.categories : null,
     matcher: spark ? (spark.version === 2 ? 'spark2' : 'spark') : 'keyword',
-    noNewPurchase: Boolean(spark && spark.noNewPurchase),
+    noNewPurchase: ownedCoversRequest || Boolean(spark && spark.noNewPurchase),
     clarifyingQuestion: spark && spark.decision === 'ask' ? spark.question : null,
     goalReading: spark ? { decision: spark.decision, summary: spark.goalSummary, reason: spark.reason } : null,
-    otherCandidates: others.slice(0, 3).map((r) => ({ id: r.rec.id, toolName: r.rec.toolName, category: r.rec.category, matchScore: r.score, matchQuality: r.match.quality, matchQualityLabel: r.match.label, owned: r.owned })),
+    otherCandidates: (ownedCoversRequest ? [] : others).slice(0, 3).map((r) => ({ id: r.rec.id, toolName: r.rec.toolName, category: r.rec.category, matchScore: r.score, matchQuality: r.match.quality, matchQualityLabel: r.match.label, owned: r.owned })),
     risks,
     checkBeforeBuying: [...new Set(risks.map((r) => r.check))],
     honesty: {

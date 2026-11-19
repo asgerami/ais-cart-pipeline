@@ -1,0 +1,320 @@
+{
+  "mode": "live",
+  "question": "Should I complete this purchase?",
+  "verdict": {
+    "check_before_buying": [
+      "Ask why Total due today is $10.00 more than subtotal - discount + tax (29.95 - 19.95)",
+      "Confirm what TEST CHECKOUT means and do not pay until you see a real charge checkout",
+      "Confirm renewal billing date and how to cancel before the $79.95 renewal"
+    ],
+    "confidence": "high",
+    "decision": "WAIT",
+    "headline": "Total does not add up and this shows as test checkout - do not pay yet",
+    "reasons": [
+      {
+        "fields": [
+          "subtotal",
+          "discounts",
+          "tax",
+          "total_due_now"
+        ],
+        "text": "Math check failed: subtotal 19.95 - discount 0.00 + tax 0.00 = 19.95 vs total_due_now 29.95, a 10.00 gap (29.95 - 19.95 = 10.00) with no explained fee."
+      },
+      {
+        "fields": [
+          "line_items[0].line_total",
+          "line_items[0].term",
+          "renewal_terms"
+        ],
+        "text": "Intro price is First 14 days for 19.95, then automatic renewal is 79.95 every 4 weeks, so cost jumps after 14 days."
+      },
+      {
+        "fields": [
+          "other_conditions",
+          "merchant",
+          "total_due_now"
+        ],
+        "text": "Checkout states TEST CHECKOUT \u2014 NOT A REAL PURCHASE for Cedar Voice Studio, so completing it does not confirm the real 29.95 charge."
+      }
+    ],
+    "model_decision": "WAIT",
+    "held_back": false
+  },
+  "verdict_checks": [
+    {
+      "check": "every cited field exists",
+      "ok": true,
+      "detail": "all cited fields found"
+    },
+    {
+      "check": "every reason cites at least one field",
+      "ok": true,
+      "detail": "3 reason(s)"
+    },
+    {
+      "check": "every dollar amount comes from the facts",
+      "ok": true,
+      "detail": "all amounts traced to the facts"
+    }
+  ],
+  "verdict_checks_passed": true,
+  "citations_normalized": [],
+  "facts": {
+    "cancellation_terms": {
+      "evidence": "Cancel in Account Settings before renewal.",
+      "status": "observed",
+      "value": "Cancel in Account Settings before renewal."
+    },
+    "currency": {
+      "evidence": "Currency: USD",
+      "status": "observed",
+      "value": "USD"
+    },
+    "discounts": {
+      "evidence": "Discount: $0.00",
+      "status": "observed",
+      "value": "$0.00"
+    },
+    "line_items": [
+      {
+        "line_total": {
+          "evidence": "First 14 days: $19.95",
+          "status": "observed",
+          "value": "$19.95"
+        },
+        "name": {
+          "evidence": "Voice Pro \u2014 introductory plan",
+          "status": "observed",
+          "value": "Voice Pro \u2014 introductory plan"
+        },
+        "quantity": {
+          "evidence": "Quantity: 1",
+          "status": "observed",
+          "value": "1"
+        },
+        "term": {
+          "evidence": "First 14 days: $19.95",
+          "status": "observed",
+          "value": "First 14 days"
+        }
+      }
+    ],
+    "merchant": {
+      "evidence": "Cedar Voice Studio",
+      "status": "observed",
+      "value": "Cedar Voice Studio"
+    },
+    "other_conditions": {
+      "evidence": "TEST CHECKOUT \u2014 NOT A REAL PURCHASE",
+      "status": "observed",
+      "value": "TEST CHECKOUT \u2014 NOT A REAL PURCHASE"
+    },
+    "renewal_terms": {
+      "evidence": "Automatic renewal after 14 days: $79.95 every 4 weeks",
+      "status": "observed",
+      "value": "Automatic renewal after 14 days: $79.95 every 4 weeks"
+    },
+    "subtotal": {
+      "evidence": "Subtotal: $19.95",
+      "status": "observed",
+      "value": "$19.95"
+    },
+    "tax": {
+      "evidence": "Tax: $0.00",
+      "status": "observed",
+      "value": "$0.00"
+    },
+    "total_due_now": {
+      "evidence": "Total due today: $29.95",
+      "status": "observed",
+      "value": "$29.95"
+    },
+    "trial_terms": {
+      "evidence": "No trial terms shown",
+      "status": "unknown",
+      "value": null
+    },
+    "uncertainty_flags": [
+      "price_changes_after_intro",
+      "totals_do_not_add_up"
+    ]
+  },
+  "checks": {
+    "math": [
+      {
+        "check": "line items add up to subtotal",
+        "ok": true,
+        "detail": "items 19.95 vs subtotal 19.95"
+      },
+      {
+        "check": "subtotal - discount + tax = total",
+        "ok": false,
+        "detail": "subtotal 19.95 - discount 0.00 + tax 0.00 = 19.95 vs total 29.95"
+      }
+    ],
+    "math_before_review": [
+      {
+        "check": "line items add up to subtotal",
+        "ok": true,
+        "detail": "items 19.95 vs subtotal 19.95"
+      },
+      {
+        "check": "subtotal - discount + tax = total",
+        "ok": false,
+        "detail": "subtotal 19.95 - discount 0.00 + tax 0.00 = 19.95 vs total 29.95"
+      }
+    ],
+    "schema_problems": [],
+    "fields_flagged": {
+      "subtotal": [
+        "math check failed: subtotal - discount + tax = total (subtotal 19.95 - discount 0.00 + tax 0.00 = 19.95 vs total 29.95)",
+        "model raised flag totals_do_not_add_up"
+      ],
+      "discounts": [
+        "math check failed: subtotal - discount + tax = total (subtotal 19.95 - discount 0.00 + tax 0.00 = 19.95 vs total 29.95)",
+        "model raised flag totals_do_not_add_up"
+      ],
+      "tax": [
+        "math check failed: subtotal - discount + tax = total (subtotal 19.95 - discount 0.00 + tax 0.00 = 19.95 vs total 29.95)",
+        "model raised flag totals_do_not_add_up"
+      ],
+      "total_due_now": [
+        "math check failed: subtotal - discount + tax = total (subtotal 19.95 - discount 0.00 + tax 0.00 = 19.95 vs total 29.95)",
+        "model raised flag totals_do_not_add_up"
+      ]
+    }
+  },
+  "review": {
+    "ran": true,
+    "model": "muse-wonder-1.0",
+    "changes": [],
+    "skipped_because": null
+  },
+  "facts_before_review": {
+    "cancellation_terms": {
+      "evidence": "Cancel in Account Settings before renewal.",
+      "status": "observed",
+      "value": "Cancel in Account Settings before renewal."
+    },
+    "currency": {
+      "evidence": "Currency: USD",
+      "status": "observed",
+      "value": "USD"
+    },
+    "discounts": {
+      "evidence": "Discount: $0.00",
+      "status": "observed",
+      "value": "$0.00"
+    },
+    "line_items": [
+      {
+        "line_total": {
+          "evidence": "First 14 days: $19.95",
+          "status": "observed",
+          "value": "$19.95"
+        },
+        "name": {
+          "evidence": "Voice Pro \u2014 introductory plan",
+          "status": "observed",
+          "value": "Voice Pro \u2014 introductory plan"
+        },
+        "quantity": {
+          "evidence": "Quantity: 1",
+          "status": "observed",
+          "value": "1"
+        },
+        "term": {
+          "evidence": "First 14 days: $19.95",
+          "status": "observed",
+          "value": "First 14 days"
+        }
+      }
+    ],
+    "merchant": {
+      "evidence": "Cedar Voice Studio",
+      "status": "observed",
+      "value": "Cedar Voice Studio"
+    },
+    "other_conditions": {
+      "evidence": "TEST CHECKOUT \u2014 NOT A REAL PURCHASE",
+      "status": "observed",
+      "value": "TEST CHECKOUT \u2014 NOT A REAL PURCHASE"
+    },
+    "renewal_terms": {
+      "evidence": "Automatic renewal after 14 days: $79.95 every 4 weeks",
+      "status": "observed",
+      "value": "Automatic renewal after 14 days: $79.95 every 4 weeks"
+    },
+    "subtotal": {
+      "evidence": "Subtotal: $19.95",
+      "status": "observed",
+      "value": "$19.95"
+    },
+    "tax": {
+      "evidence": "Tax: $0.00",
+      "status": "observed",
+      "value": "$0.00"
+    },
+    "total_due_now": {
+      "evidence": "Total due today: $29.95",
+      "status": "observed",
+      "value": "$29.95"
+    },
+    "trial_terms": {
+      "evidence": "No trial terms shown",
+      "status": "unknown",
+      "value": null
+    },
+    "uncertainty_flags": [
+      "price_changes_after_intro",
+      "totals_do_not_add_up"
+    ]
+  },
+  "calls": [
+    {
+      "step": "extract",
+      "model": "muse-spark-1.3",
+      "reasoning_effort": "low",
+      "latency_s": 7.219,
+      "input_tokens": 3083,
+      "output_tokens": 1058,
+      "est_cost_usd": 0.00835
+    },
+    {
+      "step": "review",
+      "model": "muse-wonder-1.0",
+      "reasoning_effort": "medium",
+      "latency_s": 5.544,
+      "input_tokens": 2414,
+      "output_tokens": 779,
+      "est_cost_usd": 0.025236
+    },
+    {
+      "step": "verdict",
+      "model": "muse-spark-1.3",
+      "reasoning_effort": "low",
+      "latency_s": 12.081,
+      "input_tokens": 1250,
+      "output_tokens": 1145,
+      "est_cost_usd": 0.006429
+    }
+  ],
+  "total_latency_s": 24.844,
+  "total_est_cost_usd": 0.040015,
+  "settings": {
+    "extract_model": "muse-spark-1.3",
+    "review_model": "muse-wonder-1.0",
+    "verdict_model": "muse-spark-1.3",
+    "temperature": 0.0,
+    "reasoning": "medium",
+    "extract_reasoning": "low",
+    "review_reasoning": "medium",
+    "verdict_reasoning": "low"
+  },
+  "versions": {
+    "extract_prompt": "d33cd6c8",
+    "review_prompt": "4c693e1f",
+    "verdict_prompt": "0a3a360f"
+  },
+  "image_sha256": "52f10a810b7eaaee79c6170acad7f343cd310a4fceff5e416b16f593d92940c0"
+}

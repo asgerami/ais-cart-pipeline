@@ -1,0 +1,9 @@
+{
+  "pipelineVerdict": {
+    "decision": "WAIT",
+    "headline": "Cart total doesn't match visible items \u2014 don't pay until full item list is confirmed",
+    "confidence": "low"
+  },
+  "recommendation": null,
+  "ownedRecommendation": null
+}

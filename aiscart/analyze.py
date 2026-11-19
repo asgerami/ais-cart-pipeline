@@ -27,12 +27,15 @@ VERSIONS = {"extract_prompt": _v(SYSTEM_PROMPT), "review_prompt": _v(REVIEW_SYST
 
 def settings_from_env():
     t = os.environ.get("TEMPERATURE", "0").strip()
+    reasoning = os.environ.get("REASONING", "medium").strip() or None
     return {
         "extract_model": os.environ.get("EXTRACT_MODEL", "muse-spark-1.3"),
         "review_model": os.environ.get("REVIEW_MODEL", "muse-wonder-1.0"),
         "verdict_model": os.environ.get("VERDICT_MODEL", "muse-spark-1.3"),
         "temperature": float(t) if t else None,
-        "reasoning": os.environ.get("REASONING", "medium").strip() or None,
+        "reasoning": reasoning,
+        **{f"{step}_reasoning": os.environ.get(f"{step.upper()}_REASONING", "").strip() or reasoning
+           for step in ("extract", "review", "verdict")},
     }
 
 
@@ -48,12 +51,13 @@ def analyze(image, mime, question, client, settings, review="auto"):
     calls = []
 
     def call(step, model, system, text, img, name, schema, hint=None):
+        reasoning = settings.get(f"{step}_reasoning", settings.get("reasoning"))
         try:
             parsed, usage, latency = client.chat(model, system, text, img, name, schema,
-                                                 settings.get("temperature"), settings.get("reasoning"), hint)
+                                                 settings.get("temperature"), reasoning, hint)
         except MetaError as e:
             raise StepError(step, e, calls)
-        calls.append({"step": step, "model": model, "latency_s": latency,
+        calls.append({"step": step, "model": model, "reasoning_effort": reasoning, "latency_s": latency,
                       "input_tokens": usage.get("prompt_tokens"), "output_tokens": usage.get("completion_tokens"),
                       "est_cost_usd": est_cost(model, usage)})
         return parsed

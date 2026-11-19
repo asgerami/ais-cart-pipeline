@@ -1,0 +1,5 @@
+{
+  "clear-renewal": {"total_due_now": "$19.95", "renewal_price": "$79.95", "renewal_interval": "every 4 weeks", "intro_days": 14, "math_ok": true, "test_checkout": true},
+  "wrong-total": {"total_due_now": "$29.95", "subtotal": "$19.95", "math_ok": false, "decision": "WAIT"},
+  "heycatch-ad": {"merchant": "HeyCatch", "total_due_now": null, "renewal_terms": null, "decision": "WAIT", "not_purchase_prices": ["$1,000", "$1,340"]}
+}

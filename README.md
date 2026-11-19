@@ -246,3 +246,41 @@ Nov 3, 2026, with `eval/live_run.py`.
 | Steven Lance Rocker | Founder/Product & Editorial Research |
 | Amir Aman | AI Pipeline/Engineering |
 | Sanvi Tata | Recommendation Integration / AI & Full-Stack Development |
+
+## Connected shopping branch
+
+`work/connected-shopping-tests` includes Amir's Spark v2 through `ada49f0` and adds a third entry, **Describe a purchase**.
+All three entries use the same browser-local **Tools you already have** inventory and editorial recommendation API:
+
+| Entry | Request chain | Evidence boundary |
+| --- | --- | --- |
+| Screenshot | `/api/analyze` → `/api/recommend` | Existing checked verdict stays unchanged by recommendations. |
+| Describe a purchase | `/api/recommend`, `mode: description` | User-supplied text only; no purchase verdict, verified pricing or verified ad claims. |
+| Goal | `/api/goal` → `/api/recommend` with `?matcher=spark2`; keywords by default | Owned tool first; Spark v2 can say nothing new is needed. |
+
+Local development now serves `/api/recommend` through the same Node handler as Vercel. Install Python 3.9+ and Node 18+;
+run `MOCK=1 python3 server.py` and open `http://localhost:8000/?matcher=spark2`. No model credentials or spending required.
+Sample mode uses prepared answers, so arbitrary new screenshots and goals are not real-model validation.
+
+Run the connected HTTP cases and page-state checks:
+
+```sh
+python3 tests/test_journeys.py
+node tests/test_page_journeys.js
+```
+
+The editable cases are in `eval/journeys/cases.json`: screenshot verdict preservation, owned-tool priority,
+duplicate purchases, tools outside the library, typed purchases, physical goods with no AI substitute, and Spark v2's
+no-new-purchase path. The runner starts and stops a local sample server with a test-only token. It never calls Meta.
+The page-state test uses a DOM double, not a real browser; visual and mobile QA remain to be done on a preview.
+
+Inventory here means AI tool names saved in this browser, not a cross-device account or grocery-stock database.
+Typed descriptions use keyword matching; they do not browse linked pages or verify HeyCatch's customer claims.
+Production remains on its current branch/version until this work is reviewed and promoted.
+
+### Preview latency experiment
+
+`EXTRACT_REASONING`, `REVIEW_REASONING` and `VERDICT_REASONING` optionally override `REASONING` per screenshot step.
+Without overrides the existing medium setting is preserved. The connected-shopping preview tests low extraction,
+medium flagged-field review and low verdict reasoning; models, schemas, math checks, citations and approval hold-back remain unchanged.
+Each call records `reasoning_effort` for latency comparisons. This is a preview experiment, not an accuracy guarantee.

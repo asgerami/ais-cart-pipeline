@@ -1,0 +1,164 @@
+{
+  "mode": "live",
+  "question": "Should I complete this purchase?",
+  "verdict": {
+    "check_before_buying": [
+      "Confirm total_due_now, subtotal, tax and currency on the actual checkout page",
+      "Confirm renewal_terms, cancellation_terms and trial_terms including price and how to cancel",
+      "Confirm other_conditions and discounts and verify merchant billing details"
+    ],
+    "confidence": "high",
+    "decision": "WAIT",
+    "headline": "No checkout totals or terms visible \u2014 wait for real purchase details",
+    "reasons": [
+      {
+        "fields": [
+          "total_due_now",
+          "subtotal",
+          "tax",
+          "currency"
+        ],
+        "text": "No amount due visible: total_due_now, subtotal, tax and currency are all unknown, so the charge cannot be verified."
+      },
+      {
+        "fields": [
+          "renewal_terms",
+          "cancellation_terms",
+          "trial_terms"
+        ],
+        "text": "No ongoing commitment visible: renewal_terms, cancellation_terms and trial_terms are all unknown."
+      },
+      {
+        "fields": [
+          "other_conditions",
+          "merchant",
+          "discounts"
+        ],
+        "text": "Only merchant HeyCatch is observed; other_conditions and discounts are unknown and evidence states image is an ad, not a checkout."
+      }
+    ],
+    "model_decision": "WAIT",
+    "held_back": false
+  },
+  "verdict_checks": [
+    {
+      "check": "every cited field exists",
+      "ok": true,
+      "detail": "all cited fields found"
+    },
+    {
+      "check": "every reason cites at least one field",
+      "ok": true,
+      "detail": "3 reason(s)"
+    },
+    {
+      "check": "every dollar amount comes from the facts",
+      "ok": true,
+      "detail": "all amounts traced to the facts"
+    }
+  ],
+  "verdict_checks_passed": true,
+  "citations_normalized": [],
+  "facts": {
+    "cancellation_terms": {
+      "evidence": "No cancellation terms visible",
+      "status": "unknown",
+      "value": null
+    },
+    "currency": {
+      "evidence": "No checkout currency or total shown",
+      "status": "unknown",
+      "value": null
+    },
+    "discounts": {
+      "evidence": "No discounts visible",
+      "status": "unknown",
+      "value": null
+    },
+    "line_items": [],
+    "merchant": {
+      "evidence": "HeyCatch",
+      "status": "observed",
+      "value": "HeyCatch"
+    },
+    "other_conditions": {
+      "evidence": "No checkout conditions visible; image is an ad, not a checkout",
+      "status": "unknown",
+      "value": null
+    },
+    "renewal_terms": {
+      "evidence": "No renewal terms visible",
+      "status": "unknown",
+      "value": null
+    },
+    "subtotal": {
+      "evidence": "No subtotal visible",
+      "status": "unknown",
+      "value": null
+    },
+    "tax": {
+      "evidence": "No tax visible",
+      "status": "unknown",
+      "value": null
+    },
+    "total_due_now": {
+      "evidence": "No amount due visible",
+      "status": "unknown",
+      "value": null
+    },
+    "trial_terms": {
+      "evidence": "No trial terms visible",
+      "status": "unknown",
+      "value": null
+    },
+    "uncertainty_flags": [
+      "other"
+    ]
+  },
+  "checks": {
+    "math": [],
+    "math_before_review": [],
+    "schema_problems": [],
+    "fields_flagged": {}
+  },
+  "review": {
+    "ran": false,
+    "model": null,
+    "changes": [],
+    "skipped_because": "nothing flagged"
+  },
+  "facts_before_review": null,
+  "calls": [
+    {
+      "step": "extract",
+      "model": "muse-spark-1.3",
+      "latency_s": 14.474,
+      "input_tokens": 3137,
+      "output_tokens": 1455,
+      "est_cost_usd": 0.010105
+    },
+    {
+      "step": "verdict",
+      "model": "muse-spark-1.3",
+      "latency_s": 10.133,
+      "input_tokens": 848,
+      "output_tokens": 1129,
+      "est_cost_usd": 0.005858
+    }
+  ],
+  "total_latency_s": 24.607,
+  "total_est_cost_usd": 0.015963,
+  "settings": {
+    "extract_model": "muse-spark-1.3",
+    "review_model": "muse-wonder-1.0",
+    "verdict_model": "muse-spark-1.3",
+    "temperature": 0.0,
+    "reasoning": "medium"
+  },
+  "versions": {
+    "extract_prompt": "d33cd6c8",
+    "review_prompt": "4c693e1f",
+    "verdict_prompt": "0a3a360f"
+  },
+  "image_sha256": "af17c199d0c7f188e47528c552f8f6773117993467dbbd1f3dae630f461a4519"
+}
