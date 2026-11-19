@@ -2,12 +2,47 @@
   "tool": "Base44",
   "library_id": "mvp-base44",
   "owner": "Lance",
-  "billing": {
-    "amount": null,
-    "cadence": null,
-    "renews": null,
-    "sources": []
+  "status": {
+    "value": null,
+    "source": null,
+    "observed": null
   },
+  "staging_ids": [
+    "AC-STAGE-20261117-002"
+  ],
+  "billing": {
+    "plan": {
+      "value": null,
+      "source": null,
+      "observed": null
+    },
+    "amount": {
+      "value": null,
+      "source": null,
+      "observed": null
+    },
+    "currency": {
+      "value": null,
+      "source": null,
+      "observed": null
+    },
+    "interval": {
+      "value": null,
+      "source": null,
+      "observed": null
+    },
+    "renews": {
+      "value": null,
+      "source": null,
+      "observed": null
+    },
+    "renewal_date": {
+      "value": null,
+      "source": null,
+      "observed": null
+    }
+  },
+  "redacted": "Billing details, which accounts show this charge, and the private source document are kept out of this public repo.",
   "evidence": [
     {
       "id": "base44-1",
@@ -22,12 +57,51 @@
     {
       "id": "base44-2",
       "kind": "surprise",
-      "what": "The Living Story idea came out of working in Base44.",
+      "what": "The Living Story contribution helped develop the Living Song interpretation.",
       "outcome": "changed_plans",
       "date": null,
       "source": "shopper_account",
       "link": null,
-      "verified": false
+      "verified": false,
+      "staging_id": "AC-STAGE-20261117-002"
+    },
+    {
+      "id": "base44-3",
+      "kind": "job",
+      "what": "Recurring project work on FloodHive.",
+      "outcome": null,
+      "date": null,
+      "source": "shopper_account",
+      "link": null,
+      "verified": false,
+      "staging_id": "AC-STAGE-20261117-002"
+    },
+    {
+      "id": "base44-4",
+      "kind": "job",
+      "what": "Recurring project work on SongWrite.",
+      "outcome": null,
+      "date": null,
+      "source": "shopper_account",
+      "link": null,
+      "verified": false,
+      "staging_id": "AC-STAGE-20261117-002"
+    }
+  ],
+  "recommendations": [
+    {
+      "date": "2026-11-17",
+      "goal": "Keep Zero Story Lab and the Frozen Seed work running",
+      "recommendation": "keep_for_now",
+      "reason": "Map active project dependencies; evaluate each new job on fit rather than assuming it replaces Floot.",
+      "cites": [
+        "base44-1",
+        "base44-3",
+        "base44-4"
+      ],
+      "status": "provisional",
+      "by": "Lance",
+      "staging_id": "AC-STAGE-20261117-002"
     }
   ]
 }
