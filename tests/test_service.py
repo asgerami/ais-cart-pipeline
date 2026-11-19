@@ -356,6 +356,30 @@ try:
     check("goal, sample mode: any other goal gets an honest 'none'", r["interpretation"]["decision"] == "none"
           and "Sample mode" in r["interpretation"]["reason"], r)
 
+    # Faster extraction/verdict retain the same model order, review and approval checks.
+    UP.update(calls=[], extract=misread, fail=None,
+              review={"corrections": [{"field":"total_due_now", "status":"observed", "value":"$435.46",
+                       "evidence":"Total $435.46", "changed":True, "reason":"digits transposed"}]},
+              verdict={"decision":"BUY", "headline":"Adds up to $435.46",
+                       "reasons":[{"text":"Total is $435.46", "fields":["total_due_now"]}],
+                       "check_before_buying":[], "confidence":"high"})
+    p, url = start("local", {"MODEL_API_KEY":"LLM_1_test", "MODEL_API_BASE":FAKE_BASE,
+                            "EXTRACT_REASONING":"low", "VERDICT_REASONING":"low"})
+    procs.append(p)
+    s, r = req(f"{url}/api/analyze", "POST", {"image":CART})
+    check("speed: effort is low/medium/low while flagged fields are still reviewed",
+          s==200 and [c["reasoning"] for c in UP["calls"]]==["low","medium","low"]
+          and r["review"]["ran"] is True, UP["calls"])
+    check("speed: passing verdict and checks are retained with per-step efforts",
+          r["verdict_checks_passed"] and r["facts"]["total_due_now"]["value"]=="$435.46"
+          and [c["reasoning_effort"] for c in r["calls"]]==["low","medium","low"], r)
+    UP.update(verdict={"decision":"BUY", "headline":"You save $999.00",
+                      "reasons":[{"text":"Save $999.00", "fields":["total_due_now"]}],
+                      "check_before_buying":[], "confidence":"high"})
+    s, r = req(f"{url}/api/analyze", "POST", {"image":CART})
+    check("speed: invented-price BUY is still held back as WAIT",
+          r["verdict"]["decision"]=="WAIT" and r["verdict"]["held_back"], r)
+
     # No key and no mock
     p, url = start("local", {})
     procs.append(p)

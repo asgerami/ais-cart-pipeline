@@ -4,6 +4,8 @@
 Environment: MODEL_API_KEY (live) or MOCK=1 (sample answers), optional SERVICE_TOKEN, PORT (default 8000).
 """
 import os
+import json
+import subprocess
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
@@ -30,7 +32,21 @@ class Handler(BaseHTTPRequestHandler):
             f = STATIC[path]
             return self._send(200, {"Content-Type": TYPES.get(f.suffix, "application/octet-stream")}, f.read_bytes())
         n = int(self.headers.get("Content-Length") or 0)
-        self._send(*handle(method, path, dict(self.headers), self.rfile.read(n) if n else b""))
+        if n > 4400000:
+            return self._send(413, {"Content-Type": "application/json"}, b'{"error":{"message":"Request too large"}}')
+        body = self.rfile.read(n) if n else b""
+        if path == "/api/recommend":
+            try:
+                payload = {"method": method, "body": body.decode("utf-8")}
+                result = subprocess.run(["node", str(ROOT / "scripts/recommend-local.js")],
+                                        input=json.dumps(payload), text=True, capture_output=True, timeout=15, check=True)
+                answer = json.loads(result.stdout)
+                return self._send(answer["status"], {"Content-Type": "application/json", **answer["headers"]},
+                                  json.dumps(answer["body"]).encode())
+            except (OSError, subprocess.SubprocessError, ValueError):
+                return self._send(502, {"Content-Type": "application/json"},
+                                  b'{"error":{"message":"Local recommendations need Node.js 18 or later."}}')
+        self._send(*handle(method, path, dict(self.headers), body))
 
     def do_GET(self):
         self._run("GET")

@@ -1,0 +1,169 @@
+{
+  "mode": "live",
+  "question": "Should I complete this purchase?",
+  "verdict": {
+    "check_before_buying": [
+      "Get a real checkout showing total_due_now, currency, subtotal, tax and discounts",
+      "Confirm renewal_terms, cancellation_terms and trial_terms in writing",
+      "Review other_conditions before paying"
+    ],
+    "confidence": "high",
+    "decision": "WAIT",
+    "headline": "No checkout to evaluate \u2014 only a HeyCatch ad with no price or terms",
+    "reasons": [
+      {
+        "fields": [
+          "merchant",
+          "total_due_now",
+          "currency"
+        ],
+        "text": "Evidence shows HeyCatch ad, not a checkout, so total_due_now and currency are unknown and cannot be approved."
+      },
+      {
+        "fields": [
+          "subtotal",
+          "tax",
+          "discounts"
+        ],
+        "text": "Subtotal, tax and discounts are unknown, so true cost cannot be verified."
+      },
+      {
+        "fields": [
+          "renewal_terms",
+          "cancellation_terms",
+          "trial_terms",
+          "other_conditions"
+        ],
+        "text": "Renewal_terms, cancellation_terms, trial_terms and other_conditions are unknown, so future charges and exit terms are a risk."
+      }
+    ],
+    "model_decision": "WAIT",
+    "held_back": false
+  },
+  "verdict_checks": [
+    {
+      "check": "every cited field exists",
+      "ok": true,
+      "detail": "all cited fields found"
+    },
+    {
+      "check": "every reason cites at least one field",
+      "ok": true,
+      "detail": "3 reason(s)"
+    },
+    {
+      "check": "every dollar amount comes from the facts",
+      "ok": true,
+      "detail": "all amounts traced to the facts"
+    }
+  ],
+  "verdict_checks_passed": true,
+  "citations_normalized": [],
+  "facts": {
+    "cancellation_terms": {
+      "evidence": "No cancellation terms visible; image is a HeyCatch ad, not a checkout.",
+      "status": "unknown",
+      "value": null
+    },
+    "currency": {
+      "evidence": "No currency or price shown in image.",
+      "status": "unknown",
+      "value": null
+    },
+    "discounts": {
+      "evidence": "No discounts shown in image.",
+      "status": "unknown",
+      "value": null
+    },
+    "line_items": [],
+    "merchant": {
+      "evidence": "HeyCatch",
+      "status": "observed",
+      "value": "HeyCatch"
+    },
+    "other_conditions": {
+      "evidence": "No checkout conditions visible; image is a HeyCatch ad, not a checkout.",
+      "status": "unknown",
+      "value": null
+    },
+    "renewal_terms": {
+      "evidence": "No renewal terms visible; image is a HeyCatch ad, not a checkout.",
+      "status": "unknown",
+      "value": null
+    },
+    "subtotal": {
+      "evidence": "No subtotal shown in image.",
+      "status": "unknown",
+      "value": null
+    },
+    "tax": {
+      "evidence": "No tax shown in image.",
+      "status": "unknown",
+      "value": null
+    },
+    "total_due_now": {
+      "evidence": "No total due shown in image.",
+      "status": "unknown",
+      "value": null
+    },
+    "trial_terms": {
+      "evidence": "No trial terms visible; image is a HeyCatch ad, not a checkout.",
+      "status": "unknown",
+      "value": null
+    },
+    "uncertainty_flags": [
+      "other"
+    ]
+  },
+  "checks": {
+    "math": [],
+    "math_before_review": [],
+    "schema_problems": [],
+    "fields_flagged": {}
+  },
+  "review": {
+    "ran": false,
+    "model": null,
+    "changes": [],
+    "skipped_because": "nothing flagged"
+  },
+  "facts_before_review": null,
+  "calls": [
+    {
+      "step": "extract",
+      "model": "muse-spark-1.3",
+      "reasoning_effort": "low",
+      "latency_s": 6.45,
+      "input_tokens": 3137,
+      "output_tokens": 791,
+      "est_cost_usd": 0.007283
+    },
+    {
+      "step": "verdict",
+      "model": "muse-spark-1.3",
+      "reasoning_effort": "low",
+      "latency_s": 7.905,
+      "input_tokens": 892,
+      "output_tokens": 804,
+      "est_cost_usd": 0.004532
+    }
+  ],
+  "total_latency_s": 14.355,
+  "total_est_cost_usd": 0.011815,
+  "settings": {
+    "extract_model": "muse-spark-1.3",
+    "review_model": "muse-wonder-1.0",
+    "verdict_model": "muse-spark-1.3",
+    "temperature": 0.0,
+    "reasoning": "medium",
+    "extract_reasoning": "low",
+    "review_reasoning": "medium",
+    "verdict_reasoning": "low"
+  },
+  "versions": {
+    "extract_prompt": "d33cd6c8",
+    "review_prompt": "4c693e1f",
+    "verdict_prompt": "0a3a360f"
+  },
+  "image_sha256": "af17c199d0c7f188e47528c552f8f6773117993467dbbd1f3dae630f461a4519"
+}

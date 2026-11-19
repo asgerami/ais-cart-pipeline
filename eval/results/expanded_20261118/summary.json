@@ -1,0 +1,188 @@
+[
+  {
+    "case": "missing-renewal",
+    "http": 200,
+    "seconds": 27.5,
+    "mode": "live",
+    "decision": "WAIT",
+    "headline": "Wait \u2014 $100 total is clear, but renewal price is unknown",
+    "due": {
+      "evidence": "\"Total due today $100.00\"",
+      "status": "observed",
+      "value": "$100.00"
+    },
+    "renewal": {
+      "evidence": "\"Your domain renews automatically at the then-current rate. You can turn off auto-renew in Settings.\"",
+      "status": "observed",
+      "value": "Your domain renews automatically at the then-current rate. You can turn off auto-renew in Settings."
+    },
+    "checks_passed": true,
+    "review_ran": true,
+    "math": [
+      {
+        "check": "line items add up to subtotal",
+        "ok": true,
+        "detail": "items 100.00 vs subtotal 100.00"
+      },
+      {
+        "check": "subtotal - discount + tax = total",
+        "ok": true,
+        "detail": "subtotal 100.00 - discount 0.00 + tax 0.00 = 100.00 vs total 100.00 (treated as 0: discount)"
+      },
+      {
+        "check": "renewal price stated for a recurring or multi-year charge",
+        "ok": false,
+        "detail": "no renewal amount in renewal_terms"
+      }
+    ],
+    "calls": [
+      {
+        "step": "extract",
+        "model": "muse-spark-1.3",
+        "reasoning_effort": "low",
+        "latency_s": 10.554,
+        "input_tokens": 2291,
+        "output_tokens": 1342,
+        "est_cost_usd": 0.008567
+      },
+      {
+        "step": "review",
+        "model": "muse-wonder-1.0",
+        "reasoning_effort": "medium",
+        "latency_s": 4.349,
+        "input_tokens": 1470,
+        "output_tokens": 722,
+        "est_cost_usd": 0.02032
+      },
+      {
+        "step": "verdict",
+        "model": "muse-spark-1.3",
+        "reasoning_effort": "low",
+        "latency_s": 9.439,
+        "input_tokens": 1469,
+        "output_tokens": 1200,
+        "est_cost_usd": 0.006936
+      }
+    ],
+    "error": null
+  },
+  {
+    "case": "paid-after-trial",
+    "http": 200,
+    "seconds": 38.5,
+    "mode": "live",
+    "decision": "TRIAL",
+    "headline": "$0.00 7-day trial for Builder Pro, then $25.00/month auto-renewal",
+    "due": {
+      "evidence": "\"Total due today\" \"$0.00\"",
+      "status": "observed",
+      "value": "$0.00"
+    },
+    "renewal": {
+      "evidence": "\"After your trial ends, your subscription renews automatically each month at $25.00 until you cancel.\"",
+      "status": "observed",
+      "value": "After your trial ends, your subscription renews automatically each month at $25.00 until you cancel."
+    },
+    "checks_passed": true,
+    "review_ran": true,
+    "math": [
+      {
+        "check": "renewal price stated for a recurring or multi-year charge",
+        "ok": true,
+        "detail": "renewal amount found"
+      }
+    ],
+    "calls": [
+      {
+        "step": "extract",
+        "model": "muse-spark-1.3",
+        "reasoning_effort": "low",
+        "latency_s": 9.877,
+        "input_tokens": 2207,
+        "output_tokens": 1441,
+        "est_cost_usd": 0.008883
+      },
+      {
+        "step": "review",
+        "model": "muse-wonder-1.0",
+        "reasoning_effort": "medium",
+        "latency_s": 12.155,
+        "input_tokens": 1402,
+        "output_tokens": 1697,
+        "est_cost_usd": 0.039548
+      },
+      {
+        "step": "verdict",
+        "model": "muse-spark-1.3",
+        "reasoning_effort": "low",
+        "latency_s": 13.224,
+        "input_tokens": 1218,
+        "output_tokens": 1543,
+        "est_cost_usd": 0.00808
+      }
+    ],
+    "error": null
+  },
+  {
+    "case": "washer-protection",
+    "http": 200,
+    "seconds": 36.0,
+    "mode": "live",
+    "decision": "WAIT",
+    "headline": "Cart total doesn't match visible items \u2014 don't pay until full item list is confirmed",
+    "due": {
+      "evidence": "Total $373.17",
+      "status": "observed",
+      "value": "$373.17"
+    },
+    "renewal": {
+      "evidence": "No renewal text visible in screenshot",
+      "status": "unknown",
+      "value": null
+    },
+    "checks_passed": true,
+    "review_ran": true,
+    "math": [
+      {
+        "check": "line items add up to subtotal",
+        "ok": false,
+        "detail": "items 69.99 vs subtotal 369.98"
+      },
+      {
+        "check": "subtotal - discount + tax = total",
+        "ok": true,
+        "detail": "subtotal 369.98 - discount 20.00 + tax 23.19 = 373.17 vs total 373.17"
+      }
+    ],
+    "calls": [
+      {
+        "step": "extract",
+        "model": "muse-spark-1.3",
+        "reasoning_effort": "low",
+        "latency_s": 10.898,
+        "input_tokens": 5191,
+        "output_tokens": 1449,
+        "est_cost_usd": 0.012647
+      },
+      {
+        "step": "review",
+        "model": "muse-wonder-1.0",
+        "reasoning_effort": "medium",
+        "latency_s": 9.824,
+        "input_tokens": 4437,
+        "output_tokens": 1281,
+        "est_cost_usd": 0.043368
+      },
+      {
+        "step": "verdict",
+        "model": "muse-spark-1.3",
+        "reasoning_effort": "low",
+        "latency_s": 12.121,
+        "input_tokens": 1291,
+        "output_tokens": 1304,
+        "est_cost_usd": 0.007156
+      }
+    ],
+    "error": null
+  }
+]

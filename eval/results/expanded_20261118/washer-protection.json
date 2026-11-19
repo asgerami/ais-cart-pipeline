@@ -1,0 +1,73 @@
+{
+  "mode": "live",
+  "verdict_checks_passed": true,
+  "calls": [
+    {
+      "step": "extract",
+      "model": "muse-spark-1.3",
+      "reasoning_effort": "low",
+      "latency_s": 10.898,
+      "input_tokens": 5191,
+      "output_tokens": 1449,
+      "est_cost_usd": 0.012647
+    },
+    {
+      "step": "review",
+      "model": "muse-wonder-1.0",
+      "reasoning_effort": "medium",
+      "latency_s": 9.824,
+      "input_tokens": 4437,
+      "output_tokens": 1281,
+      "est_cost_usd": 0.043368
+    },
+    {
+      "step": "verdict",
+      "model": "muse-spark-1.3",
+      "reasoning_effort": "low",
+      "latency_s": 12.121,
+      "input_tokens": 1291,
+      "output_tokens": 1304,
+      "est_cost_usd": 0.007156
+    }
+  ],
+  "verdict": {
+    "decision": "WAIT"
+  },
+  "facts": {
+    "total_due_now": {
+      "evidence": "Total $373.17",
+      "status": "observed",
+      "value": "$373.17"
+    },
+    "renewal_terms": {
+      "evidence": "No renewal text visible in screenshot",
+      "status": "unknown",
+      "value": null
+    },
+    "line_items": [
+      {
+        "line_total": {
+          "evidence": "$69.99",
+          "status": "observed",
+          "value": "$69.99"
+        },
+        "name": {
+          "evidence": "3-Year Standard Geek Squad Protection",
+          "status": "observed",
+          "value": "3-Year Standard Geek Squad Protection"
+        },
+        "quantity": {
+          "evidence": "No quantity visible for this item",
+          "status": "unknown",
+          "value": null
+        },
+        "term": {
+          "evidence": "No separate term field visible",
+          "status": "unknown",
+          "value": null
+        }
+      }
+    ]
+  },
+  "redaction_note": "Limited to fields used by the validation checks; private source screenshot and unrelated checkout details excluded."
+}
