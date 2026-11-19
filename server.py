@@ -6,15 +6,17 @@ Environment: MODEL_API_KEY (live) or MOCK=1 (sample answers), optional SERVICE_T
 import os
 import json
 import subprocess
+from urllib.parse import parse_qs,urlparse
+from aiscart.pilot import handle as pilot_handle
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
 from aiscart.web import handle
 
 ROOT = Path(__file__).resolve().parent
-STATIC = {"/": ROOT / "index.html"}
+STATIC = {"/": ROOT / "index.html", **{"/"+p: ROOT/p for p in ("pilot.html","pilot.js","pilot.css")}}
 STATIC.update({f"/eval/samples/{p.name}": p for p in (ROOT / "eval" / "samples").glob("*.png")})
-TYPES = {".html": "text/html; charset=utf-8", ".png": "image/png"}
+TYPES = {".html": "text/html; charset=utf-8", ".png": "image/png", ".js":"text/javascript; charset=utf-8", ".css":"text/css; charset=utf-8"}
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -35,6 +37,9 @@ class Handler(BaseHTTPRequestHandler):
         if n > 4400000:
             return self._send(413, {"Content-Type": "application/json"}, b'{"error":{"message":"Request too large"}}')
         body = self.rfile.read(n) if n else b""
+        if path == "/api/pilot":
+            action=parse_qs(urlparse(self.path).query).get("action",["status"])[0]
+            return self._send(*pilot_handle(method,action,dict(self.headers),body))
         if path == "/api/recommend":
             try:
                 payload = {"method": method, "body": body.decode("utf-8")}
@@ -53,6 +58,12 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_POST(self):
         self._run("POST")
+
+    def do_PUT(self):
+        self._run("PUT")
+
+    def do_DELETE(self):
+        self._run("DELETE")
 
     def do_OPTIONS(self):
         self._run("OPTIONS")

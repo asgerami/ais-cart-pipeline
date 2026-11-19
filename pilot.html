@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI’sCart · Your first-user pilot</title><meta name="robots" content="noindex,nofollow">
+<link rel="stylesheet" href="pilot.css"><script src="pilot.js" defer></script></head>
+<body><main>
+<header><a href="/" class="brand">AI’sCart<span>One Picture. One Question. A Better Purchase.</span></a><span class="badge">Private pilot · test payments only</span></header>
+<section class="intro"><p class="eyebrow">YOUR NEXT PURCHASE, WITH A SECOND LOOK</p><h1>Your tools. Your checks.<br>Your place to start.</h1><p>Keep your inventory and purchase checks together, wherever you sign in.</p></section>
+<div id="notice" class="notice" role="status">Checking pilot setup…</div><p id="message" role="status" hidden></p>
+<div class="columns">
+<section class="card" id="signinCard"><h2>Make this your account</h2><p>Use the same sign-in on Sylvia and Lucille.</p>
+<form id="authForm"><label>Email<input id="email" type="email" autocomplete="username" maxlength="254" required disabled></label>
+<label>Password<input id="password" type="password" autocomplete="current-password" minlength="12" maxlength="128" required disabled></label>
+<p class="hint">Use at least 12 characters. Your account provider handles password storage.</p>
+<div class="buttons"><button id="login" type="submit" disabled>Sign in</button><button id="signup" type="button" class="secondary" disabled>Create account</button></div></form></section>
+<section class="card" id="accountCard" hidden><div class="row"><h2>Your account</h2><button id="logout" class="secondary">Sign out</button></div><p id="who"></p>
+<div class="balance"><strong id="credits">0</strong><span>sandbox checks available</span></div>
+<label>Your tool inventory<textarea id="tools" rows="5" placeholder="Canva&#10;ElevenLabs&#10;Squarespace"></textarea></label>
+<p class="hint">One name per line. Saved to your account when you press Save.</p>
+<div class="buttons"><button id="saveTools">Save tools</button><button id="importTools" class="secondary">Import this browser’s tools</button></div></section>
+<section class="receipt"><p class="eyebrow">OUR OWN CART</p><h2 id="offerName">Pilot check pack</h2><p class="testLabel">Sandbox example · no real charge</p>
+<dl><div><dt>Checks included</dt><dd id="offerCredits">10</dd></div><div><dt>One-time price</dt><dd id="offerAmount">$5.00</dd></div><div><dt>Automatic renewal</dt><dd>None</dd></div><div><dt>Credits expire</dt><dd>No expiry in this pilot</dd></div></dl>
+<p class="hint">Sample pricing for testing; your public offer has not been set. A completed screenshot check uses one credit, including WAIT results. Failed model calls release the reservation when the account service is reachable.</p>
+<button id="checkout" disabled>Connect payment setup first</button><p class="hint" id="checkoutHint">Sign-in and checkout services need to be connected before you can test a purchase.</p>
+<p class="hint">Cancel Stripe Checkout before paying to leave without adding credits. The checkout return page never grants credits; only a verified payment event does.</p></section>
+</div>
+<section class="card workbench" id="workbench" hidden><p class="eyebrow">CHECK BEFORE YOU BUY</p><h2>Bring a real checkout</h2><p>Upload one screenshot. We’ll read what is visible, check the numbers, and keep unknown details unknown.</p>
+<form id="checkForm"><label>Screenshot<input id="screenshot" type="file" accept="image/png,image/jpeg,image/webp,image/gif" required></label><img id="preview" alt="Your selected checkout" hidden>
+<label>Your question<textarea id="question" maxlength="500" required>Should I complete this purchase?</textarea></label><button id="analyze" type="submit">Check and save to my history</button></form>
+<p id="working" role="status" hidden>Reading the screenshot and checking its terms…</p><div id="answer" aria-live="polite"></div>
+</section>
+<section class="card" id="historyCard" hidden><div class="row"><h2>Your saved checks</h2><button id="refresh" class="secondary">Refresh account</button></div><p class="hint">Saved across devices. Original screenshots are not stored in history.</p><div id="history"></div></section>
+<footer><details><summary>What this pilot saves and shares</summary><p>Account authentication is handled by Supabase. Tool names, questions, extracted purchase facts and results are saved to your account. A screenshot is sent to the analysis service and Meta’s models to run the check; its original image bytes are not saved in this app’s history. Delete individual saved checks from the history list.</p><p>Stripe hosts the payment form. This pilot refuses live Stripe keys and accepts only sandbox payments. It does not collect or store card numbers. These are draft pilot terms, not an approved public sales offer.</p></details>
+<a href="/">Return to the existing screenshot and goal tester</a></footer>
+</main></body></html>

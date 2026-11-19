@@ -1,0 +1,6 @@
+{
+  "name": "aiscart-pipeline-pilot-tests",
+  "private": true,
+  "scripts": {"test:pilot:sql": "node tests/test_pilot_sql.js"},
+  "devDependencies": {"@electric-sql/pglite": "0.5.16"}
+}
