@@ -1,0 +1,53 @@
+{
+  "adapter": {
+    "name": "ais-cart-recommendation-adapter",
+    "version": "0.4.0"
+  },
+  "dataSource": {
+    "source": "Floot AI's Cart / helpers/editorialRecommendations.tsx",
+    "status": "real-floot-editorial",
+    "dataStatus": "Founder editorial assessments, not controlled rankings or verified live prices",
+    "recordCount": 12
+  },
+  "status": "no_match",
+  "matchQuality": "no_suitable_match",
+  "matchQualityLabel": "No suitable match",
+  "noMatchReason": null,
+  "inputMode": "live",
+  "recommendation": null,
+  "ownedTools": [
+    "Canva",
+    "ElevenLabs"
+  ],
+  "ownedWorkflow": [],
+  "ownedRecommendation": null,
+  "ownedNotInLibrary": [],
+  "duplicates": [],
+  "goalCategories": null,
+  "matcher": "keyword",
+  "noNewPurchase": false,
+  "clarifyingQuestion": null,
+  "goalReading": null,
+  "otherCandidates": [],
+  "risks": [
+    {
+      "source": "pipeline_flag",
+      "flag": "other",
+      "severity": "low",
+      "title": "Other uncertainty flagged by the pipeline",
+      "detail": "The extraction flagged an uncertainty that is not categorised above.",
+      "check": "Review the flagged fields in the facts before paying."
+    }
+  ],
+  "checkBeforeBuying": [
+    "Review the flagged fields in the facts before paying."
+  ],
+  "pipelineVerdict": {
+    "decision": "WAIT",
+    "headline": "No checkout to evaluate \u2014 only a HeyCatch ad with no price or terms",
+    "confidence": "high"
+  },
+  "shopperGoal": null,
+  "goalFallback": "existing_question",
+  "analysisQuestion": "Should I complete this purchase?"
+}

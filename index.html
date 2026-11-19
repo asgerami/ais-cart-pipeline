@@ -340,7 +340,7 @@ footer a { color: inherit; }
 </main>
 
 <script>
-const PAGE_VERSION = "2026-11-18.connected.4";
+const PAGE_VERSION = "2026-11-18.connected.5";
 const DEFAULT_Q = "Should I complete this purchase?";
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -504,7 +504,7 @@ $("go").onclick = async () => {
   const t0 = Date.now();
   $("result").innerHTML = `<h2 id="right-title">Answer</h2>${forStrip("Checking now")}
     <div class="working" role="status">
-      <p><strong>Checking this purchase.</strong> ${serverMode === "mock" ? "Sample answers come back in a second." : "Live checks take about a minute."}</p>
+      <p><strong>Checking this purchase.</strong> ${serverMode === "mock" ? "Sample answers come back in a second." : "Reading the screenshot and checking its terms."}</p>
       <div class="bar" aria-hidden="true"><i></i></div>
       <div class="elapsed" id="elapsed">0 s</div>
       <ol class="plan"><li>Read every price and term on the screenshot</li><li>Check the math and the renewal price</li>
