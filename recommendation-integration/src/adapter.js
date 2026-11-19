@@ -532,7 +532,22 @@ function recommend(input, recommendationLibrary, options = {}) {
   // A tool the shopper already has comes first when it fits. The recommendation itself is always a tool they
   // don't have yet, so it says what a new purchase would add. With no owned tools, nothing here changes.
   const ownedEntry = ranked.find((r) => r.owned && (!goalOnly || r.match.quality === 'goal_match')) || null;
-  const top = ranked.find((r) => !r.owned) || null;
+  // Known capabilities compose an owned workflow; category overlap alone is insufficient.
+  const needText = String(founderGoal || checkout.searchableText).replace(
+    /\b(?:no|without|don't need|do not need)\s+(?:AI\s+)?(?:narration|voiceover|voice-over|voice over|speech)\b/gi, '');
+  const capabilityRules = [
+    { key: 'editing', tool: 'Canva', role: 'Video editing and assembly', pattern: /\b(video|promo|editing|edit|clips?)\b/i },
+    { key: 'narration', tool: 'ElevenLabs', role: 'Narration and voice tracks', pattern: /\b(narration|narrator|voiceover|voice.over|speech|voice tracks?)\b/i },
+    { key: 'visuals', tool: 'Runway', role: 'AI-generated visuals', pattern: /\b(generat(?:e|ed|ive|ing)\s+(?:AI\s+)?(?:video|visuals?|footage|shots?|clips?|images?)|text.to.video|image.to.video)\b/i },
+  ];
+  const requestedCapabilities = capabilityRules.filter(rule => rule.pattern.test(needText));
+  const workflowEligible = !spark && (sourceMode === 'description' || goalOnly)
+    && requestedCapabilities.some(rule => rule.key === 'editing');
+  const workflowEntries = workflowEligible ? requestedCapabilities.map(rule => ({rule,
+    entry: ranked.find(r => r.owned && sameTool(r.rec.toolName, rule.tool))
+  })).filter(item => item.entry) : [];
+  const ownedCoversRequest = workflowEligible && workflowEntries.length >= 2 && workflowEntries.length === requestedCapabilities.length;
+  const top = ownedCoversRequest ? null : ranked.find((r) => !r.owned) || null;
   const seenTools = [top, ownedEntry].filter(Boolean).map(r => r.rec.toolName);
   const others = ranked.filter(r => {
     if (seenTools.some(name => sameTool(name, r.rec.toolName))) return false;
@@ -552,7 +567,11 @@ function recommend(input, recommendationLibrary, options = {}) {
         duplicates.push({ tool: name, kind: 'same_tool', jobs: [], text: `You already have ${name}. Make sure this isn't a second subscription.` });
         continue;
       }
-      const ownedJobs = new Set(libRecs.flatMap((rec) => detectJob(recordText(rec)).map((entry) => entry.job)));
+      const ownedJobs = new Set(libRecs.flatMap((rec) => /elevenlabs/i.test(rec.toolName) ? [] : detectJob(recordText(rec)).map((entry) => entry.job)));
+      if (libRecs.some(rec => /elevenlabs/i.test(rec.toolName)) && /\b(narration|voiceover|voice.over|speech)\b/i.test(checkout.searchableText)) {
+        duplicates.push({tool: name, kind: 'same_job', jobs: ['narration'], text: `You already have ${name}, which covers narration and voice tracks.`});
+        continue;
+      }
       const shared = JOB_PATTERNS.filter((p) => strongJobs.includes(p.job) && ownedJobs.has(p.job));
       if (shared.length) {
         duplicates.push({
@@ -595,7 +614,9 @@ function recommend(input, recommendationLibrary, options = {}) {
   });
   const why = top ? whyFor(top)
     : [`No record in the recommendation library matched this ${goalOnly ? 'goal' : 'checkout'}. That is a library-coverage result, not a claim that no alternative exists.`];
-  const noMatchReason = top ? null : domainOnlyWithoutGoal
+  const noMatchReason = ownedCoversRequest
+    ? 'The tools you already own cover the editing and any narration or generated visuals identified in this comparison. No additional purchase is established as necessary.'
+    : top ? null : domainOnlyWithoutGoal
     ? `This ${sourceMode === 'description' ? 'purchase description' : 'checkout'} only shows a domain purchase, and a website builder is not a substitute for a domain. To see related tools, say what you're trying to do, such as launching a website.`
     : spark && spark.noNewPurchase
       ? "What you already have covers this, so there's nothing new to buy."
@@ -634,14 +655,15 @@ function recommend(input, recommendationLibrary, options = {}) {
     recommendation: top ? { ...shape(top), whyItFits: why } : null,
     ownedTools: owned,
     ownedRecommendation: ownedEntry ? shape(ownedEntry) : null,
+    ownedWorkflow: workflowEntries.map(({rule, entry}) => ({toolName: entry.rec.toolName, role: rule.role, firstStep: entry.rec.firstStep, evidenceIds: entry.rec.evidenceIds || []})),
     ownedNotInLibrary,
     duplicates,
     goalCategories: goalOnly && !spark ? checkout.categories : null,
     matcher: spark ? (spark.version === 2 ? 'spark2' : 'spark') : 'keyword',
-    noNewPurchase: Boolean(spark && spark.noNewPurchase),
+    noNewPurchase: ownedCoversRequest || Boolean(spark && spark.noNewPurchase),
     clarifyingQuestion: spark && spark.decision === 'ask' ? spark.question : null,
     goalReading: spark ? { decision: spark.decision, summary: spark.goalSummary, reason: spark.reason } : null,
-    otherCandidates: others.slice(0, 3).map((r) => ({ id: r.rec.id, toolName: r.rec.toolName, category: r.rec.category, matchScore: r.score, matchQuality: r.match.quality, matchQualityLabel: r.match.label, owned: r.owned })),
+    otherCandidates: (ownedCoversRequest ? [] : others).slice(0, 3).map((r) => ({ id: r.rec.id, toolName: r.rec.toolName, category: r.rec.category, matchScore: r.score, matchQuality: r.match.quality, matchQualityLabel: r.match.label, owned: r.owned })),
     risks,
     checkBeforeBuying: [...new Set(risks.map((r) => r.check))],
     honesty: {

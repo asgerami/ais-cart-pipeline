@@ -340,7 +340,7 @@ footer a { color: inherit; }
 </main>
 
 <script>
-const PAGE_VERSION = "2026-11-18.connected.2";
+const PAGE_VERSION = "2026-11-18.connected.3";
 const DEFAULT_Q = "Should I complete this purchase?";
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -687,7 +687,10 @@ function extrasHtml(data) {
 function renderGoal(data, goal) {
   const own = data.ownedRecommendation, rec = data.recommendation;
   const blocks = [];
-  if (own) blocks.push(toolBlock(own, "You already have this", "have"));
+  if (data.ownedWorkflow?.length) {
+    blocks.push(`<div class="start have"><span class="kicker">Use what you already have</span><h3>Your workflow</h3>
+      ${data.ownedWorkflow.map(item => `<p><strong>${esc(item.toolName)}:</strong> ${esc(item.role)}.</p><p class="muted">${esc(item.firstStep)}</p>`).join("")}</div>`);
+  } else if (own) blocks.push(toolBlock(own, "You already have this", "have"));
   if (own && rec?.match.optionalCondition) blocks.push(`<p class="note">Start with ${esc(own.toolName)}. Nothing in this comparison establishes that you need another subscription.</p>`);
   if (rec) blocks.push(toolBlock(rec, rec.match.optionalCondition ? "Optional addition" : own ? "What a new tool would add" : (rec.match.quality === "goal_match" ? "Fits your goal" : "Loosely related")));
   if (data.clarifyingQuestion) blocks.push(`<div class="start"><span class="kicker">One question first</span><h3>${esc(data.clarifyingQuestion)}</h3>

@@ -1,0 +1,24 @@
+'use strict';
+const assert = require('node:assert/strict');
+const handler = require('../../api/recommend');
+const run = (goal, ownedTools) => new Promise(resolve => handler({method:'POST',body:{mode:'description',description:'Canva video editing subscription',shopperGoal:goal,ownedTools}}, {setHeader(){},status(code){this.code=code;return this;},json(body){assert.equal(this.code,200);resolve(body);}}));
+(async()=>{
+ const goal='make a short promo video with AI narration';
+ const result=await run(goal,['Canva','ElevenLabs']);
+ assert.equal(result.recommendation,null);
+ assert.equal(result.noNewPurchase,true);
+ assert.deepEqual(result.ownedWorkflow.map(x=>x.toolName),['Canva','ElevenLabs']);
+ assert.equal(result.ownedWorkflow[1].role,'Narration and voice tracks');
+ assert.deepEqual(result.otherCandidates,[]);
+ assert.ok(!result.duplicates.some(d=>d.tool==='ElevenLabs' && /video creation\/editing/.test(d.text)));
+ assert.equal(result.pipelineVerdict,null);
+ const missing=await run(goal,['Canva']);
+ assert.equal(missing.noNewPurchase,false);
+ assert.equal(missing.recommendation.toolName,'ElevenLabs');
+ const visuals=await run(goal+' and generate video clips',['Canva','ElevenLabs']);
+ assert.equal(visuals.noNewPurchase,false);
+ assert.ok(visuals.recommendation);
+ const unknown=await run(goal,['Canva','Unknown voice tool']);
+ assert.equal(unknown.noNewPurchase,false);
+ console.log('PASS owned editing + narration workflow; missing capability and unknown inventory do not claim coverage');
+})().catch(e=>{console.error(e);process.exitCode=1;});
