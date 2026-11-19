@@ -1,0 +1,127 @@
+{
+  "tool": "Floot",
+  "library_id": "mvp-floot",
+  "owner": "Lance",
+  "status": {
+    "value": null,
+    "source": null,
+    "observed": null
+  },
+  "staging_ids": [
+    "AC-STAGE-20261117-001"
+  ],
+  "billing": {
+    "plan": {
+      "value": null,
+      "source": null,
+      "observed": null
+    },
+    "amount": {
+      "value": null,
+      "source": null,
+      "observed": null
+    },
+    "currency": {
+      "value": null,
+      "source": null,
+      "observed": null
+    },
+    "interval": {
+      "value": null,
+      "source": null,
+      "observed": null
+    },
+    "renews": {
+      "value": null,
+      "source": null,
+      "observed": null
+    },
+    "renewal_date": {
+      "value": null,
+      "source": null,
+      "observed": null
+    }
+  },
+  "redacted": "Billing details, which accounts show this charge, and the private source document are kept out of this public repo.",
+  "evidence": [
+    {
+      "id": "floot-1",
+      "kind": "dependency",
+      "what": "Hosts Zero Story Lab.",
+      "outcome": "live",
+      "date": null,
+      "source": "shopper_account",
+      "link": null,
+      "verified": false
+    },
+    {
+      "id": "floot-2",
+      "kind": "dependency",
+      "what": "Hosts our Frozen Seed work.",
+      "outcome": "live",
+      "date": null,
+      "source": "shopper_account",
+      "link": null,
+      "verified": false
+    },
+    {
+      "id": "floot-3",
+      "kind": "usage",
+      "what": "Used less often day to day than Base44.",
+      "outcome": null,
+      "date": null,
+      "source": "shopper_account",
+      "link": null,
+      "verified": false
+    },
+    {
+      "id": "floot-4",
+      "kind": "job",
+      "what": "Built Zero Story Lab and the Frozen Seed work.",
+      "outcome": "kept",
+      "date": null,
+      "source": "shopper_account",
+      "link": null,
+      "verified": false,
+      "staging_id": "AC-STAGE-20261117-001"
+    },
+    {
+      "id": "floot-5",
+      "kind": "job",
+      "what": "SongWrite's thread-finding interaction contributed to exploration.",
+      "outcome": "usable",
+      "date": null,
+      "source": "shopper_account",
+      "link": null,
+      "verified": false,
+      "staging_id": "AC-STAGE-20261117-001"
+    },
+    {
+      "id": "floot-6",
+      "kind": "retry",
+      "what": "A next-action interaction reached a dead end.",
+      "outcome": "failed",
+      "date": null,
+      "source": "shopper_account",
+      "link": null,
+      "verified": false,
+      "staging_id": "AC-STAGE-20261117-001"
+    }
+  ],
+  "recommendations": [
+    {
+      "date": "2026-11-17",
+      "goal": "Keep Zero Story Lab and the Frozen Seed work running",
+      "recommendation": "keep",
+      "reason": "Keep until a replacement runs and existing stories, objects and evidence remain accessible. Frequent manual use is not required for a live hosting dependency.",
+      "cites": [
+        "floot-1",
+        "floot-2",
+        "floot-3"
+      ],
+      "status": "provisional",
+      "by": "Lance",
+      "staging_id": "AC-STAGE-20261117-001"
+    }
+  ]
+}

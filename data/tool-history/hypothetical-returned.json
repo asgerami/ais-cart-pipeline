@@ -1,0 +1,77 @@
+{
+  "tool": "Hypothetical tool A",
+  "library_id": null,
+  "owner": "test shopper",
+  "hypothetical": true,
+  "status": {
+    "value": "active",
+    "source": "test_fixture",
+    "observed": null
+  },
+  "staging_ids": [],
+  "billing": {
+    "plan": {
+      "value": "Monthly",
+      "source": "test_fixture",
+      "observed": null
+    },
+    "amount": {
+      "value": 20,
+      "source": "test_fixture",
+      "observed": null
+    },
+    "currency": {
+      "value": "USD",
+      "source": "test_fixture",
+      "observed": null
+    },
+    "interval": {
+      "value": "monthly",
+      "source": "test_fixture",
+      "observed": null
+    },
+    "renews": {
+      "value": true,
+      "source": "test_fixture",
+      "observed": null
+    },
+    "renewal_date": {
+      "value": null,
+      "source": null,
+      "observed": null
+    }
+  },
+  "evidence": [
+    {
+      "id": "hypo-a-1",
+      "kind": "job",
+      "what": "Made a launch video and kept it.",
+      "outcome": "kept",
+      "date": null,
+      "source": "test_fixture",
+      "link": null,
+      "verified": false
+    },
+    {
+      "id": "hypo-a-2",
+      "kind": "job",
+      "what": "Came back weeks later to cut social clips from it, and kept those.",
+      "outcome": "kept",
+      "date": null,
+      "source": "test_fixture",
+      "link": null,
+      "verified": false
+    },
+    {
+      "id": "hypo-a-3",
+      "kind": "job",
+      "what": "Came back again for a product demo for a different project, and kept it.",
+      "outcome": "kept",
+      "date": null,
+      "source": "test_fixture",
+      "link": null,
+      "verified": false
+    }
+  ],
+  "recommendations": []
+}

@@ -1,0 +1,77 @@
+{
+  "tool": "Hypothetical tool B",
+  "library_id": null,
+  "owner": "test shopper",
+  "hypothetical": true,
+  "status": {
+    "value": "active",
+    "source": "test_fixture",
+    "observed": null
+  },
+  "staging_ids": [],
+  "billing": {
+    "plan": {
+      "value": "Monthly",
+      "source": "test_fixture",
+      "observed": null
+    },
+    "amount": {
+      "value": 20,
+      "source": "test_fixture",
+      "observed": null
+    },
+    "currency": {
+      "value": "USD",
+      "source": "test_fixture",
+      "observed": null
+    },
+    "interval": {
+      "value": "monthly",
+      "source": "test_fixture",
+      "observed": null
+    },
+    "renews": {
+      "value": true,
+      "source": "test_fixture",
+      "observed": null
+    },
+    "renewal_date": {
+      "value": null,
+      "source": null,
+      "observed": null
+    }
+  },
+  "evidence": [
+    {
+      "id": "hypo-b-1",
+      "kind": "job",
+      "what": "Tried it once for a launch video; the result wasn't usable.",
+      "outcome": "failed",
+      "date": null,
+      "source": "test_fixture",
+      "link": null,
+      "verified": false
+    },
+    {
+      "id": "hypo-b-2",
+      "kind": "retry",
+      "what": "Retried the same video; still not usable.",
+      "outcome": "failed",
+      "date": null,
+      "source": "test_fixture",
+      "link": null,
+      "verified": false
+    },
+    {
+      "id": "hypo-b-3",
+      "kind": "retry",
+      "what": "Retried again with a simpler brief; still not usable.",
+      "outcome": "failed",
+      "date": null,
+      "source": "test_fixture",
+      "link": null,
+      "verified": false
+    }
+  ],
+  "recommendations": []
+}
