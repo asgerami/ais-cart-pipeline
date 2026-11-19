@@ -655,7 +655,11 @@ function recommend(input, recommendationLibrary, options = {}) {
     recommendation: top ? { ...shape(top), whyItFits: why } : null,
     ownedTools: owned,
     ownedRecommendation: ownedEntry ? shape(ownedEntry) : null,
-    ownedWorkflow: workflowEntries.map(({rule, entry}) => ({toolName: entry.rec.toolName, role: rule.role, firstStep: entry.rec.firstStep, evidenceIds: entry.rec.evidenceIds || []})),
+    ownedWorkflow: workflowEntries.map(({rule, entry}) => ({
+      ...shape(entry), role: rule.role,
+      match: { quality: 'goal_match', label: 'Fits this workflow step',
+        explanation: `You already own ${entry.rec.toolName}. Our editorial notes support using it for ${rule.role.toLowerCase()} in this workflow.` },
+    })),
     ownedNotInLibrary,
     duplicates,
     goalCategories: goalOnly && !spark ? checkout.categories : null,

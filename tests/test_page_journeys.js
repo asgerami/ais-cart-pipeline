@@ -63,5 +63,15 @@ const run = code => vm.runInContext(code, ctx);
   assert.equal(element('descriptionText').value, '');
   assert.equal(element('goDescription').disabled, true);
   assert.deepEqual(JSON.parse(storage.get('aiscart-owned-tools')), ['Canva']);
-  console.log('PASS page entry modes, shared inventory, late-response rejection, reset preserves inventory');
+  const api = require('../api/recommend');
+  const data = await new Promise(resolve => api({method:'POST',body:{mode:'description',description:'Canva video editing subscription',shopperGoal:'make a short promo video with AI narration',ownedTools:['Canva','ElevenLabs']}},
+    {setHeader(){},status(){return this;},json:resolve}));
+  ctx.workflowResult = data;
+  run('renderGoal(workflowResult, "make a short promo video with AI narration")');
+  const rendered = element('result').innerHTML;
+  assert.match(rendered, /You have \(Video editing and assembly\): Canva/);
+  assert.match(rendered, /You have \(Narration and voice tracks\): ElevenLabs/);
+  assert.match(rendered, /Provided narration in SongWrite and FloodHive workflows/);
+  assert.match(rendered, /elevenlabs-narration/);
+  console.log('PASS page entry modes, shared inventory, late-response rejection, reset preserves inventory, evidence for both owned tools');
 })().catch(err => { console.error(err); process.exitCode = 1; });

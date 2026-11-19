@@ -44,7 +44,7 @@ function publicRecommendation(result) {
     inputMode: result.inputMode,
     recommendation,
     ownedTools: result.ownedTools,
-    ownedWorkflow: result.ownedWorkflow || [],
+    ownedWorkflow: (result.ownedWorkflow || []).map(rec => ({ ...publicRec(rec), role: rec.role })),
     ownedRecommendation: publicRec(result.ownedRecommendation),
     ownedNotInLibrary: result.ownedNotInLibrary,
     duplicates: result.duplicates,

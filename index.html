@@ -340,7 +340,7 @@ footer a { color: inherit; }
 </main>
 
 <script>
-const PAGE_VERSION = "2026-11-18.connected.3";
+const PAGE_VERSION = "2026-11-18.connected.4";
 const DEFAULT_Q = "Should I complete this purchase?";
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -698,7 +698,10 @@ function renderGoal(data, goal) {
   else if (!own && !rec) blocks.push(`<div class="start"><span class="kicker">No match yet</span><p>${esc(data.noMatchReason || "Our library has no tool for this goal yet.")}</p></div>`);
   else if (!rec && data.noNewPurchase) blocks.push(`<div class="start"><span class="kicker">Nothing new to buy</span><p>${esc(data.noMatchReason)}</p></div>`);
   else if (!rec && data.noMatchReason) blocks.push(`<p class="muted">${esc(data.noMatchReason)}</p>`);
-  const why = [own && whyBlock(own, "You have"), rec && whyBlock(rec, own ? "New tool" : "Suggested")].filter(Boolean).join("");
+  const ownedWhy = data.ownedWorkflow?.length
+    ? data.ownedWorkflow.map(item => whyBlock(item, `You have (${item.role})`))
+    : [own && whyBlock(own, "You have")];
+  const why = [...ownedWhy, rec && whyBlock(rec, own ? "New tool" : "Suggested")].filter(Boolean).join("");
   $("result").innerHTML = `<h2 id="right-title">Where to start</h2>
     <p class="goal-quote">${esc(goal)}</p>
     ${blocks.join("")}

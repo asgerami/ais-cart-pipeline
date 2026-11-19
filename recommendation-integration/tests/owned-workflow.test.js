@@ -9,6 +9,10 @@ const run = (goal, ownedTools) => new Promise(resolve => handler({method:'POST',
  assert.equal(result.noNewPurchase,true);
  assert.deepEqual(result.ownedWorkflow.map(x=>x.toolName),['Canva','ElevenLabs']);
  assert.equal(result.ownedWorkflow[1].role,'Narration and voice tracks');
+ assert.match(result.ownedWorkflow[1].why,/narration/i);
+ assert.ok(result.ownedWorkflow[1].evidenceIds.includes('elevenlabs-narration'));
+ assert.ok(result.ownedWorkflow[1].caution);
+ assert.equal(result.ownedWorkflow[1].match.quality,'goal_match');
  assert.deepEqual(result.otherCandidates,[]);
  assert.ok(!result.duplicates.some(d=>d.tool==='ElevenLabs' && /video creation\/editing/.test(d.text)));
  assert.equal(result.pipelineVerdict,null);
