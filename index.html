@@ -340,7 +340,7 @@ footer a { color: inherit; }
 </main>
 
 <script>
-const PAGE_VERSION = "2026-11-18.connected.1";
+const PAGE_VERSION = "2026-11-18.connected.2";
 const DEFAULT_Q = "Should I complete this purchase?";
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -663,6 +663,7 @@ $("goGoal").onclick = async () => {
 
 function toolBlock(rec, kicker, cls = "") {
   return `<div class="start ${cls}"><span class="kicker">${esc(kicker)}</span><h3>${esc(rec.toolName)}</h3>
+    ${rec.match.optionalCondition ? `<p><strong>${esc(rec.match.optionalCondition)}.</strong> This is an optional addition, not a reason to buy another subscription.</p>` : ""}
     ${rec.sparkFirstStep ? `<p><strong>For your goal:</strong> ${esc(rec.sparkFirstStep)}</p>` : ""}
     ${rec.sparkAdds ? `<p><strong>What it would add:</strong> ${esc(rec.sparkAdds)}</p>` : ""}
     ${rec.bestFor ? `<p><strong>Best for:</strong> ${esc(rec.bestFor)}</p>` : ""}
@@ -670,7 +671,7 @@ function toolBlock(rec, kicker, cls = "") {
     ${rec.caution ? `<p class="muted"><strong>Caution:</strong> ${esc(rec.caution)}</p>` : ""}</div>`;
 }
 function whyBlock(rec, heading) {
-  return `<div class="opt-block"><p><strong>${esc(heading)}: ${esc(rec.toolName)}</strong>, ${esc(QUALITY[rec.match.quality] || rec.match.label)}</p>
+  return `<div class="opt-block"><p><strong>${esc(heading)}: ${esc(rec.toolName)}</strong>, ${esc(rec.match.optionalCondition ? rec.match.label : (QUALITY[rec.match.quality] || rec.match.label))}</p>
     <p>${esc(rec.match.explanation)}</p>
     ${rec.firstStep ? `<p><strong>First step:</strong> ${esc(rec.firstStep)}</p>` : ""}
     ${rec.why ? `<p>${esc(rec.why)}</p>` : ""}
@@ -678,7 +679,7 @@ function whyBlock(rec, heading) {
     <p class="muted">Confidence: ${esc(rec.confidence)}. Evidence: ${esc((rec.evidenceIds || []).join(", ") || "none supplied")}.</p></div>`;
 }
 function extrasHtml(data) {
-  const others = (data.otherCandidates || []).filter(x => !x.owned);
+  const others = (data.otherCandidates || []).filter((x, i, all) => !x.owned && all.findIndex(y => y.toolName.toLowerCase() === x.toolName.toLowerCase()) === i);
   return `${others.length ? `<p class="muted">Also related: ${others.map(x => esc(x.toolName)).join(", ")}.</p>` : ""}
     ${(data.ownedNotInLibrary || []).length ? `<p class="muted">Not in our library yet, so we couldn't check: ${data.ownedNotInLibrary.map(esc).join(", ")}.</p>` : ""}`;
 }
@@ -687,7 +688,8 @@ function renderGoal(data, goal) {
   const own = data.ownedRecommendation, rec = data.recommendation;
   const blocks = [];
   if (own) blocks.push(toolBlock(own, "You already have this", "have"));
-  if (rec) blocks.push(toolBlock(rec, own ? "What a new tool would add" : (rec.match.quality === "goal_match" ? "Fits your goal" : "Loosely related")));
+  if (own && rec?.match.optionalCondition) blocks.push(`<p class="note">Start with ${esc(own.toolName)}. Nothing in this comparison establishes that you need another subscription.</p>`);
+  if (rec) blocks.push(toolBlock(rec, rec.match.optionalCondition ? "Optional addition" : own ? "What a new tool would add" : (rec.match.quality === "goal_match" ? "Fits your goal" : "Loosely related")));
   if (data.clarifyingQuestion) blocks.push(`<div class="start"><span class="kicker">One question first</span><h3>${esc(data.clarifyingQuestion)}</h3>
     <p class="muted">Add your answer to what you typed, then press Find where to start again.</p></div>`);
   else if (!own && !rec) blocks.push(`<div class="start"><span class="kicker">No match yet</span><p>${esc(data.noMatchReason || "Our library has no tool for this goal yet.")}</p></div>`);
@@ -718,7 +720,7 @@ async function loadRecommendation(result, run) {
     const dup = (data.duplicates || []).map(d => `<span class="opt-warn">${esc(d.text)}</span>`).join("");
     const main = own
       ? `<span><strong>${esc(own.toolName)}</strong>, which you already have</span>${rec ? `<span class="opt-sub">New tool: ${esc(rec.toolName)}, ${esc(QUALITY[rec.match.quality] || "")}</span>` : ""}`
-      : rec ? `<span><strong>${esc(rec.toolName)}</strong>, ${esc(QUALITY[rec.match.quality] || rec.match.label)}</span>`
+      : rec ? `<span><strong>${esc(rec.toolName)}</strong>, ${esc(rec.match.optionalCondition ? rec.match.label : (QUALITY[rec.match.quality] || rec.match.label))}</span>`
       : `<span>No better option found</span>`;
     row.innerHTML = dup + main;
     const goalNote = data.goalFallback === "shopper_goal" ? `Goal used: ${esc(data.shopperGoal)}.` : "No goal given, so we used your question.";

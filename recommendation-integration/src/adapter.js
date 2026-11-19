@@ -182,6 +182,37 @@ const GENERIC_QUESTIONS = new Set([
 ]);
 
 function classifyMatch(rec, checkout, founderGoal = '') {
+  const subject = checkout.sourceMode === 'description' ? 'purchase description' : 'checkout';
+  // Narration is an additional capability, not a substitute for assembling/editing video.
+  const isNarration = /\belevenlabs\b/i.test(rec.toolName) && rec.category === 'video';
+  const mentionsSpeech = text => /\b(narration|narrator|voiceover|voice-over|voice over|text.to.speech|speech|voice tracks?)\b/i.test(
+    String(text).replace(/\b(?:no|without|don't need|do not need)\s+(?:AI\s+)?(?:narration|voiceover|voice-over|voice over|speech|voice tracks?)\b/gi, ''));
+  if (isNarration && !mentionsSpeech(checkout.searchableText)) {
+    const requested = mentionsSpeech(founderGoal);
+    return {
+      quality: 'related_alternative', label: 'Optional narration addition — not a video editor',
+      explanation: requested
+        ? `Your goal asks for narration. This record covers speech alongside a video editor, rather than a direct substitute for the product in your ${subject}.`
+        : `Your ${subject} concerns video editing. This record adds narration only if you need it; your stated goal does not establish that need.`,
+      optionalCondition: requested ? null : 'Only if you need AI narration',
+      checkoutJobs: detectStrongCheckoutJob(checkout.searchableText).map(entry => entry.job),
+      sharedJobs: [], missingDirectJobs: ['video_editing'],
+    };
+  }
+  const isGeneratedVisual = /\brunway\b/i.test(rec.toolName);
+  const generatedVisuals = /\b(generat(?:e|ed|ive|ing)\s+(?:AI\s+)?(?:video|visuals?|footage|shots?|clips?|images?)|text.to.video|image.to.video)\b/i;
+  if (isGeneratedVisual && !generatedVisuals.test(checkout.searchableText)) {
+    const requested = generatedVisuals.test(founderGoal);
+    return {
+      quality: 'related_alternative', label: 'Optional generated visuals — not a video editor',
+      explanation: requested
+        ? `Your goal asks for generated visuals. This record adds generated footage alongside an editor, rather than replacing the product in your ${subject}.`
+        : `This record adds generated visuals only if you need them. Your ${subject} and stated goal do not establish that need.`,
+      optionalCondition: requested ? null : 'Only if you need AI-generated visuals',
+      checkoutJobs: detectStrongCheckoutJob(checkout.searchableText).map(entry => entry.job),
+      sharedJobs: [], missingDirectJobs: ['video_editing'],
+    };
+  }
   const goalText = String(founderGoal || '').trim().toLowerCase().replace(/\s+/g, ' ');
   const hasSpecificGoal = goalText && !GENERIC_QUESTIONS.has(goalText);
   const goalJobs = hasSpecificGoal ? detectJob(founderGoal) : [];
@@ -206,7 +237,7 @@ function classifyMatch(rec, checkout, founderGoal = '') {
     return {
       quality: 'direct_match',
       label: 'Direct match',
-      explanation: `The checkout (or a specific founder goal) and this Floot record both directly concern ${directJobs.map((entry) => entry.label).join(', ')}.`,
+      explanation: `The ${subject} (or a specific goal) and this editorial record both directly concern ${directJobs.map((entry) => entry.label).join(', ')}.`,
       checkoutJobs: checkoutJobs.map((entry) => entry.job),
       sharedJobs: directJobs.map((entry) => entry.job),
       missingDirectJobs: checkoutJobs.filter((entry) => !directJobs.some((direct) => direct.job === entry.job)).map((entry) => entry.job),
@@ -218,7 +249,7 @@ function classifyMatch(rec, checkout, founderGoal = '') {
     return {
       quality: 'related_alternative',
       label: 'Related alternative — not a direct substitute',
-      explanation: `Related through the stated goal (${goalOnlyJobs.map((entry) => entry.label).join(', ')}), but the checkout item itself does not directly identify that kind of purchase.`,
+      explanation: `Related through the stated goal (${goalOnlyJobs.map((entry) => entry.label).join(', ')}), but the ${subject} item itself does not directly identify that kind of purchase.`,
       checkoutJobs: checkoutJobs.map((entry) => entry.job),
       sharedJobs: recJobs.filter((entry) => goalOnlyJobs.some((goal) => goal.job === entry.job)).map((entry) => entry.job),
       missingDirectJobs: checkoutJobs.map((entry) => entry.job),
@@ -231,10 +262,10 @@ function classifyMatch(rec, checkout, founderGoal = '') {
     quality: 'related_alternative',
     label: 'Related alternative — not a direct substitute',
     explanation: genericPlanOnly
-      ? 'Related guidance only: the checkout only names a generic plan (for example "Builder Pro"), so the purchase does not explicitly identify a direct substitute category.'
+      ? `Related guidance only: the ${subject} only names a generic plan (for example "Builder Pro"), so the purchase does not explicitly identify a direct substitute category.`
       : (missingDirect.length
-        ? `Related guidance only: the checkout concerns ${missingDirect.map((entry) => entry.label).join(', ')}, while this record covers a neighbouring use case. Direct classification is withheld because the checkout/goal evidence is generic or adjacent, not an explicit direct-purchase match.`
-        : 'Related guidance only: this record shares a broad category with the checkout, but the evidence is too generic to call it a direct substitute.'),
+        ? `Related guidance only: the ${subject} concerns ${missingDirect.map((entry) => entry.label).join(', ')}, while this record covers a neighbouring use case. Direct classification is withheld because the ${subject}/goal evidence is generic or adjacent, not an explicit direct-purchase match.`
+        : `Related guidance only: this record shares a broad category with the ${subject}, but the evidence is too generic to call it a direct substitute.`),
     checkoutJobs: checkoutJobs.map((entry) => entry.job),
     sharedJobs: directJobs.map((entry) => entry.job),
     missingDirectJobs: missingDirect.map((entry) => entry.job),
@@ -444,6 +475,7 @@ function recommend(input, recommendationLibrary, options = {}) {
   const scoringGoal = goalOnly ? String(founderGoal).replace(/[.,!?;:]+(?=\s|$)/g, ' ') : founderGoal;
   const checkout = describeCheckout(facts);
   checkout.goalOnly = goalOnly;
+  checkout.sourceMode = sourceMode;
   checkout.categories = goalOnly
     ? inferCategories({ searchableTokens: new Set(tokens(scoringGoal)) })
     : inferCategories(checkout);
@@ -501,7 +533,12 @@ function recommend(input, recommendationLibrary, options = {}) {
   // don't have yet, so it says what a new purchase would add. With no owned tools, nothing here changes.
   const ownedEntry = ranked.find((r) => r.owned && (!goalOnly || r.match.quality === 'goal_match')) || null;
   const top = ranked.find((r) => !r.owned) || null;
-  const others = ranked.filter((r) => r !== top && r !== ownedEntry);
+  const seenTools = [top, ownedEntry].filter(Boolean).map(r => r.rec.toolName);
+  const others = ranked.filter(r => {
+    if (seenTools.some(name => sameTool(name, r.rec.toolName))) return false;
+    seenTools.push(r.rec.toolName);
+    return true;
+  });
 
   // Something in the cart the shopper already has, by name or by the job it does. Checked only against
   // records in the library, and only for jobs the checkout names clearly, so a domain never reads as a
@@ -559,7 +596,7 @@ function recommend(input, recommendationLibrary, options = {}) {
   const why = top ? whyFor(top)
     : [`No record in the recommendation library matched this ${goalOnly ? 'goal' : 'checkout'}. That is a library-coverage result, not a claim that no alternative exists.`];
   const noMatchReason = top ? null : domainOnlyWithoutGoal
-    ? "This checkout only shows a domain purchase, and a website builder is not a substitute for a domain. To see related tools, say what you're trying to do, such as launching a website."
+    ? `This ${sourceMode === 'description' ? 'purchase description' : 'checkout'} only shows a domain purchase, and a website builder is not a substitute for a domain. To see related tools, say what you're trying to do, such as launching a website.`
     : spark && spark.noNewPurchase
       ? "What you already have covers this, so there's nothing new to buy."
       : goalOnly && ownedEntry
