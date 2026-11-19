@@ -1,0 +1,96 @@
+[
+  {
+    "case": "clear-renewal",
+    "checks": [
+      {
+        "check": "Mode is live",
+        "passed": true
+      },
+      {
+        "check": "Total due matches the screenshot",
+        "passed": true
+      },
+      {
+        "check": "Renewal price and interval retained",
+        "passed": true
+      },
+      {
+        "check": "Math check detects the expected condition",
+        "passed": true
+      },
+      {
+        "check": "Verdict guardrails pass",
+        "passed": true
+      },
+      {
+        "check": "Recommendations preserve the shown verdict",
+        "passed": true
+      }
+    ],
+    "passed": true
+  },
+  {
+    "case": "wrong-total",
+    "checks": [
+      {
+        "check": "Mode is live",
+        "passed": true
+      },
+      {
+        "check": "Total due matches the screenshot",
+        "passed": true
+      },
+      {
+        "check": "Math check detects the expected condition",
+        "passed": true
+      },
+      {
+        "check": "Decision matches expected boundary",
+        "passed": true
+      },
+      {
+        "check": "Flagged image received a second review",
+        "passed": true
+      },
+      {
+        "check": "Verdict guardrails pass",
+        "passed": true
+      },
+      {
+        "check": "Recommendations preserve the shown verdict",
+        "passed": true
+      }
+    ],
+    "passed": true
+  },
+  {
+    "case": "heycatch-ad",
+    "checks": [
+      {
+        "check": "Mode is live",
+        "passed": true
+      },
+      {
+        "check": "Total due matches the screenshot",
+        "passed": true
+      },
+      {
+        "check": "No renewal terms invented",
+        "passed": true
+      },
+      {
+        "check": "Decision matches expected boundary",
+        "passed": true
+      },
+      {
+        "check": "Verdict guardrails pass",
+        "passed": true
+      },
+      {
+        "check": "Recommendations preserve the shown verdict",
+        "passed": true
+      }
+    ],
+    "passed": true
+  }
+]
