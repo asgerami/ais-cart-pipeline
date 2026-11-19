@@ -10,7 +10,7 @@ import threading
 import time
 
 from .analyze import StepError, VERSIONS, analyze, settings_from_env
-from .goal import GOAL_VERSION, MAX_GOAL, interpret_goal
+from .goal import GOAL_VERSION, GOAL_VERSION_V2, MAX_GOAL, interpret_goal
 from .meta import MetaError, client_from_env
 
 MAX_BODY = int(os.environ.get("MAX_BODY_BYTES", "4400000"))  # Vercel caps request bodies at 4.5 MB
@@ -84,7 +84,7 @@ def health():
     return _json(200, {"ok": True, "mode": client.mode if client else "not configured",
                        "model_key_set": bool(os.environ.get("MODEL_API_KEY", "").strip()),
                        "token_required": bool(os.environ.get("SERVICE_TOKEN", "").strip()),
-                       "settings": settings_from_env(), "versions": {**VERSIONS, "goal_prompt": GOAL_VERSION}})
+                       "settings": settings_from_env(), "versions": {**VERSIONS, "goal_prompt": GOAL_VERSION, "goal_prompt_v2": GOAL_VERSION_V2}})
 
 
 def handle(method, path, headers, body):
@@ -135,10 +135,16 @@ def _goal(body):
         return _error(400, "bad_request", "Say what you are trying to do first: send it as \"goal\".")
     if len(goal) > MAX_GOAL:
         return _error(400, "bad_request", f"Keep the goal under {MAX_GOAL} characters.")
+    version = req.get("version", 1)
+    if version not in (1, 2):
+        return _error(400, "bad_request", "version must be 1 or 2.")
+    owned = req.get("ownedTools", [])
+    if not isinstance(owned, list) or not all(isinstance(x, str) for x in owned):
+        return _error(400, "bad_request", "ownedTools must be a list of tool names.")
     client = client_from_env()
     if client is None:
         return _error(503, "not_configured", "MODEL_API_KEY is not set on the server. Set it, or set MOCK=1 for sample answers.")
     try:
-        return _json(200, interpret_goal(goal, client, settings_from_env()))
+        return _json(200, interpret_goal(goal, client, settings_from_env(), owned, version))
     except MetaError as e:
         return _error(502, "model_call_failed", str(e), step="goal", http_status=e.status, detail=e.body)

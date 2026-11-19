@@ -162,7 +162,7 @@ details summary { cursor: pointer; color: var(--ink-2); font-size: 14px; }
 .opt-warn { color: var(--wait); font-weight: 700; font-size: 14.5px; }
 .pay-more { margin-top: 6px; padding: 6px 10px; font-size: 13.5px; }
 /* Two ways in */
-.modes { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding: 4px; background: var(--paper); border: 1px solid var(--line); border-radius: 10px; }
+.modes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; padding: 4px; background: var(--paper); border: 1px solid var(--line); border-radius: 10px; }
 .modes button { border: 0; background: transparent; padding: 10px 8px; line-height: 1.25; }
 .modes button[aria-selected="true"] { background: var(--card); color: var(--brand); box-shadow: 0 1px 2px var(--shadow), 0 0 0 1px var(--line); }
 .modes button[aria-selected="false"] { color: var(--ink-2); }
@@ -249,6 +249,7 @@ footer a { color: inherit; }
       </div>
       <div class="modes" role="tablist" aria-label="How do you want to start?">
         <button type="button" role="tab" id="modeShot" aria-selected="true" aria-controls="shotSteps">I have a screenshot</button>
+        <button type="button" role="tab" id="modeDescription" aria-selected="false" aria-controls="descriptionSteps">Describe a purchase</button>
         <button type="button" role="tab" id="modeGoal" aria-selected="false" aria-controls="goalSteps">I don't have a cart yet</button>
       </div>
       <ol class="steps" id="shotSteps" role="tabpanel" aria-labelledby="modeShot">
@@ -284,6 +285,14 @@ footer a { color: inherit; }
         <label class="step-title" for="goalText">Tell us what you're trying to do</label>
         <textarea id="goalText" maxlength="500" placeholder="In your own words. For example: I need to get more people to sign up on my website. Where do I start?"></textarea>
         <button class="primary" id="goGoal" disabled>Find where to start</button>
+      </div>
+      <div class="goal-steps" id="descriptionSteps" role="tabpanel" aria-labelledby="modeDescription" hidden>
+        <label class="step-title" for="descriptionText">What are you considering?</label>
+        <textarea id="descriptionText" maxlength="2000" placeholder="Name the product and what it promises. You can paste an ad or describe it."></textarea>
+        <label for="descriptionGoal">What would you use it for? (optional)</label>
+        <input id="descriptionGoal" type="text" maxlength="500" placeholder="e.g. make a promo video for AI’sCart">
+        <p class="muted">We compare it with your tools. Prices, terms and advertising claims stay unverified until checked.</p>
+        <button class="primary" id="goDescription" disabled>Compare with my tools</button>
       </div>
       <details class="owned" id="ownedBox">
         <summary>Tools you already have <span class="muted" id="ownedCount"></span></summary>
@@ -331,7 +340,7 @@ footer a { color: inherit; }
 </main>
 
 <script>
-const PAGE_VERSION = "2026-11-15.1";
+const PAGE_VERSION = "2026-11-18.connected.1";
 const DEFAULT_Q = "Should I complete this purchase?";
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -364,6 +373,8 @@ function cancelRun() {
   state.controller = null;
   state.result = null;
   $("go").disabled = !state.image;
+  $("goGoal").disabled = !$("goalText").value.trim();
+  $("goDescription").disabled = !$("descriptionText").value.trim();
 }
 
 function showAnswerPanel() {
@@ -378,7 +389,9 @@ function forStrip(note) {
 }
 
 function showEmpty() {
-  $("result").innerHTML = state.mode === "goal"
+  $("result").innerHTML = state.mode === "description"
+    ? `<h2 id="right-title" hidden>Comparison</h2><div class="empty"><strong>Compare a purchase with what you have</strong>Describe the product, add your tools below, then press Compare with my tools.</div>`
+    : state.mode === "goal"
     ? `<h2 id="right-title" hidden>Answer</h2><div class="empty"><strong>Where to start will appear here</strong>
       Say what you're trying to do, in your own words, then press Find where to start.</div>`
     : `<h2 id="right-title" hidden>Answer</h2><div class="empty"><strong>Your answer will appear here</strong>
@@ -423,6 +436,7 @@ function resetAll() {
   $("q").value = DEFAULT_Q;
   $("shopperGoal").value = "";
   $("goalText").value = ""; $("goGoal").disabled = true;
+  $("descriptionText").value = ""; $("descriptionGoal").value = ""; $("goDescription").disabled = true;
   state.checkedGoal = "";
   markSample(null);
   $("go").disabled = true;
@@ -468,6 +482,8 @@ document.querySelectorAll("[data-sample]").forEach(b => b.onclick = async () => 
 });
 $("reset").onclick = resetAll;
 function updateStaleNotes() {
+  if (state.mode !== "shot") { cancelRun(); showEmpty(); }
+
   const questionNote = $("stale");
   if (questionNote) questionNote.hidden = $("q").value.trim() === state.checkedQuestion.trim();
   const goalNote = $("goalStale");
@@ -527,18 +543,24 @@ function setMode(mode) {
   state.pick += 1;
   state.mode = mode;
   $("modeShot").setAttribute("aria-selected", String(mode === "shot"));
+  $("modeDescription").setAttribute("aria-selected", String(mode === "description"));
+  $("descriptionSteps").hidden = mode !== "description";
   $("modeGoal").setAttribute("aria-selected", String(mode === "goal"));
   $("shotSteps").hidden = mode !== "shot";
   $("goalSteps").hidden = mode !== "goal";
   if (mode === "goal") { $("ownedBox").open = true; showEmpty(); $("goalText").focus(); }
+  else if (mode === "description") { $("ownedBox").open = true; showEmpty(); $("descriptionText").focus(); }
   else if (state.image) showReady(); else showEmpty();
 }
 $("modeShot").onclick = () => setMode("shot");
 $("modeGoal").onclick = () => setMode("goal");
+$("modeDescription").onclick = () => setMode("description");
 document.querySelector(".modes").onkeydown = e => {
   if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
-  const next = state.mode === "shot" ? "goal" : "shot";
-  setMode(next); $(next === "goal" ? "modeGoal" : "modeShot").focus();
+  e.preventDefault();
+  const modes = ["shot", "description", "goal"];
+  const next = modes[(modes.indexOf(state.mode) + (e.key === "ArrowRight" ? 1 : 2)) % 3];
+  setMode(next); $({shot: "modeShot", description: "modeDescription", goal: "modeGoal"}[next]).focus();
 };
 
 // ---------- Tools the shopper already has. Kept in this browser; the page works without storage. ----------
@@ -566,33 +588,66 @@ fetch("/api/recommend").then(r => r.json()).then(d => {
   $("toolNames").innerHTML = (d.tools || []).map(t => `<option value="${esc(t)}">`).join("");
 }).catch(() => {});
 
-$("goalText").oninput = () => { $("goGoal").disabled = !$("goalText").value.trim(); };
+$("goalText").oninput = updateStaleNotes;
+$("descriptionText").oninput = updateStaleNotes;
+$("descriptionGoal").oninput = updateStaleNotes;
+$("goDescription").onclick = async () => {
+  const description = $("descriptionText").value.trim(), shopperGoal = $("descriptionGoal").value.trim();
+  if (!description) return;
+  cancelRun();
+  const run = state.run, ownedTools = owned.slice();
+  $("goDescription").disabled = true;
+  $("result").innerHTML = `<h2 id="right-title">Comparison</h2><p role="status">Comparing with your tools…</p>`;
+  try {
+    const resp = await fetch("/api/recommend", {method: "POST", headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({mode: "description", description, shopperGoal, ownedTools})});
+    const data = await resp.json();
+    if (run !== state.run) return;
+    if (!resp.ok || data.error) throw new Error(data.error?.message || `HTTP ${resp.status}`);
+    renderGoal(data, description);
+    $("right-title").textContent = "Purchase comparison";
+    $("right-title").insertAdjacentHTML("afterend", `<p class="held">${esc(data.verificationNote)}</p>`);
+    const duplicates = (data.duplicates || []).map(d => `<p class="opt-warn">${esc(d.text)}</p>`).join("");
+    $("result").insertAdjacentHTML("beforeend", duplicates);
+    showAnswerPanel();
+  } catch (err) {
+    if (run === state.run) $("result").innerHTML = `<h2 id="right-title">Comparison</h2><div class="err">${esc(err.message || err)}</div>`;
+  } finally {
+    if (run === state.run) $("goDescription").disabled = !$("descriptionText").value.trim();
+  }
+};
 // Muse Spark reads the goal when the page is opened with ?matcher=spark (a live deployment, with its access token).
-const MATCHER = new URLSearchParams(location.search).get("matcher") === "spark" ? "spark" : "keyword";
+// ?matcher=spark2 uses the version that also knows the shopper's owned tools.
+const MATCHER = {spark: "spark", spark2: "spark2"}[new URLSearchParams(location.search).get("matcher")] || "keyword";
 $("goGoal").onclick = async () => {
   const goal = $("goalText").value.trim();
   if (!goal) return;
   cancelRun();
-  const run = state.run;
+  const run = state.run, ownedTools = owned.slice();
   $("goGoal").disabled = true;
   $("result").innerHTML = `<h2 id="right-title">Where to start</h2><p class="goal-quote">${esc(goal)}</p>
     <div class="working" role="status"><p><strong>Finding where to start.</strong></p><div class="bar" aria-hidden="true"><i></i></div></div>`;
   showAnswerPanel();
   try {
     let picks = null;
-    if (MATCHER === "spark") {
+    if (MATCHER !== "keyword") {
       const token = $("token").value.trim();
       const headers = {"Content-Type": "application/json"};
       if (token) headers.Authorization = `Bearer ${token}`;
-      const g = await fetch("/api/goal", {method: "POST", headers, body: JSON.stringify({goal})});
+      const v2 = MATCHER === "spark2";
+      const g = await fetch("/api/goal", {method: "POST", headers,
+        body: JSON.stringify(v2 ? {goal, version: 2, ownedTools} : {goal})});
       const read = await g.json();
       if (run !== state.run) return;
       if (!g.ok || read.error) throw new Error(read.error?.message || `HTTP ${g.status}`);
       const it = read.interpretation;
-      picks = {decision: it.decision, recordIds: it.record_ids, question: it.question, goalSummary: it.goal_summary, reason: it.reason};
+      picks = v2
+        ? {version: 2, decision: it.decision, ownedRecordId: it.owned_record_id, ownedFirstStep: it.owned_first_step,
+           newRecordId: it.new_record_id, newToolAdds: it.new_tool_adds, question: it.question, goalSummary: it.goal_summary, reason: it.reason}
+        : {decision: it.decision, recordIds: it.record_ids, question: it.question, goalSummary: it.goal_summary, reason: it.reason};
     }
     const resp = await fetch("/api/recommend", {method: "POST", headers: {"Content-Type": "application/json"},
-      body: JSON.stringify({mode: "goal", goal, ownedTools: owned, ...(picks ? {picks} : {})})});
+      body: JSON.stringify({mode: "goal", goal, ownedTools, ...(picks ? {picks} : {})})});
     const data = await resp.json();
     if (run !== state.run) return;
     if (!resp.ok || data.error) throw new Error(data.error?.message || `HTTP ${resp.status}`);
@@ -608,6 +663,8 @@ $("goGoal").onclick = async () => {
 
 function toolBlock(rec, kicker, cls = "") {
   return `<div class="start ${cls}"><span class="kicker">${esc(kicker)}</span><h3>${esc(rec.toolName)}</h3>
+    ${rec.sparkFirstStep ? `<p><strong>For your goal:</strong> ${esc(rec.sparkFirstStep)}</p>` : ""}
+    ${rec.sparkAdds ? `<p><strong>What it would add:</strong> ${esc(rec.sparkAdds)}</p>` : ""}
     ${rec.bestFor ? `<p><strong>Best for:</strong> ${esc(rec.bestFor)}</p>` : ""}
     ${rec.firstStep ? `<p><strong>First step:</strong> ${esc(rec.firstStep)}</p>` : ""}
     ${rec.caution ? `<p class="muted"><strong>Caution:</strong> ${esc(rec.caution)}</p>` : ""}</div>`;
@@ -634,6 +691,7 @@ function renderGoal(data, goal) {
   if (data.clarifyingQuestion) blocks.push(`<div class="start"><span class="kicker">One question first</span><h3>${esc(data.clarifyingQuestion)}</h3>
     <p class="muted">Add your answer to what you typed, then press Find where to start again.</p></div>`);
   else if (!own && !rec) blocks.push(`<div class="start"><span class="kicker">No match yet</span><p>${esc(data.noMatchReason || "Our library has no tool for this goal yet.")}</p></div>`);
+  else if (!rec && data.noNewPurchase) blocks.push(`<div class="start"><span class="kicker">Nothing new to buy</span><p>${esc(data.noMatchReason)}</p></div>`);
   else if (!rec && data.noMatchReason) blocks.push(`<p class="muted">${esc(data.noMatchReason)}</p>`);
   const why = [own && whyBlock(own, "You have"), rec && whyBlock(rec, own ? "New tool" : "Suggested")].filter(Boolean).join("");
   $("result").innerHTML = `<h2 id="right-title">Where to start</h2>
@@ -641,8 +699,9 @@ function renderGoal(data, goal) {
     ${blocks.join("")}
     ${extrasHtml(data)}
     ${why ? `<details class="why-opt"><summary>Why these tools</summary>${why}
-      <p class="muted">${data.matcher === "spark" ? "Muse Spark read your goal, then picked only from our editorial notes on the tools we've used."
-        : "From our editorial notes on the tools we've used, matched on the words in your goal."}</p></details>` : ""}`;
+      <p class="muted">${data.matcher === "spark2" ? "Muse Spark read your goal and the tools you have, then picked only from our editorial notes on the tools we've used. \"For your goal\" and \"What it would add\" are Spark's words; the rest is ours."
+        : data.matcher === "spark" ? "Muse Spark read your goal, then picked only from our editorial notes on the tools we've used."
+        : data.inputMode === "description" ? "From our editorial library, matched on your description and optional goal. This is a keyword comparison, not a checkout verification." : "From our editorial notes on the tools we've used, matched on the words in your goal."}</p></details>` : ""}`;
 }
 
 function chip(f) { return `<span class="chip">${esc(f)}</span>`; }

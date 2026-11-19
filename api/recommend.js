@@ -15,6 +15,8 @@ function publicRec(rec) {
         why: rec.why,
         caution: rec.caution,
         firstStep: rec.firstStep || null,
+        sparkFirstStep: rec.sparkFirstStep || null,
+        sparkAdds: rec.sparkAdds || null,
         confidence: rec.confidence,
         evidenceIds: rec.evidenceIds,
         alternative: rec.alternative,
@@ -47,6 +49,7 @@ function publicRecommendation(result) {
     duplicates: result.duplicates,
     goalCategories: result.goalCategories,
     matcher: result.matcher,
+    noNewPurchase: result.noNewPurchase,
     clarifyingQuestion: result.clarifyingQuestion,
     goalReading: result.goalReading,
     otherCandidates: result.otherCandidates.map((candidate) => ({
@@ -78,6 +81,23 @@ module.exports = async function handler(req, res) {
   try {
     const body = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : (req.body || {});
     const ownedTools = Array.isArray(body.ownedTools) ? body.ownedTools : [];
+    // A description is shopper testimony, never an extracted checkout or a purchase approval.
+    if (body.mode === 'description') {
+      const description = typeof body.description === 'string' ? body.description.trim() : '';
+      const goal = typeof body.shopperGoal === 'string' ? body.shopperGoal.trim() : '';
+      if (!description || description.length > 2000 || goal.length > 500) {
+        return res.status(400).json({ error: { code: 'bad_request', message: 'Describe the purchase in 1–2000 characters; keep the goal under 500.' } });
+      }
+      const field = { status: 'inferred', value: description, evidence: 'User-supplied description; not verified against a checkout.' };
+      const result = recommend({ mode: 'description', facts: {
+        merchant: { status: 'unknown', value: null, evidence: '' },
+        line_items: [{ name: field }], uncertainty_flags: [],
+      } }, library, { founderGoal: goal, ownedTools });
+      return res.status(200).json({ ...publicRecommendation(result), inputMode: 'description',
+        description, shopperGoal: goal || null, evidenceSource: 'user_description',
+        purchaseVerified: false, pipelineVerdict: null,
+        verificationNote: 'Based on what you typed. Price, renewal, cancellation and advertised results are unverified. Add a checkout screenshot before deciding to pay.' });
+    }
     // Goal-first: no screenshot yet, only what the shopper is trying to do.
     if (body.mode === 'goal') {
       const goal = typeof body.goal === 'string' ? body.goal.trim() : '';

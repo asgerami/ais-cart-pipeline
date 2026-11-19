@@ -1,0 +1,12 @@
+[
+  {"id":"domain-screenshot-owned", "mode":"screenshot", "sample":"checkout_01_domain", "goal":"launch a website for my startup", "ownedTools":["Squarespace"], "expected":{"verdict":"WAIT", "owned":"Squarespace", "recommendation":"Floot"}},
+  {"id":"domain-screenshot-no-goal", "mode":"screenshot", "sample":"checkout_01_domain", "ownedTools":["Squarespace"], "expected":{"verdict":"WAIT", "owned":null, "recommendation":null}},
+  {"id":"trial-screenshot", "mode":"screenshot", "sample":"checkout_02_trial", "ownedTools":[], "expected":{"verdict":"TRIAL", "recommendation":"Base44"}},
+  {"id":"furniture-no-ai-substitute", "mode":"screenshot", "sample":"checkout_03_cart", "ownedTools":["Canva"], "expected":{"verdict":"BUY", "recommendation":null}},
+  {"id":"typed-owned-duplicate", "mode":"description", "description":"Canva video editing subscription", "goal":"make a short promo video", "ownedTools":["Canva"], "expected":{"owned":"Canva", "duplicate":true}},
+  {"id":"typed-domain-no-goal", "mode":"description", "description":"Domainly domain registration", "ownedTools":["Squarespace"], "expected":{"owned":null, "recommendation":null}},
+  {"id":"typed-washer-outside-library", "mode":"description", "description":"Portable washing machine for small loads with a sink connection", "ownedTools":["Canva"], "expected":{"owned":null, "recommendation":null}},
+  {"id":"goal-owned-writing", "mode":"goal", "goal":"help me write a grant proposal", "ownedTools":["ChatGPT","Claude"], "expected":{"recommendation":null}},
+  {"id":"goal-unknown-inventory", "mode":"goal", "goal":"make a short promo video", "ownedTools":["Canva","Unlisted tool"], "expected":{"owned":"Canva", "unknown":"Unlisted tool"}},
+  {"id":"spark2-owned-no-purchase", "mode":"spark2", "goal":"People visit my site, but hardly anyone ever joins my mailing list.", "ownedTools":["Squarespace"], "expected":{"owned":"Squarespace", "recommendation":null, "noNewPurchase":true}}
+]
